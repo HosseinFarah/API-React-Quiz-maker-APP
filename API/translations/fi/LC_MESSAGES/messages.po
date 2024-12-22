@@ -1,0 +1,1128 @@
+# Finnish translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-11-28 10:41+0200\n"
+"PO-Revision-Date: 2024-11-20 15:19+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: fi\n"
+"Language-Team: fi <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: app/forms.py:12 app/forms.py:31 app/forms.py:82 app/forms.py:96
+#: app/forms.py:105 app/templates/auth/activate_users.html:14
+#: app/templates/auth/all_users.html:66
+msgid "Email"
+msgstr "Sähköposti"
+
+#: app/forms.py:13 app/forms.py:32 app/forms.py:91
+msgid "Password"
+msgstr "Salasana"
+
+#: app/forms.py:14
+msgid "Remember Me"
+msgstr "Muista minut"
+
+#: app/auth/views.py:66 app/forms.py:15 app/templates/auth/login.html:7
+#: app/templates/auth/register.html:113
+#: app/templates/auth/reset_password.html:25
+#: app/templates/auth/reset_password_request.html:20
+#: app/templates/base.html:100 app/templates/base.html:208
+msgid "Login"
+msgstr "Kirjaudu Sisään"
+
+#: app/forms.py:24
+#, python-format
+msgid "File size must be less than %d bytes"
+msgstr "Tiedoston koon on oltava alle %d tavua"
+
+#: app/forms.py:29 app/forms.py:52 app/forms.py:114
+msgid "First Name"
+msgstr "Etunimi"
+
+#: app/forms.py:29 app/forms.py:30 app/forms.py:52 app/forms.py:53
+#: app/forms.py:114 app/forms.py:115
+msgid "^[a-zåäöA-ZÅÄÖ'\\-]+$"
+msgstr "^[a-zåäöA-ZÅÄÖ'\\-]+$"
+
+#: app/forms.py:29 app/forms.py:30 app/forms.py:52 app/forms.py:53
+#: app/forms.py:114 app/forms.py:115
+msgid "Only letters, hyphens and apostrophes allowed"
+msgstr "Vain kirjaimet, väliviivat ja heittomerkit sallittu"
+
+#: app/forms.py:30 app/forms.py:53 app/forms.py:115
+msgid "Last Name"
+msgstr "Sukunimi"
+
+#: app/forms.py:32 app/forms.py:91 app/forms.py:133
+msgid "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/]{8,}$"
+msgstr "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/]{8,}$"
+
+#: app/forms.py:32 app/forms.py:91 app/forms.py:133
+msgid ""
+"Password must contain at least one uppercase letter, one lowercase "
+"letter, one number, one special character, and be at least 8 characters "
+"long"
+msgstr ""
+"Salasanassa on oltava vähintään yksi iso kirjain, yksi pieni kirjain, "
+"yksi numero, yksi erikoismerkki ja sen on oltava vähintään 8 merkkiä "
+"pitkä"
+
+#: app/forms.py:33 app/forms.py:92
+msgid "Confirm Password"
+msgstr "Vahvista Salasana"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:117
+#: app/templates/auth/all_users.html:80
+msgid "Address"
+msgstr "Osoite"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:68 app/forms.py:69
+#: app/forms.py:75 app/forms.py:76 app/forms.py:117
+msgid "^[a-zåäöA-ZÅÄÖ0-9'\\- ]+$"
+msgstr "^[a-zåäöA-ZÅÄÖ0-9'\\- ]+$"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:68 app/forms.py:69
+#: app/forms.py:75 app/forms.py:76 app/forms.py:117
+msgid "Only letters, numbers, hyphens and apostrophes allowed"
+msgstr "Vain kirjaimet, numerot, väliviivat ja heittomerkit sallittu"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "Zip Code"
+msgstr "Postinumero"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "^[0-9]{5}$"
+msgstr "^[0-9]{5}$"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "Zip code must be 5 digits long"
+msgstr "Postinumeron on oltava 5 numeroa pitkä"
+
+#: app/forms.py:36 app/forms.py:54 app/forms.py:116
+#: app/templates/auth/all_users.html:76
+msgid "City"
+msgstr "Kaupunki"
+
+#: app/forms.py:37 app/forms.py:57
+msgid "Phone Number"
+msgstr "Puhelinnumero"
+
+#: app/forms.py:37 app/forms.py:57
+msgid "^[\\d\\s\\-\\+\\(\\)]{1,15}$"
+msgstr "^[\\d\\s\\-\\+\\(\\)]{1,15}$"
+
+#: app/forms.py:37 app/forms.py:57
+msgid ""
+"Phone number must have at most 15 digits and can contain numbers, spaces,"
+" hyphens, plus signs and parentheses"
+msgstr ""
+"Puhelinnumerossa saa olla enintään 15 numeroa ja se voi sisältää "
+"numeroita, välilyöntejä, väliviivoja, plusmerkkejä ja sulkeita"
+
+#: app/forms.py:38
+msgid "Profile Picture"
+msgstr "Profiilikuva"
+
+#: app/forms.py:38 app/forms.py:58
+msgid "Only jpg, png, jpeg and gif files allowed"
+msgstr "Vain jpg-, png-, jpeg- ja gif-tiedostot sallittu"
+
+#: app/forms.py:38 app/forms.py:58
+msgid "Image size must be less than 1MB"
+msgstr "Kuvan koon on oltava alle 1MB"
+
+#: app/forms.py:39
+msgid "Sign Up"
+msgstr "Rekisteröidy"
+
+#: app/forms.py:44 app/forms.py:111
+msgid "Email already in use. Please choose a different one."
+msgstr "Sähköposti on jo käytössä. Valitse toinen."
+
+#: app/forms.py:49 app/forms.py:65
+msgid "Phone number already in use. Please choose a different one."
+msgstr "Puhelinnumero on jo käytössä. Valitse toinen."
+
+#: app/forms.py:58
+msgid "Update Profile Picture"
+msgstr "Päivitä Profiilikuva"
+
+#: app/forms.py:59 app/forms.py:79 app/forms.py:121 app/templates/index.html:99
+#: app/templates/products/all_discounted_products.html:87
+#: app/templates/products/brand.html:172
+#: app/templates/products/product.html:131
+msgid "Update"
+msgstr "Päivitä"
+
+#: app/forms.py:68 app/forms.py:75 app/templates/tickets/view_tickets.html:19
+msgid "Title"
+msgstr "Otsikko"
+
+#: app/forms.py:69 app/forms.py:76 app/templates/products/product.html:248
+msgid "Description"
+msgstr "Kuvaus"
+
+#: app/forms.py:70 app/forms.py:77 app/templates/tickets/view_tickets.html:20
+msgid "Status"
+msgstr "Tila"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "Pending"
+msgstr "Odottaa"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "In Progress"
+msgstr "Käynnissä"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "Completed"
+msgstr "Valmis"
+
+#: app/forms.py:71 app/forms.py:78
+msgid "Due Date"
+msgstr "Eräpäivä"
+
+#: app/forms.py:72
+msgid "Create"
+msgstr "Luo"
+
+#: app/forms.py:83
+msgid "Request Password Reset"
+msgstr "Pyydä Salasanan Nollausta"
+
+#: app/forms.py:88
+msgid "There is no account with that email. You must register first."
+msgstr "Tällä sähköpostilla ei ole tiliä. Sinun täytyy rekisteröityä ensin."
+
+#: app/forms.py:93 app/templates/auth/reset_email_request.html:4
+#: app/templates/auth/reset_password.html:6
+#: app/templates/auth/reset_password_request.html:3
+msgid "Reset Password"
+msgstr "Nollaa Salasana"
+
+#: app/forms.py:97
+msgid "Request Email Reset"
+msgstr "Pyydä Sähköpostin Nollausta"
+
+#: app/forms.py:102
+msgid "This email is already in use. Please choose a different one."
+msgstr "Tämä sähköposti on jo käytössä. Valitse toinen."
+
+#: app/forms.py:106
+msgid "Reset Email"
+msgstr "Nollaa Sähköposti"
+
+#: app/forms.py:119 app/templates/auth/all_users.html:69
+msgid "Role"
+msgstr "Rooli"
+
+#: app/forms.py:119 app/templates/tickets/view_tickets.html:18
+msgid "User"
+msgstr "Käyttäjä"
+
+#: app/forms.py:119
+msgid "Moderator"
+msgstr "Moderaattori"
+
+#: app/forms.py:119
+msgid "Administrator"
+msgstr "Ylläpitäjä"
+
+#: app/forms.py:120
+msgid "is_active"
+msgstr "aktiivinen"
+
+#: app/forms.py:124 app/forms.py:125 app/templates/auth/all_users.html:10
+#: app/templates/base.html:118 app/templates/products/all_orders.html:9
+#: app/templates/products/all_products.html:8
+#: app/templates/tickets/view_tickets.html:8
+#: app/templates/tickets/view_tickets.html:9
+msgid "Search"
+msgstr "Haku"
+
+#: app/forms.py:129
+msgid "You must enter a search term."
+msgstr "Sinun täytyy syöttää hakusana."
+
+#: app/forms.py:132
+msgid "Old Password"
+msgstr "Vanha Salasana"
+
+#: app/forms.py:133
+msgid "New Password"
+msgstr "Uusi Salasana"
+
+#: app/forms.py:134
+msgid "Confirm New Password"
+msgstr "Vahvista Uusi Salasana"
+
+#: app/forms.py:135 app/templates/auth/profile.html:26
+#: app/templates/auth/update_password.html:4
+msgid "Update Password"
+msgstr "Päivitä Salasana"
+
+#: app/auth/views.py:58
+msgid "Your account has been disabled. Please contact the administrator."
+msgstr "Tilisi on poistettu käytöstä. Ota yhteyttä ylläpitäjään."
+
+#: app/auth/views.py:65
+msgid "Invalid email or password."
+msgstr "Virheellinen sähköposti tai salasana."
+
+#: app/auth/views.py:93 app/auth/views.py:115
+msgid "Confirm Your Account"
+msgstr "Vahvista Tilisi"
+
+#: app/auth/views.py:94
+msgid "A confirmation email has been sent via email."
+msgstr "Vahvistussähköposti on lähetetty sähköpostitse."
+
+#: app/auth/views.py:96 app/templates/auth/login.html:50
+#: app/templates/auth/register.html:5 app/templates/base.html:105
+#: app/templates/base.html:209
+msgid "Register"
+msgstr "Rekisteröidy"
+
+#: app/auth/views.py:105
+msgid "You have confirmed your account. Thanks!"
+msgstr "Olet vahvistanut tilisi. Kiitos!"
+
+#: app/auth/views.py:107 app/auth/views.py:336
+msgid "The confirmation link is invalid or has expired."
+msgstr "Vahvistuslinkki on virheellinen tai vanhentunut."
+
+#: app/auth/views.py:116
+msgid "A new confirmation email has been sent via email."
+msgstr "Uusi vahvistussähköposti on lähetetty sähköpostitse."
+
+#: app/auth/views.py:128
+msgid "Reset Your Password"
+msgstr "Nollaa Salasanasi"
+
+#: app/auth/views.py:129
+msgid "An email with instructions to reset your password has been sent to you."
+msgstr "Sähköposti, jossa on ohjeet salasanan nollaamiseksi, on lähetetty sinulle."
+
+#: app/auth/views.py:131
+msgid "Something went wrong. Please try again."
+msgstr "Jotain meni pieleen. Yritä uudelleen."
+
+#: app/auth/views.py:143 app/auth/views.py:310
+msgid "Your password has been updated."
+msgstr "Salasanasi on päivitetty."
+
+#: app/auth/views.py:146
+msgid "The reset password link is invalid or has expired."
+msgstr "Salasanan nollaamislinkki on virheellinen tai vanhentunut."
+
+#: app/auth/views.py:158 app/templates/auth/profile.html:9
+#: app/templates/base.html:82 app/templates/base.html:206
+msgid "Profile"
+msgstr "Profiili"
+
+#: app/auth/views.py:195
+msgid "Your profile has been updated."
+msgstr "Profiilisi on päivitetty."
+
+#: app/auth/views.py:199
+msgid "An error occurred while updating your profile."
+msgstr "Profiilin päivityksessä tapahtui virhe."
+
+#: app/auth/views.py:274
+msgid "User has been updated."
+msgstr "Käyttäjä on päivitetty."
+
+#: app/auth/views.py:277
+msgid "An error occurred while updating user."
+msgstr "Käyttäjän päivityksessä tapahtui virhe."
+
+#: app/auth/views.py:298
+msgid "User has been deleted."
+msgstr "Käyttäjä on poistettu."
+
+#: app/auth/views.py:313
+msgid "An error occurred while updating your password."
+msgstr "Salasanan päivityksessä tapahtui virhe."
+
+#: app/auth/views.py:315
+msgid "Invalid old password."
+msgstr "Virheellinen vanha salasana."
+
+#: app/auth/views.py:324
+msgid "Confirm Your Email Address"
+msgstr "Vahvista Sähköpostiosoitteesi"
+
+#: app/auth/views.py:325
+msgid ""
+"An email with instructions to confirm your new email address has been "
+"sent to you."
+msgstr ""
+"Sähköposti, jossa on ohjeet uuden sähköpostiosoitteen vahvistamiseksi, on"
+" lähetetty sinulle."
+
+#: app/auth/views.py:334
+msgid "Your email address has been updated."
+msgstr "Sähköpostiosoitteesi on päivitetty."
+
+#: app/auth/views.py:397
+msgid "Users have been updated."
+msgstr "Käyttäjät on päivitetty."
+
+#: app/auth/views.py:401
+msgid "An error occurred while updating users."
+msgstr "Käyttäjien päivityksessä tapahtui virhe."
+
+#: app/auth/views.py:404
+msgid "No action selected."
+msgstr "Toimintoa ei valittu."
+
+#: app/products/views.py:24
+msgid "Method Not Allowed"
+msgstr "Menetelmä ei sallittu"
+
+#: app/products/views.py:48
+msgid "Invalid item in basket"
+msgstr "Virheellinen tuote korissa"
+
+#: app/products/views.py:74
+msgid "Invalid CSRF token"
+msgstr "Virheellinen CSRF-tunnus"
+
+#: app/products/views.py:89
+msgid "Payment successful!"
+msgstr "Maksu onnistui!"
+
+#: app/products/views.py:100
+msgid "Payment canceled."
+msgstr "Maksu peruttu."
+
+#: app/products/views.py:158
+#: app/templates/products/email/order_confirmation.html:5
+#: app/templates/products/email/order_confirmation.html:16
+msgid "Order Confirmation"
+msgstr "Tilausvahvistus"
+
+#: app/products/views.py:190
+msgid "Product created successfully"
+msgstr "Tuote luotu onnistuneesti"
+
+#: app/products/views.py:218
+msgid "From this product, another product was added to the shopping cart"
+msgstr "Tästä tuotteesta lisättiin toinen tuote ostoskoriin"
+
+#: app/products/views.py:233
+msgid "Product added to basket"
+msgstr "Tuote lisätty koriin"
+
+#: app/products/views.py:240
+msgid "Product not found"
+msgstr "Tuotetta ei löytynyt"
+
+#: app/products/views.py:341
+msgid "Product updated successfully"
+msgstr "Tuote päivitetty onnistuneesti"
+
+#: app/products/views.py:380
+msgid "Product deleted successfully"
+msgstr "Tuote poistettu onnistuneesti"
+
+#: app/products/views.py:402
+msgid "Rating updated successfully"
+msgstr "Arvostelu päivitetty onnistuneesti"
+
+#: app/products/views.py:412
+msgid "Rating added successfully"
+msgstr "Arvostelu lisätty onnistuneesti"
+
+#: app/products/views.py:490
+msgid "Brand created successfully"
+msgstr "Brändi luotu onnistuneesti"
+
+#: app/products/views.py:515
+msgid "Brand updated successfully"
+msgstr "Brändi päivitetty onnistuneesti"
+
+#: app/products/views.py:540
+msgid "Category created successfully"
+msgstr "Kategoria luotu onnistuneesti"
+
+#: app/products/views.py:543
+msgid "Category already exists"
+msgstr "Kategoria on jo olemassa"
+
+#: app/products/views.py:578
+msgid "Translation added successfully"
+msgstr "Käännös lisätty onnistuneesti"
+
+#: app/products/views.py:594
+msgid "Translation updated successfully"
+msgstr "Käännös päivitetty onnistuneesti"
+
+#: app/templates/base.html:26
+msgid "Main Page"
+msgstr "Etusivu"
+
+#: app/templates/base.html:27 app/templates/base.html:220
+msgid "Helmi Shop"
+msgstr "Helmi Kauppa"
+
+#: app/templates/base.html:45 app/templates/base.html:217
+msgid "Categories"
+msgstr "Kategoriat"
+
+#: app/templates/base.html:50 app/templates/products/brand.html:192
+msgid "All Brands"
+msgstr "Kaikki Brändit"
+
+#: app/templates/base.html:55
+msgid "Discounted Products"
+msgstr "Alennetut Tuotteet"
+
+#: app/templates/auth/all_users.html:55 app/templates/base.html:70
+#: app/templates/base.html:159
+msgid "All Users"
+msgstr "Kaikki Käyttäjät"
+
+#: app/templates/base.html:75 app/templates/base.html:160
+msgid "Active Users"
+msgstr "Aktiiviset Käyttäjät"
+
+#: app/templates/base.html:87
+msgid "Tickets"
+msgstr "Liput"
+
+#: app/templates/auth/unconfirmed.html:15 app/templates/base.html:93
+#: app/templates/base.html:205
+msgid "Logout"
+msgstr "Kirjaudu Ulos"
+
+#: app/templates/base.html:129
+msgid "Language"
+msgstr "Kieli"
+
+#: app/templates/base.html:132
+msgid "English"
+msgstr "Englanti"
+
+#: app/templates/base.html:133
+msgid "Suomi"
+msgstr "Suomi"
+
+#: app/templates/base.html:145
+msgid "Admin"
+msgstr "Ylläpitäjä"
+
+#: app/templates/base.html:152
+msgid "Create New Product"
+msgstr "Luo Uusi Tuote"
+
+#: app/templates/base.html:154
+msgid "Create New Brand"
+msgstr "Luo Uusi Brändi"
+
+#: app/templates/base.html:155
+msgid "Create New Category"
+msgstr "Luo Uusi Kategoria"
+
+#: app/templates/base.html:157
+msgid "Create New Translation"
+msgstr "Luo Uusi Käännös"
+
+#: app/templates/base.html:158
+msgid "All Orders"
+msgstr "Kaikki Tilaukset"
+
+#: app/templates/base.html:161 app/templates/products/all_products.html:35
+msgid "All Products"
+msgstr "Kaikki Tuotteet"
+
+#: app/templates/base.html:162
+msgid "All Tickets"
+msgstr "Kaikki Liput"
+
+#: app/templates/base.html:174
+msgid "Kosmetiikka verkkokauppa"
+msgstr "Kosmetiikka Verkkokauppa"
+
+#: app/templates/base.html:185
+msgid "Close"
+msgstr "Sulje"
+
+#: app/templates/base.html:195
+msgid "Kaupamme"
+msgstr "Kauppamme"
+
+#: app/templates/base.html:197
+msgid "Pysy Kauniina"
+msgstr "Pysy Kauniina"
+
+#: app/templates/base.html:198
+msgid ""
+"was created with the aim of offering our customers the best and highest "
+"quality products. The Helmi Shop cosmetics store offers a wide selection "
+"of famous brands for beauty lovers. In this online store, you can find "
+"all kinds of cosmetic products, including creams, cosmetics, perfumes, "
+"and skin and hair care products. You can safely buy your beauty products "
+"and benefit from high-quality products and services."
+msgstr ""
+"luotiin tarjoamaan asiakkaillemme parhaita ja korkealaatuisimpia "
+"tuotteita. Helmi Kauppa kosmetiikkakauppa tarjoaa laajan valikoiman "
+"tunnettuja brändejä kauneuden ystäville. Tästä verkkokaupasta löydät "
+"kaikenlaisia kosmetiikkatuotteita, mukaan lukien voiteet, kosmetiikka, "
+"hajuvedet ja ihon- ja hiustenhoitotuotteet. Voit turvallisesti ostaa "
+"kauneustuotteesi ja hyötyä korkealaatuisista tuotteista ja palveluista."
+
+#: app/templates/base.html:202
+msgid "My Account"
+msgstr "Oma Tili"
+
+#: app/templates/base.html:214
+msgid "Information"
+msgstr "Tietoa"
+
+#: app/templates/base.html:216 app/templates/products/brand.html:9
+#: app/templates/products/product.html:21
+msgid "Home"
+msgstr "Koti"
+
+#: app/templates/base.html:218 app/templates/products/brand.html:194
+msgid "Brands"
+msgstr "Brändit"
+
+#: app/templates/base.html:226
+msgid "Design by"
+msgstr "Suunnittelu"
+
+#: app/templates/index.html:86
+#: app/templates/products/all_discounted_products.html:72
+#: app/templates/products/basket.html:24 app/templates/products/brand.html:157
+msgid "Details"
+msgstr "Yksityiskohdat"
+
+#: app/templates/index.html:92
+#: app/templates/products/all_discounted_products.html:81
+#: app/templates/products/brand.html:166
+#: app/templates/products/product.html:123
+msgid "Add to basket"
+msgstr "Lisää koriin"
+
+#: app/templates/index.html:105
+#: app/templates/products/all_discounted_products.html:93
+#: app/templates/products/brand.html:178
+#: app/templates/products/product.html:139
+msgid "Delete"
+msgstr "Poista"
+
+#: app/templates/index.html:106
+#: app/templates/products/all_discounted_products.html:95
+#: app/templates/products/all_products.html:69
+#: app/templates/products/brand.html:180
+#: app/templates/products/product.html:141
+msgid "Are you sure you want to delete"
+msgstr "Oletko varma, että haluat poistaa"
+
+#: app/templates/auth/activate_users.html:57
+#: app/templates/auth/all_users.html:35 app/templates/index.html:127
+#: app/templates/index.html:174 app/templates/products/all_orders.html:25
+#: app/templates/products/all_products.html:24
+#: app/templates/products/product.html:178
+msgid "Previous"
+msgstr "Edellinen"
+
+#: app/templates/auth/activate_users.html:80
+#: app/templates/auth/all_users.html:42 app/templates/index.html:138
+#: app/templates/index.html:178 app/templates/products/all_orders.html:28
+#: app/templates/products/all_products.html:27
+#: app/templates/products/product.html:189
+msgid "Next"
+msgstr "Seuraava"
+
+#: app/templates/auth/activate_users.html:4
+msgid "Activate Users"
+msgstr "Aktivoi Käyttäjät"
+
+#: app/templates/auth/activate_users.html:13
+#: app/templates/auth/all_users.html:61
+msgid "Fullname"
+msgstr "Koko nimi"
+
+#: app/templates/auth/activate_users.html:15
+#: app/templates/auth/all_users.html:86
+msgid "Active"
+msgstr "Aktiivinen"
+
+#: app/templates/auth/activate_users.html:45
+msgid "Update Selected Users"
+msgstr "Päivitä Valitut Käyttäjät"
+
+#: app/templates/auth/activate_users.html:50
+#: app/templates/auth/all_users.html:24
+#: app/templates/products/all_orders.html:19
+#: app/templates/products/all_products.html:18
+msgid "Page navigation"
+msgstr "Sivunavigointi"
+
+#: app/templates/auth/all_users.html:28
+#: app/templates/products/all_orders.html:22
+#: app/templates/products/all_products.html:21
+msgid "First"
+msgstr "Ensimmäinen"
+
+#: app/templates/auth/all_users.html:49
+#: app/templates/products/all_orders.html:31
+#: app/templates/products/all_products.html:30
+msgid "Last"
+msgstr "Viimeinen"
+
+#: app/templates/auth/all_users.html:73
+msgid "Phone"
+msgstr "Puhelin"
+
+#: app/templates/auth/all_users.html:83
+msgid "Zipcode"
+msgstr "Postinumero"
+
+#: app/templates/auth/all_users.html:88
+msgid "Action"
+msgstr "Toiminto"
+
+#: app/templates/auth/all_users.html:110
+msgid "Are you sure you want to delete user:"
+msgstr "Oletko varma, että haluat poistaa käyttäjän:"
+
+#: app/templates/auth/edit_user_admin.html:6
+msgid "Edit User"
+msgstr "Muokkaa Käyttäjää"
+
+#: app/templates/auth/edit_user_admin.html:34
+#: app/templates/auth/register.html:65
+#: app/templates/auth/update_profile.html:55
+msgid "Please enter your city."
+msgstr "Ole hyvä ja syötä kaupunkisi."
+
+#: app/templates/auth/edit_user_admin.html:62
+#: app/templates/auth/reset_email_request.html:18
+#: app/templates/auth/update_password.html:32
+#: app/templates/auth/update_profile.html:15
+#: app/templates/tickets/view_ticket.html:39
+msgid "Back"
+msgstr "Takaisin"
+
+#: app/templates/auth/login.html:22 app/templates/auth/login.html:25
+#: app/templates/auth/reset_password_request.html:12
+msgid "Please provide a valid email address."
+msgstr "Ole hyvä ja anna kelvollinen sähköpostiosoite."
+
+#: app/templates/auth/login.html:32 app/templates/auth/login.html:35
+msgid "Please provide a valid password."
+msgstr "Ole hyvä ja anna kelvollinen salasana."
+
+#: app/templates/auth/login.html:52
+msgid "Forgot Password"
+msgstr "Unohditko salasanan"
+
+#: app/templates/auth/login.html:61
+msgid "logo"
+msgstr "logo"
+
+#: app/templates/auth/profile.html:13
+msgid "Fullname:"
+msgstr "Koko nimi:"
+
+#: app/templates/auth/profile.html:14
+msgid "Email:"
+msgstr "Sähköposti:"
+
+#: app/templates/auth/profile.html:15
+msgid "Phone:"
+msgstr "Puhelin:"
+
+#: app/templates/auth/profile.html:16
+msgid "Role:"
+msgstr "Rooli:"
+
+#: app/templates/auth/profile.html:17
+msgid "City:"
+msgstr "Kaupunki:"
+
+#: app/templates/auth/profile.html:18
+msgid "Address:"
+msgstr "Osoite:"
+
+#: app/templates/auth/profile.html:19
+msgid "Zipcode:"
+msgstr "Postinumero"
+
+#: app/templates/auth/profile.html:22
+msgid "Last Login:"
+msgstr "Viimeisin Kirjautuminen:"
+
+#: app/templates/auth/profile.html:23
+msgid "Member Since:"
+msgstr "Jäsen vuodesta:"
+
+#: app/templates/auth/profile.html:23
+msgid "Days ago"
+msgstr "Päivää sitten"
+
+#: app/templates/auth/profile.html:25
+msgid "Edit Profile"
+msgstr "Muokkaa Profiilia"
+
+#: app/templates/auth/profile.html:27
+msgid "Update Email"
+msgstr "Päivitä Sähköposti"
+
+#: app/templates/auth/profile.html:34
+msgid "My Orders"
+msgstr "Minun tilaukseni"
+
+#: app/templates/auth/profile.html:42
+msgid "Order ID"
+msgstr "Tilaus ID"
+
+#: app/templates/auth/profile.html:43
+msgid "Order Date"
+msgstr "Tilauspäivämäärä"
+
+#: app/templates/auth/profile.html:44
+msgid "Products"
+msgstr "Tuotteet"
+
+#: app/templates/auth/profile.html:45
+msgid "Total Amount"
+msgstr "Kokonaissumma"
+
+#: app/templates/auth/profile.html:56 app/templates/products/all_orders.html:60
+msgid "Price Per Unit:"
+msgstr "Hinta per yksikkö:"
+
+#: app/templates/auth/profile.html:57 app/templates/products/all_orders.html:61
+msgid "View"
+msgstr "Näytä"
+
+#: app/templates/auth/profile.html:72
+msgid "You have not made any orders yet."
+msgstr "Et ole tehnyt vielä tilauksia."
+
+#: app/templates/auth/register.html:16
+msgid "Please enter your first name."
+msgstr "Ole hyvä ja syötä etunimesi."
+
+#: app/templates/auth/register.html:24
+msgid "Please enter your last name."
+msgstr "Ole hyvä ja syötä sukunimesi."
+
+#: app/templates/auth/register.html:32
+msgid "Please enter your email address."
+msgstr "Ole hyvä ja syötä sähköpostiosoitteesi."
+
+#: app/templates/auth/register.html:40
+msgid "Please enter your password."
+msgstr "Ole hyvä ja syötä salasanasi."
+
+#: app/templates/auth/register.html:48
+msgid "Please confirm your password."
+msgstr "Ole hyvä ja vahvista salasanasi."
+
+#: app/templates/auth/register.html:56
+msgid "Please enter your phone number."
+msgstr "Ole hyvä ja syötä puhelinnumerosi."
+
+#: app/templates/auth/register.html:73
+msgid "Please enter your address."
+msgstr "Ole hyvä ja syötä osoitteesi."
+
+#: app/templates/auth/register.html:81
+msgid "Please enter your zipcode."
+msgstr "Ole hyvä ja syötä postinumerosi."
+
+#: app/templates/auth/register.html:89
+msgid "Please upload your image."
+msgstr "Ole hyvä ja lataa kuvasi."
+
+#: app/templates/auth/register.html:106
+#: app/templates/auth/update_profile.html:94
+#: app/templates/products/basket.html:26
+msgid "Remove"
+msgstr "Poista"
+
+#: app/templates/auth/register.html:113
+msgid "Already have an account?"
+msgstr "Onko sinulla jo tili?"
+
+#: app/templates/auth/unconfirmed.html:10
+msgid "Unconfirmed Account"
+msgstr "Vahvistamaton Tili"
+
+#: app/templates/auth/unconfirmed.html:13
+msgid ""
+"Your account has not been confirmed yet. Please check your email for the "
+"confirmation link."
+msgstr ""
+"Tiliäsi ei ole vielä vahvistettu. Ole hyvä ja tarkista sähköpostisi "
+"vahvistuslinkin varalta."
+
+#: app/templates/auth/unconfirmed.html:14
+msgid "Resend confirmation email"
+msgstr "Lähetä vahvistussähköposti uudelleen"
+
+#: app/templates/auth/update_profile.html:13
+msgid "Update Profile"
+msgstr "Päivitä Profiili"
+
+#: app/templates/errors/403.html:7 app/templates/errors/403.html:10
+msgid "403 Forbidden"
+msgstr "403 Kielletty"
+
+#: app/templates/errors/403.html:11
+msgid "You are not allowed to access this page."
+msgstr "Sinulla ei ole oikeutta käyttää tätä sivua."
+
+#: app/templates/errors/404.html:17
+msgid "Look like you're lost"
+msgstr "Näyttää siltä, että olet eksynyt"
+
+#: app/templates/errors/404.html:20
+msgid "the page you are looking for not avaible!"
+msgstr "Etsimääsi sivua ei ole saatavilla!"
+
+#: app/templates/errors/404.html:22 app/templates/errors/csrf_error.html:20
+msgid "Go to Home"
+msgstr "Mene Kotiin"
+
+#: app/templates/errors/500.html:6 app/templates/errors/500.html:9
+msgid "500 Internal Server Error"
+msgstr "500 Sisäinen Palvelinvirhe"
+
+#: app/templates/errors/500.html:10
+msgid "Sorry, something went wrong."
+msgstr "Pahoittelut, jotain meni pieleen."
+
+#: app/templates/errors/500.html:11
+msgid "If you are the application owner check the logs for more information."
+msgstr "Jos olet sovelluksen omistaja, tarkista lokit lisätietoja varten."
+
+#: app/templates/errors/csrf_error.html:8
+#: app/templates/errors/csrf_error.html:11
+msgid "CSRF Error"
+msgstr "CSRF Virhe"
+
+#: app/templates/errors/csrf_error.html:14
+msgid "CSRF token is missing or incorrect. Please try again."
+msgstr "CSRF-tunnus puuttuu tai on virheellinen. Yritä uudelleen."
+
+#: app/templates/products/all_products.html:39
+msgid "Product ID"
+msgstr "Tuotteen ID"
+
+#: app/templates/products/all_products.html:40
+msgid "Image"
+msgstr "Kuva"
+
+#: app/templates/products/all_products.html:41
+msgid "Name"
+msgstr "Nimi"
+
+#: app/templates/products/all_products.html:42
+#: app/templates/products/basket.html:22
+msgid "Price"
+msgstr "Hinta"
+
+#: app/templates/products/all_products.html:43
+msgid "Discount"
+msgstr "Alennus"
+
+#: app/templates/products/all_products.html:44
+msgid "Size"
+msgstr "Koko"
+
+#: app/templates/products/all_products.html:45
+msgid "Weight"
+msgstr "Paino"
+
+#: app/templates/products/all_products.html:46
+msgid "Ean"
+msgstr "Ean"
+
+#: app/templates/products/all_products.html:47
+msgid "Category"
+msgstr "Kategoria"
+
+#: app/templates/products/all_products.html:48
+msgid "Subcategory"
+msgstr "Alakategoria"
+
+#: app/templates/products/all_products.html:49
+msgid "Brand"
+msgstr "Brändi"
+
+#: app/templates/products/all_products.html:50
+#: app/templates/products/basket.html:25
+#: app/templates/tickets/view_tickets.html:21
+msgid "Actions"
+msgstr "Toiminnot"
+
+#: app/templates/products/basket.html:12
+msgid "Your Basket"
+msgstr "Korisi"
+
+#: app/templates/products/basket.html:14
+msgid "Your basket is empty"
+msgstr "Korisi on tyhjä"
+
+#: app/templates/products/basket.html:19
+msgid "Product"
+msgstr "Tuote"
+
+#: app/templates/products/basket.html:20
+msgid "Product Image"
+msgstr "Tuotekuva"
+
+#: app/templates/products/basket.html:21
+msgid "Quantity"
+msgstr "Määrä"
+
+#: app/templates/products/basket.html:23
+msgid "Total"
+msgstr "Kokonaissumma"
+
+#: app/templates/products/basket.html:92
+msgid "Total:"
+msgstr "Kokonaissumma:"
+
+#: app/templates/products/basket.html:99
+msgid "Pay Now"
+msgstr "Maksa nyt"
+
+#: app/templates/products/basket.html:105
+msgid "Continue Shopping"
+msgstr "Jatka ostoksia"
+
+#: app/templates/products/brand.html:32
+msgid "Filter"
+msgstr "Suodata"
+
+#: app/templates/products/brand.html:77
+msgid "Edit Brand"
+msgstr "Muokkaa Brändiä"
+
+#: app/templates/products/product.html:199
+msgid "Slide"
+msgstr "Dia"
+
+#: app/templates/products/product.html:220
+msgid "brand"
+msgstr "brändi"
+
+#: app/templates/products/product.html:224
+#: app/templates/products/product.html:232
+msgid "Filter by"
+msgstr "Suodata"
+
+#: app/templates/products/product.html:228
+msgid "category"
+msgstr "kategoria"
+
+#: app/templates/products/product.html:261
+msgid "Instructions"
+msgstr "Ohjeet"
+
+#: app/templates/products/product.html:274
+msgid "Ingredients"
+msgstr "Ainesosat"
+
+#: app/templates/products/product.html:330
+msgid "Update your review"
+msgstr "Päivitä arvostelusi"
+
+#: app/templates/products/product.html:352
+msgid "Submit your review"
+msgstr "Lähetä arvostelusi"
+
+#: app/templates/products/product.html:377
+msgid "Reviews"
+msgstr "Arvostelut"
+
+#: app/templates/products/email/order_confirmation.html:19
+msgid "Dear"
+msgstr "Hyvä"
+
+#: app/templates/products/email/order_confirmation.html:20
+msgid "Thank you for your order. Your payment has been successfully processed."
+msgstr "Kiitos tilauksestasi. Maksusi on käsitelty onnistuneesti."
+
+#: app/templates/products/email/order_confirmation.html:21
+msgid "Order ID:"
+msgstr "Tilaus ID:"
+
+#: app/templates/products/email/order_confirmation.html:22
+msgid "Total Amount:"
+msgstr "Kokonaissumma:"
+
+#: app/templates/products/email/order_confirmation.html:23
+msgid "Purchased Products:"
+msgstr "Ostetut Tuotteet:"
+
+#: app/templates/products/email/order_confirmation.html:29
+msgid "We hope you enjoy your purchase!"
+msgstr "Toivomme, että nautit ostoksestasi!"
+
+#: app/templates/tickets/view_ticket.html:11
+msgid "Ticket Image"
+msgstr "Lipun Kuva"
+
+#: app/templates/tickets/view_ticket.html:16
+msgid "Messages"
+msgstr "Viestit"
+
+#: app/templates/tickets/view_tickets.html:4
+msgid "Your Tickets"
+msgstr "Sinun Lippusi"
+
+#: app/templates/tickets/view_tickets.html:5
+msgid "Create Ticket"
+msgstr "Luo Lippu"
+
+#: app/templates/tickets/view_tickets.html:17
+msgid "Ticket ID"
+msgstr "Lipun ID"
+
+#: app/templates/tickets/view_tickets.html:35
+msgid "View Ticket"
+msgstr "Näytä Lippu"
+
+#: app/templates/tickets/view_tickets.html:41
+msgid "Update Ticket"
+msgstr "Päivitä Lippu"
+
+#: app/templates/tickets/view_tickets.html:47
+msgid "Are you sure you want to delete this ticket?"
+msgstr "Oletko varma, että haluat poistaa tämän lipun?"
+
+#: app/templates/tickets/view_tickets.html:48
+msgid "Delete Ticket"
+msgstr "Poista Lippu"
+
+#~ msgid "products/all_orders.html"
+#~ msgstr "tuotteet/kaikki_tilaukset.html"
+
+#~ msgid "products/all_products.html"
+#~ msgstr "tuotteet/kaikki_tuotteet.html"
+
+#~ msgid "Update ({{ product.name }})"
+#~ msgstr "Päivitä ({{ product.name }})"
+
+#~ msgid "Delete ({{ product.name }})"
+#~ msgstr "Poista ({{ product.name }})"
+

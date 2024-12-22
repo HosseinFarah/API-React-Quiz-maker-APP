@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Search Form -->
+<form method="POST" action="{{ url_for('main.search') }}" class="d-flex mb-4">
+  {{ form.hidden_tag() }}
+  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search-input">
+  <button class="btn btn-outline-success" type="submit" id="search-button" disabled><i class="fa fa-search"></i></button>
+</form>
+<!-- End Search Form -->
+
+{% endblock %}
+

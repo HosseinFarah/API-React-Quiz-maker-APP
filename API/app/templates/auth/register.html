@@ -1,0 +1,119 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <h2>Register</h2>
+      <form
+        method="POST"
+        novalidate
+        class="needs-validation"
+        enctype="multipart/form-data"
+      >
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.firstname.label(class="form-label") }} {{
+          form.firstname(class="form-control") }}
+          <div class="invalid-feedback">Please enter your first name.</div>
+          {% for error in form.firstname.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.lastname.label(class="form-label") }} {{
+          form.lastname(class="form-control") }}
+          <div class="invalid-feedback">Please enter your last name.</div>
+          {% for error in form.lastname.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.email.label(class="form-label") }} {{
+          form.email(class="form-control") }}
+          <div class="invalid-feedback">Please enter your email address.</div>
+          {% for error in form.email.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.password.label(class="form-label") }} {{
+          form.password(class="form-control") }}
+          <div class="invalid-feedback">Please enter your password.</div>
+          {% for error in form.password.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{form.confirm_password.label(class="form-label")}}
+          {{form.confirm_password(class="form-control")}}
+          <div class="invalid-feedback">Please confirm your password.</div>
+          {% for error in form.confirm_password.errors %}
+          <span class="text-danger">{{error}}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.phone.label(class="form-label") }} {{
+          form.phone(class="form-control") }}
+          <div class="invalid-feedback">Please enter your phone number.</div>
+          {% for error in form.phone.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.city.label(class="form-label") }} 
+          <select id="city" name="city" class="form-control">
+          </select>
+          <div class="invalid-feedback">Please enter your city.</div>
+          {% for error in form.city.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.address.label(class="form-label") }} {{
+          form.address(class="form-control") }}
+          <div class="invalid-feedback">Please enter your address.</div>
+          {% for error in form.address.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.zipcode.label(class="form-label") }} {{
+          form.zipcode(class="form-control") }}
+          <div class="invalid-feedback">Please enter your zipcode.</div>
+          {% for error in form.zipcode.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.image.label(class="form-label") }} {{
+          form.image(class="form-control") }}
+          <div class="invalid-feedback">Please upload your image.</div>
+          {% for error in form.image.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <!-- Preview Selected Image -->
+        <div class="previewDiv mt-1 col-sm-8 d-none" id="previewDiv">
+          <img
+            class="previewImage rounded mt-2"
+            src=""
+            id="previewImage"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            onclick="remove_img('image')"
+          >
+            <i class="fa fa-trash"></i> Remove
+          </button>
+        </div>
+        <div class="form-group ms-auto">{{ form.submit(class="btn btn-primary mt-3") }}</div>
+      </form>
+      <hr />
+      <p>
+        Already have an account? <a href="{{ url_for('auth.login') }}">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+<!-- Preview Selected Image -->
+{% endblock %}

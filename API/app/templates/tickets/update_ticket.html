@@ -1,0 +1,42 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="container">
+  <div class="row d-flex justify-content-center bg-secondary text-white p-2 rounded">
+    <div class="col-md-8">
+      <h2>Update Ticket</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.title.label(class="form-control-label") }} {{
+          form.title(class="form-control") }}
+        </div>
+        <div class="form-group">
+          {{ form.description.label(class="form-control-label") }} {{
+          form.description(class="form-control") }}
+        </div>
+        {% if current_user.is_administrator() %}
+        <div class="form-group">
+          {{ form.status.label(class="form-control-label") }} {{
+          form.status(class="form-control") }}
+        </div>
+        {% endif %}
+        <div class="form-group">
+          {{ form.image.label(class="form-control-label") }} {{
+          form.image(class="form-control-file") }}
+        </div>
+        {% if ticket.image %}
+        <img
+          src="{{ url_for('static', filename='uploads/tickets/' ~ ticket.image) }}"
+          alt="Ticket Image"
+          class="img-thumbnail"
+          style="max-width: 300px"
+        />
+        {% endif %} 
+        <div class="form-group mt-2 mb-5">
+            {{ form.submit(class="btn btn-primary mb-5") }}
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

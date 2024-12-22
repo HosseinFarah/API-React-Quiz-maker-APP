@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<!-- for translation -->
+<html lang="{{ get_locale() }}">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous"
+        />
+        <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        />
+        
+        <link rel="stylesheet" type="image/x-icon" href="{{ url_for('static', filename='uploads/favicon.ico') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+        <link
+        href="https://fonts.googleapis.com/css2?family=Jura:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+        <!-- navbar with Home,Login,Register,Logout,Profile -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('main.index') }}" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-title="Main Page"
+                    ><img src="{{ url_for('static', filename='uploads/Helmi.webp') }}" alt="Helmi Shop" width="101" height="101" class="rounded-circle" /></a>
+
+
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                    aria-controls="navbarNav"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+
+                        {% if current_user.is_administrator()%}
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.all_users' else 'navdeactive' }}" href="{{ url_for('auth.all_users') }}">
+                                All Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.activate_users' else 'navdeactive' }}" href="{{ url_for('auth.activate_users') }}">
+                                Active Users
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item">
+                          <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.profile' else 'navdeactive' }}" href="{{ url_for('auth.profile') }}">
+                            Profile</a
+                            >
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'tickets.view_tickets' else 'navdeactive' }}" href="{{ url_for('tickets.view_tickets') }}">
+                                Tickets<span class="badge bg-primary">{{ open_tickets_count }}</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.logout' else 'navdeactive' }}" href="{{ url_for('auth.logout') }}">
+                                Logout
+                            </a>
+                        </li>
+
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.login' else 'navdeactive' }}" href="{{ url_for('auth.login') }}">
+                                Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ 'navactive rounded shadow' if request.endpoint == 'auth.register' else 'navdeactive' }}" href="{{ url_for('auth.register') }}">
+                                Register
+                            </a>
+                        </li>
+                       
+                        {% endif %}
+                    </ul>
+                </div>
+                
+            </div>
+            <!-- Search Form -->
+            <div class="row d-flex justify-content-start ms-5">
+                <form method="POST" action="{{ url_for('main.search') }}" class="d-flex ms-auto">
+                    {{ form.hidden_tag() }}
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search" id="search-input">
+                    <button class="btn btn-outline-success" type="submit" id="search-button" disabled><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+            <!-- End Search Form -->
+            
+            <!-- Language selection dropdown for translation -->
+            <div class="row d-flex justify-content-end me-5">
+                <form method="POST" action="{{ url_for('main.set_language') }}" class="dropdown">
+                    {{ form.hidden_tag() }}
+                    <button class="btn btn-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Language
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                        <li><button class="dropdown-item" type="submit" name="lang_code" value="en">English</button></li>
+                        <li><button class="dropdown-item" type="submit" name="lang_code" value="fi">Suomi</button></li>
+                    </ul>
+                </form>
+            </div>
+        </nav>
+
+
+        <!-- admin section -->
+        {% if current_user.is_administrator() %}
+            <button class="btn btn-danger ms-5 mt-3 mb-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions"><i class="fa fa-cog text-light fs-5"></i> </button>
+            <div class="offcanvas offcanvas-top bg-light" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Admin</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">       
+                <a href="{{ url_for('auth.all_users') }}" class="btn btn-primary mt-2" ><i class="fa fa-users"></i> All Users</a>
+                <a href="{{ url_for('auth.activate_users') }}" class="btn btn-primary mt-2" ><i class="fa fa-user-check"></i> Active Users</a>
+                <a href="{{ url_for('tickets.view_tickets') }}" class="btn btn-primary mt-2" ><i class="fa fa-ticket-alt"></i> All Tickets</a>
+            </div>
+        </div>
+        {% endif %}
+
+
+
+<!-- end loading... -->
+
+        {% if title %}
+        <title>{{ title }}</title>
+        {% else %}
+        <title>Kosmetiikka verkkokauppa</title>
+        {% endif %}
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-md-6 mt-1">
+                {% for category, message in get_flashed_messages(with_categories=true) %}
+                {% set category = 'danger' if category == 'error' else category %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% block content %}
+            
+            {% endblock %}
+        </div>
+        <footer class="footer mt-5 shadow">
+            <div class="container-fluid">
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-5 ms-5">
+                        <h5 class="text-danger fs-3">Kaupamme</h5>
+                        <p>
+                            <span class="badge bg-brand fs-3 shadow">Pysy Kauniina</span> <hr>
+                            <i class="fa fa-quote-left"></i><span class="text-danger fs-4"> Helmi Shop</span> <i class="fa fa-quote-right"></i> was created with the aim of offering our customers the best and highest quality products. The Helmi Shop cosmetics store offers a wide selection of famous brands for beauty lovers. In this online store, you can find all kinds of cosmetic products, including creams, cosmetics, perfumes, and skin and hair care products. You can safely buy your beauty products and benefit from high-quality products and services.
+                        </p>
+                    </div>
+                    <div class="col-md-3">
+                        <h5 class="text-danger fs-3">My Account</h5>
+                        <ul class="list-unstyled"> 
+                            {% if current_user.is_authenticated %}
+                            <li class="mt-3"><a href="{{ url_for('auth.logout') }}" class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Logout"><i class="fa fa-sign-out-alt"></i> Logout</a></li>
+                            <li class="mt-3"><a href="{{ url_for('auth.profile') }}" class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Profile"><i class="fa fa-user"></i> Profile</a></li>
+                            {% else %}
+                            <li class="mt-3"><a href="{{ url_for('auth.login') }}" class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Login"><i class="fa fa-sign-in-alt"></i> Login</a></li>
+                            <li class="mt-3"><a href="{{ url_for('auth.register') }}" class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Register"><i class="fa fa-user-plus"></i> Register</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="col-md-2 me-5 mb-3">
+                        <h5 class="text-danger fs-3">Information</h5>
+                        <ul class="list-unstyled">
+                            <li class="mt-3"><a href="{{ url_for('main.index') }}" class="text-decoration-none text-secondary"><i class="fa fa-home"></i> Home</a></li>
+                        </ul>
+                        <a href="{{ url_for('main.index') }}" class="text-decoration-none text-secondary"><img src="{{ url_for('static', filename='uploads/Helmi.webp') }}" alt="Helmi Shop" width="101" height="101" class="rounded-circle shadow-lg" /></a>
+                </div>
+            </div>
+            <div class="row">
+                <hr>
+                <div class="col-md-12 text-center">
+                    <p>&copy; 2024 Helmi Shop | Design by <a href="https://www.linkedin.com/in/hosseinfarah//" class="text-decoration-none text-secondary">Hossein Farahkordmahaleh</a></p>
+                </div>
+            </div>
+        </div>
+        </footer>
+        {% block scripts %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"
+        ></script>
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        {% endblock %}
+    </body>
+</html>  

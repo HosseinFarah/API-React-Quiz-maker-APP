@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Email</title>
+</head>
+<body>
+    <h1>Confirm Email</h1>
+    <p>Hi {{ user.firstname+ ' ' + user.lastname }},</p>
+    <p>Click the link below to confirm your email address.</p>
+    <a href="{{ url_for('auth.confirm', token=token, _external=True) }}">Confirm Email</a>
+    <p>Thank you for using our service!</p>
+    <p>Best regards,</p>
+    <p>Team</p>
+</body>
+</html>

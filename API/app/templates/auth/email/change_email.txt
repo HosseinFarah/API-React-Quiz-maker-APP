@@ -1,0 +1,5 @@
+Change Email
+   Click the link below to change your email address.
+   {{ url_for('auth.change_email', token=token, _external=True) }}
+   If you did not make this request then simply ignore this email.
+   Thanks!

@@ -1,0 +1,99 @@
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Node modules and build directories
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+API/.env
+API/.flaskenv
+API/app.log
+API/logger_config.txt
+API/babel.txt
+
+# User uploads
+API/app/static/uploads/users/
+!API/app/static/uploads/users/default.jpg
+API/app/static/uploads/products/
+API/app/static/uploads/brands/
+API/app/static/uploads/videos/
+
+# Python
+API/*.pyc
+API/__pycache__/
+API/instance/
+API/.venv/
+API/venv/
+API/ENV/
+API/env.bak/
+API/env/
+
+# Distribution / packaging
+API/.Python
+API/build/
+API/develop-eggs/
+API/dist/
+API/downloads/
+API/eggs/
+API/.eggs/
+API/lib/
+API/lib64/
+API/parts/
+API/sdist/
+API/var/
+API/wheels/
+API/share/python-wheels/
+API/*.egg-info/
+API/.installed.cfg
+API/*.egg
+
+# Installer logs
+API/pip-log.txt
+API/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+API/htmlcov/
+API/.tox/
+API/.nox/
+API/.coverage
+API/.coverage.*
+API/.cache
+API/nosetests.xml
+API/coverage.xml
+API/*.cover
+API/*.py,cover
+API/.hypothesis/
+
+# Jupyter Notebook
+API/.ipynb_checkpoints
+
+# PyCharm
+API/.idea/
+
+# macOS
+API/.DS_Store
+
+# Windows
+API/Thumbs.db
+API/ehthumbs.db

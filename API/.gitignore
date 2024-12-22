@@ -1,0 +1,79 @@
+# .gitignore
+
+# Environment variables
+.env
+.flaskenv
+*.log
+app.log
+logger_config.txt
+babel.txt
+# User uploads
+app/static/uploads/users/
+!app/static/uploads/users/default.jpg
+app/static/uploads/products/
+app/static/uploads/brands/
+app/static/uploads/videos/
+# Python
+*.pyc
+__pycache__/
+instance/
+.venv/
+venv/
+ENV/
+env.bak/
+env/
+
+# VS Code
+.vscode/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# txt
+

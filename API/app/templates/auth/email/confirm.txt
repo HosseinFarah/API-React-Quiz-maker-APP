@@ -1,0 +1,7 @@
+    Confirm Email
+    Hi {{ user.firstname+ ' ' + user.lastname }}
+    Click the link below to confirm your email address.
+    {{ url_for('auth.confirm', token=token, _external=True) }}
+    Thank you for using our service!
+    Best regards,
+    Team

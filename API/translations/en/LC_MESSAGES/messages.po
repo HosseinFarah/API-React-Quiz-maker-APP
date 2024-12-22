@@ -1,0 +1,1128 @@
+# English translations for PROJECT.
+# Copyright (C) 2024 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2024-11-28 10:41+0200\n"
+"PO-Revision-Date: 2024-11-20 15:19+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.16.0\n"
+
+#: app/forms.py:12 app/forms.py:31 app/forms.py:82 app/forms.py:96
+#: app/forms.py:105 app/templates/auth/activate_users.html:14
+#: app/templates/auth/all_users.html:66
+msgid "Email"
+msgstr "Email"
+
+#: app/forms.py:13 app/forms.py:32 app/forms.py:91
+msgid "Password"
+msgstr "Password"
+
+#: app/forms.py:14
+msgid "Remember Me"
+msgstr "Remember Me"
+
+#: app/auth/views.py:66 app/forms.py:15 app/templates/auth/login.html:7
+#: app/templates/auth/register.html:113
+#: app/templates/auth/reset_password.html:25
+#: app/templates/auth/reset_password_request.html:20
+#: app/templates/base.html:100 app/templates/base.html:208
+msgid "Login"
+msgstr "Login"
+
+#: app/forms.py:24
+#, python-format
+msgid "File size must be less than %d bytes"
+msgstr "File size must be less than %d bytes"
+
+#: app/forms.py:29 app/forms.py:52 app/forms.py:114
+msgid "First Name"
+msgstr "First Name"
+
+#: app/forms.py:29 app/forms.py:30 app/forms.py:52 app/forms.py:53
+#: app/forms.py:114 app/forms.py:115
+msgid "^[a-zåäöA-ZÅÄÖ'\\-]+$"
+msgstr "^[a-zåäöA-ZÅÄÖ'\\-]+$"
+
+#: app/forms.py:29 app/forms.py:30 app/forms.py:52 app/forms.py:53
+#: app/forms.py:114 app/forms.py:115
+msgid "Only letters, hyphens and apostrophes allowed"
+msgstr "Only letters, hyphens and apostrophes allowed"
+
+#: app/forms.py:30 app/forms.py:53 app/forms.py:115
+msgid "Last Name"
+msgstr "Last Name"
+
+#: app/forms.py:32 app/forms.py:91 app/forms.py:133
+msgid "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/]{8,}$"
+msgstr "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{}|;:'\\\",.<>?/]{8,}$"
+
+#: app/forms.py:32 app/forms.py:91 app/forms.py:133
+msgid ""
+"Password must contain at least one uppercase letter, one lowercase "
+"letter, one number, one special character, and be at least 8 characters "
+"long"
+msgstr ""
+"Password must contain at least one uppercase letter, one lowercase "
+"letter, one number, one special character, and be at least 8 characters "
+"long"
+
+#: app/forms.py:33 app/forms.py:92
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:117
+#: app/templates/auth/all_users.html:80
+msgid "Address"
+msgstr "Address"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:68 app/forms.py:69
+#: app/forms.py:75 app/forms.py:76 app/forms.py:117
+msgid "^[a-zåäöA-ZÅÄÖ0-9'\\- ]+$"
+msgstr "^[a-zåäöA-ZÅÄÖ0-9'\\- ]+$"
+
+#: app/forms.py:34 app/forms.py:55 app/forms.py:68 app/forms.py:69
+#: app/forms.py:75 app/forms.py:76 app/forms.py:117
+msgid "Only letters, numbers, hyphens and apostrophes allowed"
+msgstr "Only letters, numbers, hyphens and apostrophes allowed"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "Zip Code"
+msgstr "Zip Code"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "^[0-9]{5}$"
+msgstr "^[0-9]{5}$"
+
+#: app/forms.py:35 app/forms.py:56 app/forms.py:118
+msgid "Zip code must be 5 digits long"
+msgstr "Zip code must be 5 digits long"
+
+#: app/forms.py:36 app/forms.py:54 app/forms.py:116
+#: app/templates/auth/all_users.html:76
+msgid "City"
+msgstr "City"
+
+#: app/forms.py:37 app/forms.py:57
+msgid "Phone Number"
+msgstr "Phone Number"
+
+#: app/forms.py:37 app/forms.py:57
+msgid "^[\\d\\s\\-\\+\\(\\)]{1,15}$"
+msgstr "^[\\d\\s\\-\\+\\(\\)]{1,15}$"
+
+#: app/forms.py:37 app/forms.py:57
+msgid ""
+"Phone number must have at most 15 digits and can contain numbers, spaces,"
+" hyphens, plus signs and parentheses"
+msgstr ""
+"Phone number must have at most 15 digits and can contain numbers, spaces,"
+" hyphens, plus signs and parentheses"
+
+#: app/forms.py:38
+msgid "Profile Picture"
+msgstr "Profile Picture"
+
+#: app/forms.py:38 app/forms.py:58
+msgid "Only jpg, png, jpeg and gif files allowed"
+msgstr "Only jpg, png, jpeg and gif files allowed"
+
+#: app/forms.py:38 app/forms.py:58
+msgid "Image size must be less than 1MB"
+msgstr "Image size must be less than 1MB"
+
+#: app/forms.py:39
+msgid "Sign Up"
+msgstr "Sign Up"
+
+#: app/forms.py:44 app/forms.py:111
+msgid "Email already in use. Please choose a different one."
+msgstr "Email already in use. Please choose a different one."
+
+#: app/forms.py:49 app/forms.py:65
+msgid "Phone number already in use. Please choose a different one."
+msgstr "Phone number already in use. Please choose a different one."
+
+#: app/forms.py:58
+msgid "Update Profile Picture"
+msgstr "Update Profile Picture"
+
+#: app/forms.py:59 app/forms.py:79 app/forms.py:121 app/templates/index.html:99
+#: app/templates/products/all_discounted_products.html:87
+#: app/templates/products/brand.html:172
+#: app/templates/products/product.html:131
+msgid "Update"
+msgstr "Update"
+
+#: app/forms.py:68 app/forms.py:75 app/templates/tickets/view_tickets.html:19
+msgid "Title"
+msgstr "Title"
+
+#: app/forms.py:69 app/forms.py:76 app/templates/products/product.html:248
+msgid "Description"
+msgstr "Description"
+
+#: app/forms.py:70 app/forms.py:77 app/templates/tickets/view_tickets.html:20
+msgid "Status"
+msgstr "Status"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "Pending"
+msgstr "Pending"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "In Progress"
+msgstr "In Progress"
+
+#: app/forms.py:70 app/forms.py:77
+msgid "Completed"
+msgstr "Completed"
+
+#: app/forms.py:71 app/forms.py:78
+msgid "Due Date"
+msgstr "Due Date"
+
+#: app/forms.py:72
+msgid "Create"
+msgstr "Create"
+
+#: app/forms.py:83
+msgid "Request Password Reset"
+msgstr "Request Password Reset"
+
+#: app/forms.py:88
+msgid "There is no account with that email. You must register first."
+msgstr "There is no account with that email. You must register first."
+
+#: app/forms.py:93 app/templates/auth/reset_email_request.html:4
+#: app/templates/auth/reset_password.html:6
+#: app/templates/auth/reset_password_request.html:3
+msgid "Reset Password"
+msgstr "Reset Password"
+
+#: app/forms.py:97
+msgid "Request Email Reset"
+msgstr "Request Email Reset"
+
+#: app/forms.py:102
+msgid "This email is already in use. Please choose a different one."
+msgstr "This email is already in use. Please choose a different one."
+
+#: app/forms.py:106
+msgid "Reset Email"
+msgstr "Reset Email"
+
+#: app/forms.py:119 app/templates/auth/all_users.html:69
+msgid "Role"
+msgstr "Role"
+
+#: app/forms.py:119 app/templates/tickets/view_tickets.html:18
+msgid "User"
+msgstr "User"
+
+#: app/forms.py:119
+msgid "Moderator"
+msgstr "Moderator"
+
+#: app/forms.py:119
+msgid "Administrator"
+msgstr "Administrator"
+
+#: app/forms.py:120
+msgid "is_active"
+msgstr "is_active"
+
+#: app/forms.py:124 app/forms.py:125 app/templates/auth/all_users.html:10
+#: app/templates/base.html:118 app/templates/products/all_orders.html:9
+#: app/templates/products/all_products.html:8
+#: app/templates/tickets/view_tickets.html:8
+#: app/templates/tickets/view_tickets.html:9
+msgid "Search"
+msgstr "Search"
+
+#: app/forms.py:129
+msgid "You must enter a search term."
+msgstr "You must enter a search term."
+
+#: app/forms.py:132
+msgid "Old Password"
+msgstr "Old Password"
+
+#: app/forms.py:133
+msgid "New Password"
+msgstr "New Password"
+
+#: app/forms.py:134
+msgid "Confirm New Password"
+msgstr "Confirm New Password"
+
+#: app/forms.py:135 app/templates/auth/profile.html:26
+#: app/templates/auth/update_password.html:4
+msgid "Update Password"
+msgstr "Update Password"
+
+#: app/auth/views.py:58
+msgid "Your account has been disabled. Please contact the administrator."
+msgstr "Your account has been disabled. Please contact the administrator."
+
+#: app/auth/views.py:65
+msgid "Invalid email or password."
+msgstr "Invalid email or password."
+
+#: app/auth/views.py:93 app/auth/views.py:115
+msgid "Confirm Your Account"
+msgstr "Confirm Your Account"
+
+#: app/auth/views.py:94
+msgid "A confirmation email has been sent via email."
+msgstr "A confirmation email has been sent via email."
+
+#: app/auth/views.py:96 app/templates/auth/login.html:50
+#: app/templates/auth/register.html:5 app/templates/base.html:105
+#: app/templates/base.html:209
+msgid "Register"
+msgstr "Register"
+
+#: app/auth/views.py:105
+msgid "You have confirmed your account. Thanks!"
+msgstr "You have confirmed your account. Thanks!"
+
+#: app/auth/views.py:107 app/auth/views.py:336
+msgid "The confirmation link is invalid or has expired."
+msgstr "The confirmation link is invalid or has expired."
+
+#: app/auth/views.py:116
+msgid "A new confirmation email has been sent via email."
+msgstr "A new confirmation email has been sent via email."
+
+#: app/auth/views.py:128
+msgid "Reset Your Password"
+msgstr "Reset Your Password"
+
+#: app/auth/views.py:129
+msgid "An email with instructions to reset your password has been sent to you."
+msgstr "An email with instructions to reset your password has been sent to you."
+
+#: app/auth/views.py:131
+msgid "Something went wrong. Please try again."
+msgstr "Something went wrong. Please try again."
+
+#: app/auth/views.py:143 app/auth/views.py:310
+msgid "Your password has been updated."
+msgstr "Your password has been updated."
+
+#: app/auth/views.py:146
+msgid "The reset password link is invalid or has expired."
+msgstr "The reset password link is invalid or has expired."
+
+#: app/auth/views.py:158 app/templates/auth/profile.html:9
+#: app/templates/base.html:82 app/templates/base.html:206
+msgid "Profile"
+msgstr "Profile"
+
+#: app/auth/views.py:195
+msgid "Your profile has been updated."
+msgstr "Your profile has been updated."
+
+#: app/auth/views.py:199
+msgid "An error occurred while updating your profile."
+msgstr "An error occurred while updating your profile."
+
+#: app/auth/views.py:274
+msgid "User has been updated."
+msgstr "User has been updated."
+
+#: app/auth/views.py:277
+msgid "An error occurred while updating user."
+msgstr "An error occurred while updating user."
+
+#: app/auth/views.py:298
+msgid "User has been deleted."
+msgstr "User has been deleted."
+
+#: app/auth/views.py:313
+msgid "An error occurred while updating your password."
+msgstr "An error occurred while updating your password."
+
+#: app/auth/views.py:315
+msgid "Invalid old password."
+msgstr "Invalid old password."
+
+#: app/auth/views.py:324
+msgid "Confirm Your Email Address"
+msgstr "Confirm Your Email Address"
+
+#: app/auth/views.py:325
+msgid ""
+"An email with instructions to confirm your new email address has been "
+"sent to you."
+msgstr ""
+"An email with instructions to confirm your new email address has been "
+"sent to you."
+
+#: app/auth/views.py:334
+msgid "Your email address has been updated."
+msgstr "Your email address has been updated."
+
+#: app/auth/views.py:397
+msgid "Users have been updated."
+msgstr "Users have been updated."
+
+#: app/auth/views.py:401
+msgid "An error occurred while updating users."
+msgstr "An error occurred while updating users."
+
+#: app/auth/views.py:404
+msgid "No action selected."
+msgstr "No action selected."
+
+#: app/products/views.py:24
+msgid "Method Not Allowed"
+msgstr "Method Not Allowed"
+
+#: app/products/views.py:48
+msgid "Invalid item in basket"
+msgstr "Invalid item in basket"
+
+#: app/products/views.py:74
+msgid "Invalid CSRF token"
+msgstr "Invalid CSRF token"
+
+#: app/products/views.py:89
+msgid "Payment successful!"
+msgstr "Payment successful!"
+
+#: app/products/views.py:100
+msgid "Payment canceled."
+msgstr "Payment canceled."
+
+#: app/products/views.py:158
+#: app/templates/products/email/order_confirmation.html:5
+#: app/templates/products/email/order_confirmation.html:16
+msgid "Order Confirmation"
+msgstr "Order Confirmation"
+
+#: app/products/views.py:190
+msgid "Product created successfully"
+msgstr "Product created successfully"
+
+#: app/products/views.py:218
+msgid "From this product, another product was added to the shopping cart"
+msgstr "From this product, another product was added to the shopping cart"
+
+#: app/products/views.py:233
+msgid "Product added to basket"
+msgstr "Product added to basket"
+
+#: app/products/views.py:240
+msgid "Product not found"
+msgstr "Product not found"
+
+#: app/products/views.py:341
+msgid "Product updated successfully"
+msgstr "Product updated successfully"
+
+#: app/products/views.py:380
+msgid "Product deleted successfully"
+msgstr "Product deleted successfully"
+
+#: app/products/views.py:402
+msgid "Rating updated successfully"
+msgstr "Rating updated successfully"
+
+#: app/products/views.py:412
+msgid "Rating added successfully"
+msgstr "Rating added successfully"
+
+#: app/products/views.py:490
+msgid "Brand created successfully"
+msgstr "Brand created successfully"
+
+#: app/products/views.py:515
+msgid "Brand updated successfully"
+msgstr "Brand updated successfully"
+
+#: app/products/views.py:540
+msgid "Category created successfully"
+msgstr "Category created successfully"
+
+#: app/products/views.py:543
+msgid "Category already exists"
+msgstr "Category already exists"
+
+#: app/products/views.py:578
+msgid "Translation added successfully"
+msgstr "Translation added successfully"
+
+#: app/products/views.py:594
+msgid "Translation updated successfully"
+msgstr "Translation updated successfully"
+
+#: app/templates/base.html:26
+msgid "Main Page"
+msgstr "Main Page"
+
+#: app/templates/base.html:27 app/templates/base.html:220
+msgid "Helmi Shop"
+msgstr "Helmi Shop"
+
+#: app/templates/base.html:45 app/templates/base.html:217
+msgid "Categories"
+msgstr "Categories"
+
+#: app/templates/base.html:50 app/templates/products/brand.html:192
+msgid "All Brands"
+msgstr "All Brands"
+
+#: app/templates/base.html:55
+msgid "Discounted Products"
+msgstr "Discounted Products"
+
+#: app/templates/auth/all_users.html:55 app/templates/base.html:70
+#: app/templates/base.html:159
+msgid "All Users"
+msgstr "All Users"
+
+#: app/templates/base.html:75 app/templates/base.html:160
+msgid "Active Users"
+msgstr "Active Users"
+
+#: app/templates/base.html:87
+msgid "Tickets"
+msgstr "Tickets"
+
+#: app/templates/auth/unconfirmed.html:15 app/templates/base.html:93
+#: app/templates/base.html:205
+msgid "Logout"
+msgstr "Logout"
+
+#: app/templates/base.html:129
+msgid "Language"
+msgstr "Language"
+
+#: app/templates/base.html:132
+msgid "English"
+msgstr "English"
+
+#: app/templates/base.html:133
+msgid "Suomi"
+msgstr "Finnish"
+
+#: app/templates/base.html:145
+msgid "Admin"
+msgstr "Admin"
+
+#: app/templates/base.html:152
+msgid "Create New Product"
+msgstr "Create New Product"
+
+#: app/templates/base.html:154
+msgid "Create New Brand"
+msgstr "Create New Brand"
+
+#: app/templates/base.html:155
+msgid "Create New Category"
+msgstr "Create New Category"
+
+#: app/templates/base.html:157
+msgid "Create New Translation"
+msgstr "Create New Translation"
+
+#: app/templates/base.html:158
+msgid "All Orders"
+msgstr "All Orders"
+
+#: app/templates/base.html:161 app/templates/products/all_products.html:35
+msgid "All Products"
+msgstr "All Products"
+
+#: app/templates/base.html:162
+msgid "All Tickets"
+msgstr "All Tickets"
+
+#: app/templates/base.html:174
+msgid "Kosmetiikka verkkokauppa"
+msgstr "Cosmetics online store"
+
+#: app/templates/base.html:185
+msgid "Close"
+msgstr "Close"
+
+#: app/templates/base.html:195
+msgid "Kaupamme"
+msgstr "Our Shop"
+
+#: app/templates/base.html:197
+msgid "Pysy Kauniina"
+msgstr "Stay Beautiful"
+
+#: app/templates/base.html:198
+msgid ""
+"was created with the aim of offering our customers the best and highest "
+"quality products. The Helmi Shop cosmetics store offers a wide selection "
+"of famous brands for beauty lovers. In this online store, you can find "
+"all kinds of cosmetic products, including creams, cosmetics, perfumes, "
+"and skin and hair care products. You can safely buy your beauty products "
+"and benefit from high-quality products and services."
+msgstr ""
+"was created with the aim of offering our customers the best and highest "
+"quality products. The Helmi Shop cosmetics store offers a wide selection "
+"of famous brands for beauty lovers. In this online store, you can find "
+"all kinds of cosmetic products, including creams, cosmetics, perfumes, "
+"and skin and hair care products. You can safely buy your beauty products "
+"and benefit from high-quality products and services."
+
+#: app/templates/base.html:202
+msgid "My Account"
+msgstr "My Account"
+
+#: app/templates/base.html:214
+msgid "Information"
+msgstr "Information"
+
+#: app/templates/base.html:216 app/templates/products/brand.html:9
+#: app/templates/products/product.html:21
+msgid "Home"
+msgstr "Home"
+
+#: app/templates/base.html:218 app/templates/products/brand.html:194
+msgid "Brands"
+msgstr "Brands"
+
+#: app/templates/base.html:226
+msgid "Design by"
+msgstr "Design by"
+
+#: app/templates/index.html:86
+#: app/templates/products/all_discounted_products.html:72
+#: app/templates/products/basket.html:24 app/templates/products/brand.html:157
+msgid "Details"
+msgstr "Details"
+
+#: app/templates/index.html:92
+#: app/templates/products/all_discounted_products.html:81
+#: app/templates/products/brand.html:166
+#: app/templates/products/product.html:123
+msgid "Add to basket"
+msgstr "Add to basket"
+
+#: app/templates/index.html:105
+#: app/templates/products/all_discounted_products.html:93
+#: app/templates/products/brand.html:178
+#: app/templates/products/product.html:139
+msgid "Delete"
+msgstr "Delete"
+
+#: app/templates/index.html:106
+#: app/templates/products/all_discounted_products.html:95
+#: app/templates/products/all_products.html:69
+#: app/templates/products/brand.html:180
+#: app/templates/products/product.html:141
+msgid "Are you sure you want to delete"
+msgstr "Are you sure you want to delete"
+
+#: app/templates/auth/activate_users.html:57
+#: app/templates/auth/all_users.html:35 app/templates/index.html:127
+#: app/templates/index.html:174 app/templates/products/all_orders.html:25
+#: app/templates/products/all_products.html:24
+#: app/templates/products/product.html:178
+msgid "Previous"
+msgstr "Previous"
+
+#: app/templates/auth/activate_users.html:80
+#: app/templates/auth/all_users.html:42 app/templates/index.html:138
+#: app/templates/index.html:178 app/templates/products/all_orders.html:28
+#: app/templates/products/all_products.html:27
+#: app/templates/products/product.html:189
+msgid "Next"
+msgstr "Next"
+
+#: app/templates/auth/activate_users.html:4
+msgid "Activate Users"
+msgstr "Activate Users"
+
+#: app/templates/auth/activate_users.html:13
+#: app/templates/auth/all_users.html:61
+msgid "Fullname"
+msgstr "Fullname"
+
+#: app/templates/auth/activate_users.html:15
+#: app/templates/auth/all_users.html:86
+msgid "Active"
+msgstr "Active"
+
+#: app/templates/auth/activate_users.html:45
+msgid "Update Selected Users"
+msgstr "Update Selected Users"
+
+#: app/templates/auth/activate_users.html:50
+#: app/templates/auth/all_users.html:24
+#: app/templates/products/all_orders.html:19
+#: app/templates/products/all_products.html:18
+msgid "Page navigation"
+msgstr "Page navigation"
+
+#: app/templates/auth/all_users.html:28
+#: app/templates/products/all_orders.html:22
+#: app/templates/products/all_products.html:21
+msgid "First"
+msgstr "First"
+
+#: app/templates/auth/all_users.html:49
+#: app/templates/products/all_orders.html:31
+#: app/templates/products/all_products.html:30
+msgid "Last"
+msgstr "Last"
+
+#: app/templates/auth/all_users.html:73
+msgid "Phone"
+msgstr "Phone"
+
+#: app/templates/auth/all_users.html:83
+msgid "Zipcode"
+msgstr "Zipcode"
+
+#: app/templates/auth/all_users.html:88
+msgid "Action"
+msgstr "Action"
+
+#: app/templates/auth/all_users.html:110
+msgid "Are you sure you want to delete user:"
+msgstr "Are you sure you want to delete user:"
+
+#: app/templates/auth/edit_user_admin.html:6
+msgid "Edit User"
+msgstr "Edit User"
+
+#: app/templates/auth/edit_user_admin.html:34
+#: app/templates/auth/register.html:65
+#: app/templates/auth/update_profile.html:55
+msgid "Please enter your city."
+msgstr "Please enter your city."
+
+#: app/templates/auth/edit_user_admin.html:62
+#: app/templates/auth/reset_email_request.html:18
+#: app/templates/auth/update_password.html:32
+#: app/templates/auth/update_profile.html:15
+#: app/templates/tickets/view_ticket.html:39
+msgid "Back"
+msgstr "Back"
+
+#: app/templates/auth/login.html:22 app/templates/auth/login.html:25
+#: app/templates/auth/reset_password_request.html:12
+msgid "Please provide a valid email address."
+msgstr "Please provide a valid email address."
+
+#: app/templates/auth/login.html:32 app/templates/auth/login.html:35
+msgid "Please provide a valid password."
+msgstr "Please provide a valid password."
+
+#: app/templates/auth/login.html:52
+msgid "Forgot Password"
+msgstr "Forgot Password"
+
+#: app/templates/auth/login.html:61
+msgid "logo"
+msgstr "logo"
+
+#: app/templates/auth/profile.html:13
+msgid "Fullname:"
+msgstr "Fullname:"
+
+#: app/templates/auth/profile.html:14
+msgid "Email:"
+msgstr "Email:"
+
+#: app/templates/auth/profile.html:15
+msgid "Phone:"
+msgstr "Phone:"
+
+#: app/templates/auth/profile.html:16
+msgid "Role:"
+msgstr "Role:"
+
+#: app/templates/auth/profile.html:17
+msgid "City:"
+msgstr "City:"
+
+#: app/templates/auth/profile.html:18
+msgid "Address:"
+msgstr "Address:"
+
+#: app/templates/auth/profile.html:19
+msgid "Zipcode:"
+msgstr "Zipcode:"
+
+#: app/templates/auth/profile.html:22
+msgid "Last Login:"
+msgstr "Last Login:"
+
+#: app/templates/auth/profile.html:23
+msgid "Member Since:"
+msgstr "Member Since:"
+
+#: app/templates/auth/profile.html:23
+msgid "Days ago"
+msgstr "Days ago"
+
+#: app/templates/auth/profile.html:25
+msgid "Edit Profile"
+msgstr "Edit Profile"
+
+#: app/templates/auth/profile.html:27
+msgid "Update Email"
+msgstr "Update Email"
+
+#: app/templates/auth/profile.html:34
+msgid "My Orders"
+msgstr "My Orders"
+
+#: app/templates/auth/profile.html:42
+msgid "Order ID"
+msgstr "Order ID"
+
+#: app/templates/auth/profile.html:43
+msgid "Order Date"
+msgstr "Order Date"
+
+#: app/templates/auth/profile.html:44
+msgid "Products"
+msgstr "Products"
+
+#: app/templates/auth/profile.html:45
+msgid "Total Amount"
+msgstr "Total Amount"
+
+#: app/templates/auth/profile.html:56 app/templates/products/all_orders.html:60
+msgid "Price Per Unit:"
+msgstr "Price Per Unit:"
+
+#: app/templates/auth/profile.html:57 app/templates/products/all_orders.html:61
+msgid "View"
+msgstr "View"
+
+#: app/templates/auth/profile.html:72
+msgid "You have not made any orders yet."
+msgstr "You have not made any orders yet."
+
+#: app/templates/auth/register.html:16
+msgid "Please enter your first name."
+msgstr "Please enter your first name."
+
+#: app/templates/auth/register.html:24
+msgid "Please enter your last name."
+msgstr "Please enter your last name."
+
+#: app/templates/auth/register.html:32
+msgid "Please enter your email address."
+msgstr "Please enter your email address."
+
+#: app/templates/auth/register.html:40
+msgid "Please enter your password."
+msgstr "Please enter your password."
+
+#: app/templates/auth/register.html:48
+msgid "Please confirm your password."
+msgstr "Please confirm your password."
+
+#: app/templates/auth/register.html:56
+msgid "Please enter your phone number."
+msgstr "Please enter your phone number."
+
+#: app/templates/auth/register.html:73
+msgid "Please enter your address."
+msgstr "Please enter your address."
+
+#: app/templates/auth/register.html:81
+msgid "Please enter your zipcode."
+msgstr "Please enter your zipcode."
+
+#: app/templates/auth/register.html:89
+msgid "Please upload your image."
+msgstr "Please upload your image."
+
+#: app/templates/auth/register.html:106
+#: app/templates/auth/update_profile.html:94
+#: app/templates/products/basket.html:26
+msgid "Remove"
+msgstr "Remove"
+
+#: app/templates/auth/register.html:113
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
+#: app/templates/auth/unconfirmed.html:10
+msgid "Unconfirmed Account"
+msgstr "Unconfirmed Account"
+
+#: app/templates/auth/unconfirmed.html:13
+msgid ""
+"Your account has not been confirmed yet. Please check your email for the "
+"confirmation link."
+msgstr ""
+"Your account has not been confirmed yet. Please check your email for the "
+"confirmation link."
+
+#: app/templates/auth/unconfirmed.html:14
+msgid "Resend confirmation email"
+msgstr "Resend confirmation email"
+
+#: app/templates/auth/update_profile.html:13
+msgid "Update Profile"
+msgstr "Update Profile"
+
+#: app/templates/errors/403.html:7 app/templates/errors/403.html:10
+msgid "403 Forbidden"
+msgstr "403 Forbidden"
+
+#: app/templates/errors/403.html:11
+msgid "You are not allowed to access this page."
+msgstr "You are not allowed to access this page."
+
+#: app/templates/errors/404.html:17
+msgid "Look like you're lost"
+msgstr "Look like you're lost"
+
+#: app/templates/errors/404.html:20
+msgid "the page you are looking for not avaible!"
+msgstr "The page you are looking for is not available!"
+
+#: app/templates/errors/404.html:22 app/templates/errors/csrf_error.html:20
+msgid "Go to Home"
+msgstr "Go to Home"
+
+#: app/templates/errors/500.html:6 app/templates/errors/500.html:9
+msgid "500 Internal Server Error"
+msgstr "500 Internal Server Error"
+
+#: app/templates/errors/500.html:10
+msgid "Sorry, something went wrong."
+msgstr "Sorry, something went wrong."
+
+#: app/templates/errors/500.html:11
+msgid "If you are the application owner check the logs for more information."
+msgstr "If you are the application owner, check the logs for more information."
+
+#: app/templates/errors/csrf_error.html:8
+#: app/templates/errors/csrf_error.html:11
+msgid "CSRF Error"
+msgstr "CSRF Error"
+
+#: app/templates/errors/csrf_error.html:14
+msgid "CSRF token is missing or incorrect. Please try again."
+msgstr "CSRF token is missing or incorrect. Please try again."
+
+#: app/templates/products/all_products.html:39
+msgid "Product ID"
+msgstr "Product ID"
+
+#: app/templates/products/all_products.html:40
+msgid "Image"
+msgstr "Image"
+
+#: app/templates/products/all_products.html:41
+msgid "Name"
+msgstr "Name"
+
+#: app/templates/products/all_products.html:42
+#: app/templates/products/basket.html:22
+msgid "Price"
+msgstr "Price"
+
+#: app/templates/products/all_products.html:43
+msgid "Discount"
+msgstr "Discount"
+
+#: app/templates/products/all_products.html:44
+msgid "Size"
+msgstr "Size"
+
+#: app/templates/products/all_products.html:45
+msgid "Weight"
+msgstr "Weight"
+
+#: app/templates/products/all_products.html:46
+msgid "Ean"
+msgstr "Ean"
+
+#: app/templates/products/all_products.html:47
+msgid "Category"
+msgstr "Category"
+
+#: app/templates/products/all_products.html:48
+msgid "Subcategory"
+msgstr "Subcategory"
+
+#: app/templates/products/all_products.html:49
+msgid "Brand"
+msgstr "Brand"
+
+#: app/templates/products/all_products.html:50
+#: app/templates/products/basket.html:25
+#: app/templates/tickets/view_tickets.html:21
+msgid "Actions"
+msgstr "Actions"
+
+#: app/templates/products/basket.html:12
+msgid "Your Basket"
+msgstr "Your Basket"
+
+#: app/templates/products/basket.html:14
+msgid "Your basket is empty"
+msgstr "Your basket is empty"
+
+#: app/templates/products/basket.html:19
+msgid "Product"
+msgstr "Product"
+
+#: app/templates/products/basket.html:20
+msgid "Product Image"
+msgstr "Product Image"
+
+#: app/templates/products/basket.html:21
+msgid "Quantity"
+msgstr "Quantity"
+
+#: app/templates/products/basket.html:23
+msgid "Total"
+msgstr "Total"
+
+#: app/templates/products/basket.html:92
+msgid "Total:"
+msgstr "Total:"
+
+#: app/templates/products/basket.html:99
+msgid "Pay Now"
+msgstr "Pay Now"
+
+#: app/templates/products/basket.html:105
+msgid "Continue Shopping"
+msgstr "Continue Shopping"
+
+#: app/templates/products/brand.html:32
+msgid "Filter"
+msgstr "Filter"
+
+#: app/templates/products/brand.html:77
+msgid "Edit Brand"
+msgstr "Edit Brand"
+
+#: app/templates/products/product.html:199
+msgid "Slide"
+msgstr "Slide"
+
+#: app/templates/products/product.html:220
+msgid "brand"
+msgstr "brand"
+
+#: app/templates/products/product.html:224
+#: app/templates/products/product.html:232
+msgid "Filter by"
+msgstr "Filter by"
+
+#: app/templates/products/product.html:228
+msgid "category"
+msgstr "category"
+
+#: app/templates/products/product.html:261
+msgid "Instructions"
+msgstr "Instructions"
+
+#: app/templates/products/product.html:274
+msgid "Ingredients"
+msgstr "Ingredients"
+
+#: app/templates/products/product.html:330
+msgid "Update your review"
+msgstr "Update your review"
+
+#: app/templates/products/product.html:352
+msgid "Submit your review"
+msgstr "Submit your review"
+
+#: app/templates/products/product.html:377
+msgid "Reviews"
+msgstr "Reviews"
+
+#: app/templates/products/email/order_confirmation.html:19
+msgid "Dear"
+msgstr "Dear"
+
+#: app/templates/products/email/order_confirmation.html:20
+msgid "Thank you for your order. Your payment has been successfully processed."
+msgstr "Thank you for your order. Your payment has been successfully processed."
+
+#: app/templates/products/email/order_confirmation.html:21
+msgid "Order ID:"
+msgstr "Order ID:"
+
+#: app/templates/products/email/order_confirmation.html:22
+msgid "Total Amount:"
+msgstr "Total Amount:"
+
+#: app/templates/products/email/order_confirmation.html:23
+msgid "Purchased Products:"
+msgstr "Purchased Products:"
+
+#: app/templates/products/email/order_confirmation.html:29
+msgid "We hope you enjoy your purchase!"
+msgstr "We hope you enjoy your purchase!"
+
+#: app/templates/tickets/view_ticket.html:11
+msgid "Ticket Image"
+msgstr "Ticket Image"
+
+#: app/templates/tickets/view_ticket.html:16
+msgid "Messages"
+msgstr "Messages"
+
+#: app/templates/tickets/view_tickets.html:4
+msgid "Your Tickets"
+msgstr "Your Tickets"
+
+#: app/templates/tickets/view_tickets.html:5
+msgid "Create Ticket"
+msgstr "Create Ticket"
+
+#: app/templates/tickets/view_tickets.html:17
+msgid "Ticket ID"
+msgstr "Ticket ID"
+
+#: app/templates/tickets/view_tickets.html:35
+msgid "View Ticket"
+msgstr "View Ticket"
+
+#: app/templates/tickets/view_tickets.html:41
+msgid "Update Ticket"
+msgstr "Update Ticket"
+
+#: app/templates/tickets/view_tickets.html:47
+msgid "Are you sure you want to delete this ticket?"
+msgstr "Are you sure you want to delete this ticket?"
+
+#: app/templates/tickets/view_tickets.html:48
+msgid "Delete Ticket"
+msgstr "Delete Ticket"
+
+#~ msgid "products/all_orders.html"
+#~ msgstr "products/all_orders.html"
+
+#~ msgid "products/all_products.html"
+#~ msgstr "products/all_products.html"
+
+#~ msgid "Update ({{ product.name }})"
+#~ msgstr "Update ({{ product.name }})"
+
+#~ msgid "Delete ({{ product.name }})"
+#~ msgstr "Delete ({{ product.name }})"
+

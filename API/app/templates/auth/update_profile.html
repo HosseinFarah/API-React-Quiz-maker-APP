@@ -1,0 +1,103 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <form
+        method="POST"
+        enctype="multipart/form-data"
+        class="needs-validation"
+        novalidate
+      >
+        {{ form.hidden_tag() }}
+        <h3 class="card-title">Update Profile</h3>
+        <a href="{{ url_for('auth.profile') }}" class="btn btn-danger mt-3"
+          ><i class="fa fa-arrow-left"></i> Back</a
+        >
+        <img
+          src="{{ url_for('static', filename='uploads/users/' + current_user.image) }}"
+          alt="{{ current_user.firstname }}"
+          class="img-thumbnail"
+          style="
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-top: 10px;
+          "
+        />
+
+        <div class="form-group">
+          {{ form.firstname.label(class="control-label") }} {{
+          form.firstname(class="form-control") }} {% for error in
+          form.firstname.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.lastname.label(class="control-label") }} {{
+          form.lastname(class="form-control") }} {% for error in
+          form.lastname.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.phone.label(class="control-label") }} {{
+          form.phone(class="form-control") }} {% for error in form.phone.errors
+          %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.city.label(class="form-label") }}
+          {{ form.city(class="form-control" ,id = "city") }}
+
+          <div class="invalid-feedback">Please enter your city.</div>
+          {% for error in form.city.errors %}
+          <span class="text-danger">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.address.label(class="control-label") }} {{
+          form.address(class="form-control") }} {% for error in
+          form.address.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.zipcode.label(class="control-label") }} {{
+          form.zipcode(class="form-control") }} {% for error in
+          form.zipcode.errors %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <div class="form-group">
+          {{ form.image.label(class="control-label") }} {{
+          form.image(class="form-control") }} {% for error in form.image.errors
+          %}
+          <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <!-- Preview Selected Image -->
+        <div class="previewDiv mt-1 col-sm-8 d-none" id="previewDiv">
+          <img
+            class="previewImage rounded mt-2"
+            src=""
+            id="previewImage"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            onclick="remove_img('image')"
+          >
+            <i class="fa fa-trash"></i> Remove
+          </button>
+        </div>
+
+        {{form.submit(class="btn btn-primary mt-3")}}
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

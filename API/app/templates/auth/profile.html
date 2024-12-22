@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-5 col-md-offset-3 mt-5">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-info shadow mb-3">
+                        <h3 class="card-title">Profile</h3>
+                        <img src="{{ url_for('static', filename='uploads/users/' + user.image) }}" alt="{{ user.firstname }}" class="img-thumbnail ms-auto" style="width: 100px; height:100px;  border-radius: 50%; margin-top: 10px;position: absolute; top: 0; right: 10px;">
+                    </div>
+                    <div class="card-body mt-5">
+                        <p><strong class="text-info"><i class="fa fa-user "></i> Fullname:</strong> {{ user.firstname }} {{ user.lastname }}</p>
+                        <p><strong class="text-info"><i class="fa fa-envelope "></i> Email:</strong> {{ user.email }}</p>
+                        <p><strong class="text-info"><i class="fa fa-phone "></i> Phone:</strong> {{ user.phone }}</p>
+                        <p><strong class="text-info"><i class="fa fa-user "></i> Role:</strong> {{ user.role.name }}</p>
+                        <p><strong class="text-info"><i class="fa fa-city "></i> City:</strong> {{ user.city }}</p>
+                        <p><strong class="text-info"><i class="fa fa-map-marker "></i> Address:</strong> {{ user.address }}</p>
+                        <p><strong class="text-info"><i class="fa fa-shipping-fast"></i> Zipcode:</strong> {{ user.zipcode }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <p><strong>Last Login:</strong> {{ user.last_login}}</p>
+                        <p><strong>Member Since: {{ member_since }} </strong> Days ago</p>
+                        <div class="d-flex justify-content-end m-3">
+                        <a href="{{ url_for('auth.update_profile') }}" class="btn btn-primary m-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Edit Profile"><i class="fa fa-edit"></i> </a>
+                        <a href="{{ url_for('auth.update_password') }}" class="btn btn-warning m-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Update Password"><i class="fa fa-edit"></i> </a>
+                        <a href="{{ url_for('auth.reset_email_request') }}" class="btn btn-warning m-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Update Email"><i class="fa fa-edit"></i> </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="page_404">
+	<div class="container">
+		<div class="row d-flex justify-content-center">	
+		<div class="col-sm-12 ">
+		<div class="col-sm-10 col-sm-offset-1  text-center">
+		<div class="four_zero_four_bg">
+			<h1 class="text-center ">404</h1>
+		
+		
+		</div>
+		
+		<div class="contant_box_404">
+		<h3 class="h2">
+		{{ _("Look like you're lost") }}
+		</h3>
+		
+		<p class="text-danger fs-4">{{ _('the page you are looking for not avaible!') }}</p>
+		
+		<a href="{{ url_for('main.index') }}" class="link_404 text-decoration-none"><i class="fa fa-home"></i> {{ _('Go to Home') }}</a>
+	</div>
+		</div>
+		</div>
+		</div>
+	</div>
+</section>
+{% endblock %}

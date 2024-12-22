@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block content %}
+<section class="page_404">
+  <div class="container">
+    <div class="row d-flex justify-content-center">
+      <div class="col-sm-12">
+        <div class="col-sm-10 col-sm-offset-1 text-center">
+          <div class="four_zero_four_bg">
+            <h1 class="text-center">{{ _('CSRF Error') }}</h1>
+          </div>
+          <div class="contant_box_404">
+            <h3 class="h2">{{ _('CSRF Error') }}</h3>
+
+            <p class="text-danger fs-4">
+              {{ _('CSRF token is missing or incorrect. Please try again.') }}
+            </p>
+            <h5>{{ reason }}</h5>
+            <a
+              href="{{ url_for('main.index') }}"
+              class="link_404 text-decoration-none"
+              ><i class="fa fa-home"></i> {{ _('Go to Home') }}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

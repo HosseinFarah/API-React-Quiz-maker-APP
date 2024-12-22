@@ -1,0 +1,47 @@
+{% extends "base.html" %} {% block content %}
+<div class="container">
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-12">
+      <h2>Title : {{ ticket.title }}</h2>
+      <p>Description: {{ ticket.description }}</p>
+      <p>Status: <span class="text-info">{{ ticket.status }}</span></p>
+      {% if ticket.image %}
+      <img
+        src="{{ url_for('static', filename='uploads/tickets/' ~ ticket.image) }}"
+        alt="Ticket Image"
+        class="img-thumbnail"
+        style="max-width: 300px"
+      />
+      {% endif %}
+      <h3>Messages</h3>
+      <div class="messages" id="messages">
+        {% for message in messages %}
+        <div class="message">
+          <strong class="text-primary">{{ message.user.firstname }} {{ message.user.lastname }}:</strong>
+          <p>{{ message.message }}</p>
+          <span class="text-secondary">{{ message.created_at }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% if ticket.status != "resolved" %}
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+          {{ form.answer.label(class="form-control-label") }}
+          {{ form.answer(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary mt-3") }}
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  <a href="{{ url_for('tickets.view_tickets') }}" class="btn btn-secondary mt-2 mb-5"
+    ><i class="fas fa-arrow-left"></i> Back</a>
+</div>
+<script src="{{ url_for('static', filename='js/ticket.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    startFetchingMessages({{ ticket.id }});
+  });
+</script>
+{% endblock %}
