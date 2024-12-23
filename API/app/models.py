@@ -223,3 +223,99 @@ class TicketMessage(db.Model):
     def __repr__(self) -> str:
         return '<TicketMessage %r>' % self.message
 
+
+class Quizzes(db.Model):
+    __tablename__ = 'quizzes'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False, index=True, unique=True)
+    description = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='available', index=True)
+    image = db.Column(db.String(255), nullable=True)
+    capacity = db.Column(db.Integer, nullable=False, default=0)
+    start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    time_limit = db.Column(db.Integer, nullable=False,default=0)
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    
+    def shuffle_questions(self):
+        from random import shuffle
+        questions = self.questions
+        shuffle(questions)
+        for index, question in enumerate(questions):
+            question.order_number = index
+        db.session.commit()
+    
+    def __repr__(self) -> str:
+        return '<Quizzes %r>' % self.title
+
+class Questions(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255), nullable=True)
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
+    order_number = db.Column(db.Integer, nullable=False, default=0)
+    question_type_id = db.Column(db.Integer, db.ForeignKey('question_types.id'), nullable=False)  # New column
+    
+    # Relationships
+    quiz = db.relationship('Quizzes', backref='questions')
+    
+    def shuffle_options(self):
+        from random import shuffle
+        options = self.options
+        shuffle(options)
+        for index, option in enumerate(options):
+            option.order_number = index
+        db.session.commit()
+    
+    def __repr__(self) -> str:
+        return '<Questions %r>' % self.question
+    
+
+class Options(db.Model):
+    __tablename__ = 'options'
+    id = db.Column(db.Integer, primary_key=True)
+    option = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255), nullable=True)
+    order_number = db.Column(db.Integer, nullable=False, default=0)
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
+    question = db.relationship('Questions', backref='options')
+    
+    def __repr__(self) -> str:
+        return '<Options %r>' % self.option
+    
+
+class Answers(db.Model):
+    __tablename__ = 'answers'
+    id = db.Column(db.Integer, primary_key=True)
+    answer = db.Column(db.Text, nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
+    option_id = db.Column(db.Integer, db.ForeignKey('options.id'), nullable=False)
+    question = db.relationship('Questions', backref='answers')
+    option = db.relationship('Options', backref='answers')
+    
+    def __repr__(self) -> str:
+        return '<Answers %r>' % self.answer
+
+class QuestionType(db.Model):
+    __tablename__ = 'question_types'
+    id = db.Column(db.Integer, primary_key=True)
+    type_name = db.Column(db.String(50), nullable=False, unique=True)
+    questions = db.relationship('Questions', backref='question_type', lazy=True)  # Ensure unique backref name
+    
+    def __repr__(self) -> str:
+        return '<QuestionType %r>' % self.type_name
+
+    @staticmethod
+    def insert_question_types():
+        types = ['Multiple Choice', 'True/False']
+        for type_name in types:
+            question_type = QuestionType.query.filter_by(type_name=type_name).first()
+            if question_type is None:
+                question_type = QuestionType(type_name=type_name)
+                db.session.add(question_type)
+        db.session.commit()
+
+def insert_question_types():
+    QuestionType.insert_question_types()
+    print("Question types inserted.")

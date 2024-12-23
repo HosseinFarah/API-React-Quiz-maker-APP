@@ -1,10 +1,10 @@
-import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form'; // Ensure this package is installed
 import { useNavigate, useLocation,Link } from 'react-router-dom'; // Import useLocation
 import { toast } from 'react-toastify';
 import { useEffect, useState, useContext } from 'react';
 import { PacmanLoader } from 'react-spinners';
 import { AuthContext } from '../context/AuthContext';
-import { API_URL } from '../Components/Urls';
+import { API_URL } from '../components/Urls';
 import { fetchCsrfToken } from '../utils/csrfUtils';
 
 const Login = () => {
@@ -106,9 +106,9 @@ const Login = () => {
         <div style={{ marginTop: '150px' }} className='container'>
             <div className="row d-flex justify-content-center">
                 <div className="col-md-4">
-                    <h2>Login</h2>
+                    <h2 className='text-secondary m-2'>Login</h2>
                     {message && <p style={{ color: 'red' }}>{message}</p>} {/* Display message */}
-                    <form onSubmit={handleSubmit(onSubmit)} className='form-group'>
+                    <form onSubmit={handleSubmit(onSubmit)} className='form-group shadow-lg rounded p-4'>
                         <div className='form-group'>
                             <label htmlFor="email" className='form-label'>Email</label>
                             <input type="email" {...register('email', { required: 'Email is required' })} className='form-control'/>

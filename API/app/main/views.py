@@ -1,7 +1,7 @@
 from . import main
 from flask import render_template, redirect, url_for, request, flash, current_app, session, g
 from flask_login import login_user, logout_user, login_required, current_user
-from app.models import User,  User, Ticket
+from app.models import User,  User, Ticket, Quizzes  # Import the Quizzes model
 from app import db
 from app.forms import SearchForm
 from sqlalchemy import or_
@@ -51,7 +51,8 @@ def set_language():
 
 @main.route("/")
 def index():
-    return render_template("index.html")
+    quizzes = Quizzes.query.all()  # Fetch all quizzes
+    return render_template("index.html", quizzes=quizzes)
 
 @main.route('/search', methods=['GET', 'POST'])
 def search():

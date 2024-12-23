@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { API_URL } from '../Components/Urls';
+import { API_URL } from '../components/Urls';
 
 export const fetchCsrfToken = async () => {
   try {

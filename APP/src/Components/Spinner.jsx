@@ -1,5 +1,4 @@
-import {MoonLoader} from 'react-spinners';
-
+import { MoonLoader } from 'react-spinners'; // Ensure this package is installed
 
 const Spinner = () => {
   return (

@@ -1,0 +1,107 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="container">
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-5">
+      <h1>Create a Quiz</h1>
+      <form method="POST" enctype="multipart/form-data" class="form needs-validation" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="form-group mb-3">
+          {{ form.title.label(class="form-label") }} {{
+          form.title(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Title is required
+          </div>
+          {% for error in form.title.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+          {% if duplicate_title_error %}
+          <span class="invalid-feedback">This title already exists. Please choose a different title.</span>
+          {% endif %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.description.label(class="form-label") }} {{
+          form.description(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Description is required
+          </div>
+          {% for error in form.description.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.status.label(class="form-label") }} {{
+          form.status(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Status is required
+          </div>
+          {% for error in form.status.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.capacity.label(class="form-label") }} {{
+          form.capacity(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Capacity is required
+          </div>
+          {% for error in form.capacity.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.start_date.label(class="form-label") }} {{
+          form.start_date(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Start Date is required
+          </div>
+          {% for error in form.start_date.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.time_limit.label(class="form-label") }} {{
+          form.time_limit(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Please enter a valid time limit
+          </div>
+          {% for error in form.time_limit.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.image.label(class="form-label") }} {{
+          form.image(class="form-control") }}
+          <div class="invalid-feedback">
+            Please upload an image
+          </div>
+          {% for error in form.image.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.shuffle_questions.label(class="form-label") }} {{
+          form.shuffle_questions(class="form-check-input") }}
+          <div class="invalid-feedback">
+            Please select an option
+          </div>
+          {% for error in form.shuffle_questions.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.shuffle_options.label(class="form-label") }} {{
+          form.shuffle_options(class="form-check-input") }}
+          <div class="invalid-feedback">
+            Please select an option
+          </div>
+          {% for error in form.shuffle_options.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">{{ form.submit(class="btn btn-primary") }}</div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

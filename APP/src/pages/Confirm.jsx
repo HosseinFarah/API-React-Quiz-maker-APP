@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { resendConfirmationEmail } from '../utils/csrfUtils';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../components/Urls';
 
 const Confirm = () => {
   const [loading, setLoading] = useState(false);

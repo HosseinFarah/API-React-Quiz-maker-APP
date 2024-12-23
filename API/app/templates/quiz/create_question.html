@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <div class="row d-flex justify-content-center">
+    <div class="col-md-5">
+      <h1>Create a Question</h1>
+      <form method="POST" enctype="multipart/form-data" class="form needs-validation" novalidate>
+        {{ form.hidden_tag() }}
+        <input type="hidden" name="quiz_id" value="{{ quiz_id }}">
+        <div class="form-group mb-3">
+          {{ form.question.label(class="form-label") }} {{
+          form.question(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Question is required
+          </div>
+          {% for error in form.question.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.image.label(class="form-label") }} {{
+          form.image(class="form-control") }}
+          <div class="invalid-feedback">
+            Please upload an image
+          </div>
+          {% for error in form.image.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.question_type_id.label(class="form-label") }} {{
+          form.question_type_id(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Question Type is required
+          </div>
+          {% for error in form.question_type_id.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.quiz_id.label(class="form-label") }} {{
+          form.quiz_id(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            Quiz is required
+          </div>
+          {% for error in form.quiz_id.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-2">
+          {{ form.options.label(class="form-label") }}
+          <div id="options-container">
+            {% for option in form.options %}
+
+            </div>
+            {% endfor %}
+            <button type="button" class="btn btn-secondary" id="add-option">Add Option</button>
+            <div class="invalid-feedback">
+              Options are required
+            </div>
+            {% for error in form.options.errors %}
+            <span class="invalid-feedback">{{ error }}</span>
+            {% endfor %}
+          </div>
+          <div class="form-group mb-3">
+            {{ form.shuffle_options.label(class="form-label") }} {{
+            form.shuffle_options(class="form-check-input") }}
+            <div class="invalid-feedback">
+              Please select an option
+            </div>
+            {% for error in form.shuffle_options.errors %}
+            <span class="invalid-feedback">{{ error }}</span>
+            {% endfor %}
+          </div>
+          <div class="form-group mb-3">{{ form.submit(class="btn btn-primary") }}</div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const optionsContainer = document.getElementById('options-container');
+  const addOptionButton = document.getElementById('add-option');
+  const questionTypeSelect = document.getElementById('question_type_id');
+  let initialQuestionType = questionTypeSelect.value;
+
+  function addOption(optionText = '', optionImage = '', orderNumber = null) {
+    if (orderNumber === null) {
+      orderNumber = optionsContainer.children.length;
+    }
+    const newOption = document.createElement('div');
+    newOption.classList.add('input-group', 'mb-2');
+    newOption.innerHTML = `
+    <div>
+      <label for="options-${orderNumber}-option_text" class="form-label">Option</label>
+      <input type="text" name="options-${orderNumber}-option_text" class="form-control" value="${optionText}" required>
+      <label for="options-${orderNumber}-option_image" class="form-label">Option Image</label>
+      <input type="file" name="options-${orderNumber}-option_image" class="form-control mt-1" value="${optionImage}">
+      <input type="hidden" name="options-${orderNumber}-order_number" value="${orderNumber}">
+      <div>
+        <label for="options-${orderNumber}-correct_option" class="form-label">Correct Option</label>
+        <input type="radio" name="correct_option" value="${orderNumber}" required>
+      </div>
+      <button type="button" class="btn btn-danger remove-option mt-1">Remove</button>
+      <hr>
+    </div>
+    `;
+    optionsContainer.appendChild(newOption);
+  }
+
+  addOptionButton.addEventListener('click', function() {
+    addOption();
+  });
+
+  optionsContainer.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-option')) {
+      event.target.closest('.input-group').remove();
+    }
+  });
+
+  questionTypeSelect.addEventListener('change', function() {
+    const selectedType = questionTypeSelect.value;
+    if (selectedType !== initialQuestionType) {
+      optionsContainer.innerHTML = '';
+      if (selectedType === 'True/False') {
+        addOption('True');
+        addOption('False');
+        addOptionButton.style.display = 'none';
+      } else {
+        addOptionButton.style.display = 'block';
+      }
+      initialQuestionType = selectedType;
+    }
+  });
+
+  // Trigger change event to set initial state
+  questionTypeSelect.dispatchEvent(new Event('change'));
+
+  // Repopulate options if there are validation errors
+  const existingOptions = {{ form.options|tojson }};
+  if (existingOptions.length > 0) {
+    existingOptions.forEach((option, index) => {
+      addOption(option.option_text.data, option.option_image.data, index);
+    });
+  }
+});
+</script>
+{% endblock %}

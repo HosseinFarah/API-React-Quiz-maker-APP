@@ -1,14 +1,15 @@
 from . import api
-from flask import jsonify, request, current_app, redirect, url_for, session, render_template, make_response, session, flash
-from app import db
+from flask import jsonify, request, current_app, redirect, url_for, session, render_template, make_response, flash
+from app import db  # Ensure this import is correct
 from flask_wtf.csrf import generate_csrf, validate_csrf, CSRFError
 from flask_login import login_user, current_user, logout_user
-from app.models import User
+from app.models import User, Quizzes
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
 from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm
 from ..forms import RegistrationForm
+from ..Quiz.forms import QuizForm, QuestionForm, OptionForm
 from werkzeug.utils import secure_filename
 import os
 import json
@@ -118,11 +119,6 @@ def login():
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
 # ...existing code...
 
-
-
-    
-    
-
 @api.route('/csrf-token', methods=['GET', 'OPTIONS'])
 def csrf_token():
     if request.method == 'OPTIONS':
@@ -152,10 +148,6 @@ def csrf_token():
     except Exception as e:
         current_app.logger.error(f'Error generating CSRF token: {str(e)}')
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
-
-
-
-
 
 @api.route('/confirmation-status', methods=['GET'])
 def confirmation_status():
@@ -187,9 +179,6 @@ def confirm(token):
     current_app.logger.info(f'Confirm Response: {response.get_data(as_text=True)}')
     return response
 # ...existing code...
-
-
-
 
 # ...existing code...
 @api.route('/confirm', methods=['POST'])
@@ -235,12 +224,6 @@ def resend_confirmation():
         return create_response({'message': 'An error occurred', 'error': str(e)}, 500)
 # ...existing code...
 
-
-
-
-
-
-
 def clear_browsing_history():
     response = redirect(url_for('main.index'))
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
@@ -256,10 +239,6 @@ def logout():
     response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     return response
-
-
-
-
 
 @api.route('/cities', methods=['GET', 'POST'])
 def get_cities():
@@ -379,3 +358,40 @@ def reset_password(token):
     return response
 
 # ...existing code...
+
+@api.route('/quiz/create', methods=['GET', 'POST'])
+def create_quiz():
+    try:
+        form = QuizForm()
+        if form.validate_on_submit():
+            image = request.files.get('image')
+            filename = None
+            if image:
+                filename = secure_filename(image.filename)
+                upload_folder = current_app.config['QUIZ_UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                image.save(os.path.join(upload_folder, filename))
+            
+            quiz = Quizzes(title=form.title.data, description=form.description.data, status=form.status.data, capacity=form.capacity.data, start_date=form.start_date.data, time_limit=form.time_limit.data, image=filename, shuffle_questions=form.shuffle_questions.data, shuffle_options=form.shuffle_options.data)
+            db.session.add(quiz)
+            db.session.commit()
+            response = create_response({'message': 'Quiz created successfully'}, 201)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+            
+        else:
+            errors = {}
+            for field, field_errors in form.errors.items():
+                errors[field] = field_errors
+            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+    except Exception as e:
+        current_app.logger.error(f'Error creating quiz: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response

@@ -1,7 +1,6 @@
-
-import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form'; // Ensure this package is installed
 import { useState } from 'react';
-import { API_URL } from '../Components/Urls';
+import { API_URL } from '../components/Urls';
 import { fetchCsrfToken } from '../utils/csrfUtils';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';

@@ -10,8 +10,6 @@ from flask_babel import Babel, lazy_gettext as _l
 import logging
 from flask_cors import CORS
 
-
-
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
@@ -97,7 +95,16 @@ def create_app(config_name='default'):
     from app.tickets import tickets as tickets_blueprint
     app.register_blueprint(tickets_blueprint, url_prefix='/tickets')
     
-    from app.API import api as api_blueprint
-    app.register_blueprint(api_blueprint, url_prefix='/api')
     
+    from app.Quiz import quiz as quiz_blueprint
+    app.register_blueprint(quiz_blueprint, url_prefix='/quiz')
+    
+    from app.API import api as api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api')  # Register the blueprint with a URL prefix
+    
+    @app.shell_context_processor
+    def make_shell_context():
+        from .models import insert_question_types  # Import the function here to avoid circular imports
+        return dict(db=db, insert_question_types=insert_question_types)  # Add the function to the shell context
+
     return app

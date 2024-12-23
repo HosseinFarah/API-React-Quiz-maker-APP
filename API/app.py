@@ -4,7 +4,7 @@ import sqlalchemy.orm as so
 from app import db
 from app.models import User, Role
 
-app = create_app()
+app = create_app('default')
 
 @app.shell_context_processor
 def make_shell_context():

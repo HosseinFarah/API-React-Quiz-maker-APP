@@ -27,6 +27,7 @@ class Config:
     BABEL_SUPPORTED_LOCALES = ['fi', 'en']
     # for translation
     BABEL_TRANSLATION_DIRECTORIES = os.path.join(basedir, 'translations') or '../translations'
+    QUIZ_UPLOAD_FOLDER = os.path.join(basedir, 'app/static/uploads/quizzes')
 
     @staticmethod
     def init_app(app):
@@ -50,13 +51,13 @@ class XAMPPConfig(Config):
     DB_SERVER = os.environ.get('DB_SERVER') or 'localhost'
     DB_USER= os.environ.get('DB_USER') or 'root'
     DB_PASSWORD = os.environ.get('DB_PASSWORD') or ''
-    DB_NAME = os.environ.get('DB_NAME') or 'kosmetiikka_db'
+    DB_NAME = os.environ.get('DB_NAME') or 'quiz_maker'
     DB_PORT = os.environ.get('DB_PORT') or '3306'
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://' + DB_USER + ':' + DB_PASSWORD + '@' + DB_SERVER + ':' + DB_PORT + '/' + DB_NAME
     DEFAULT_ORIGIN = 'http://localhost:5173'
     
 class ProductionConfig(XAMPPConfig):
-    DEBUG = False
+    DEBUG = True
     
 config = {
     'development': DevelopmentConfig,

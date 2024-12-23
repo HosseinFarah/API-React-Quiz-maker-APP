@@ -7,11 +7,23 @@
   <div class="spinner-grow text-info" role="status"></div>
 </div>
 
-<div class="container">
+<div class="text-center mt-4">
+  <a href="{{ url_for('quiz.create_quiz') }}" class="btn btn-primary">Create New Quiz</a>
+</div>
+<div class="container mt-4">
   <div class="row">
     <div class="col-md-12">
-      <h1 class="text-center">Welcome to the Flask Authentification App</h1>
+      <h2 class="text-center">Quizzes</h2>
+      <ul class="list-group">
+        {% for quiz in quizzes %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ quiz.title }}
+            <a href="{{ url_for('quiz.create_question', quiz_id=quiz.id) }}" class="btn btn-secondary">Add Question</a>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
+</div>
 
 {% endblock %}
