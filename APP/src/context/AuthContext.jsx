@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { API_URL } from '../Components/Urls';
 import { getCsrfToken } from '../utils/csrfUtils';
 
@@ -11,7 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [isConfirmed, setIsConfirmed] = useState(
     JSON.parse(sessionStorage.getItem('isConfirmed')) || false
   );
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(
+    JSON.parse(localStorage.getItem('isAdmin')) || false
+  );
   const [user, setUser] = useState(null);
 
   const setAuth = (authState) => {
@@ -21,6 +23,10 @@ export const AuthProvider = ({ children }) => {
   const setAdmin = (adminState) => {
     setIsAdmin(adminState);
   };
+
+  useEffect(() => {
+    localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
+  }, [isAdmin]);
 
   const logout = async () => {
     try {

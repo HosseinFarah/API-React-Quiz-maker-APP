@@ -233,9 +233,10 @@ class Quizzes(db.Model):
     image = db.Column(db.String(255), nullable=True)
     capacity = db.Column(db.Integer, nullable=False, default=0)
     start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
-    time_limit = db.Column(db.Integer, nullable=False,default=0)
+    time_limit = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    shuffle_questions_enabled = db.Column(db.Boolean, default=False)  # Add this field
     
     def shuffle_questions(self):
         from random import shuffle
@@ -244,6 +245,29 @@ class Quizzes(db.Model):
         for index, question in enumerate(questions):
             question.order_number = index
         db.session.commit()
+    
+    def calculate_overall_score(self):
+        overall_score = 0
+        for question in self.questions:
+            for answer in question.answers:
+                if answer.option.score > 0:
+                    overall_score += answer.option.score
+        return overall_score
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'status': self.status,
+            'capacity': self.capacity,
+            'start_date': self.start_date,
+            'time_limit': self.time_limit,
+            'image': self.image,
+            'shuffle_questions': self.shuffle_questions_enabled,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at
+        }
     
     def __repr__(self) -> str:
         return '<Quizzes %r>' % self.title
@@ -277,6 +301,7 @@ class Options(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     option = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255), nullable=True)
+    score = db.Column(db.Integer, nullable=False, default=0)
     order_number = db.Column(db.Integer, nullable=False, default=0)
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
     question = db.relationship('Questions', backref='options')
@@ -293,6 +318,10 @@ class Answers(db.Model):
     option_id = db.Column(db.Integer, db.ForeignKey('options.id'), nullable=False)
     question = db.relationship('Questions', backref='answers')
     option = db.relationship('Options', backref='answers')
+    
+    def set_score(self, is_correct):
+        self.option.score = 1 if is_correct else 0
+        db.session.commit()
     
     def __repr__(self) -> str:
         return '<Answers %r>' % self.answer

@@ -31,7 +31,7 @@ def get_locale():
 
 def create_app(config_name='default'):
     app = Flask(__name__, template_folder='templates', static_folder='static')
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
     

@@ -57,8 +57,8 @@ const Navbar = () => {
               ): null}  
               {isAdmin ? (
               <li className="nav-item">
-                <NavLink className="nav-link" to="/newtodo">
-                  New Todo
+                <NavLink className="nav-link" to="/create_quiz">
+                  Create New Quiz
                 </NavLink>
               </li>
               ): null}

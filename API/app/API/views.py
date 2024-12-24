@@ -3,7 +3,7 @@ from flask import jsonify, request, current_app, redirect, url_for, session, ren
 from app import db  # Ensure this import is correct
 from flask_wtf.csrf import generate_csrf, validate_csrf, CSRFError
 from flask_login import login_user, current_user, logout_user
-from app.models import User, Quizzes
+from app.models import User, Quizzes, Questions, Answers, Options, QuestionType
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
@@ -359,11 +359,15 @@ def reset_password(token):
 
 # ...existing code...
 
-@api.route('/quiz/create', methods=['GET', 'POST'])
+@api.route('/quiz/create', methods=['POST'])
 def create_quiz():
     try:
-        form = QuizForm()
-        if form.validate_on_submit():
+        if 'application/json' in request.content_type:
+            return create_response({'message': 'Request content type must be multipart/form-data'}, 400)
+
+        data = request.form.to_dict()
+        form = QuizForm(data=data)
+        if form.validate():
             image = request.files.get('image')
             filename = None
             if image:
@@ -373,7 +377,18 @@ def create_quiz():
                     os.makedirs(upload_folder)
                 image.save(os.path.join(upload_folder, filename))
             
-            quiz = Quizzes(title=form.title.data, description=form.description.data, status=form.status.data, capacity=form.capacity.data, start_date=form.start_date.data, time_limit=form.time_limit.data, image=filename, shuffle_questions=form.shuffle_questions.data, shuffle_options=form.shuffle_options.data)
+            shuffle_questions_enabled = data.get('shuffle_questions_enabled') == 'true'
+            
+            quiz = Quizzes(
+                title=form.title.data,
+                description=form.description.data,
+                status=form.status.data,
+                capacity=form.capacity.data,
+                start_date=form.start_date.data,
+                time_limit=form.time_limit.data,
+                image=filename,
+                shuffle_questions_enabled=shuffle_questions_enabled
+            )
             db.session.add(quiz)
             db.session.commit()
             response = create_response({'message': 'Quiz created successfully'}, 201)
@@ -395,3 +410,158 @@ def create_quiz():
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
+# ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/add_question', methods=['POST'])
+def add_question(quiz_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        data = request.form.to_dict()
+        form = QuestionForm(data=data)
+        
+        if form.validate():
+            image = request.files.get('image')
+            filename = None
+            if image:
+                filename = secure_filename(image.filename)
+                upload_folder = current_app.config['QUESTION_UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                image.save(os.path.join(upload_folder, filename))
+            
+            question = Questions(
+                question=form.question.data,
+                image=filename,
+                quiz_id=quiz.id,
+                order_number=form.order_number.data,
+                question_type_id=form.question_type_id.data
+            )
+            db.session.add(question)
+            db.session.commit()
+
+            for option_form in form.options.entries:
+                option = Options(
+                    option=option_form.form.option_text.data,
+                    image=option_form.form.option_image.data,
+                    score=option_form.form.score.data,
+                    question_id=question.id
+                )
+                db.session.add(option)
+            db.session.commit()
+
+            response = create_response({'message': 'Question added successfully'}, 201)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+        else:
+            errors = {}
+            for field, field_errors in form.errors.items():
+                errors[field] = field_errors
+            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+    except Exception as e:
+        current_app.logger.error(f'Error adding question: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+
+# ...existing code...
+
+@api.route('/all_quizzes', methods=['GET'])
+def all_quizzes():
+    try:
+        quizzes = Quizzes.query.all()
+        response = create_response({'quizzes': [quiz.to_dict() for quiz in quizzes]})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching quizzes: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+
+# ...existing code...
+
+@api.route('/quiz/<int:quiz_id>', methods=['GET'])
+def get_quiz(quiz_id):
+    quiz = Quizzes.query.get_or_404(quiz_id)
+    response = create_response({'quiz': quiz.to_dict()})
+    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    return response
+# ...existing code...
+
+@api.route('/quiz/edit/<int:quiz_id>', methods=['POST'])
+def edit_quiz(quiz_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        data = request.form.to_dict()
+        form = QuizForm(data=data)
+        if form.validate():
+            image = request.files.get('image')
+            if image:
+                # Save the new image
+                filename = secure_filename(image.filename)
+                upload_folder = current_app.config['QUIZ_UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                image.save(os.path.join(upload_folder, filename))
+                quiz.image = filename
+            else:
+                # Use the existing image only if provided; otherwise, keep the current image
+                existing_image = data.get('existing_image')
+                if existing_image and isinstance(existing_image, str):
+                    quiz.image = existing_image
+                # No `else` needed; retain the current image if neither new nor existing is provided
+
+            quiz.title = form.title.data
+            quiz.description = form.description.data
+            quiz.status = form.status.data
+            quiz.capacity = form.capacity.data
+            quiz.start_date = form.start_date.data
+            quiz.time_limit = form.time_limit.data
+            quiz.shuffle_questions_enabled = data.get('shuffle_questions') == 'true'
+            db.session.commit()
+
+            response = create_response({'message': 'Quiz updated successfully'}, 200)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+        else:
+            errors = {}
+            for field, field_errors in form.errors.items():
+                errors[field] = field_errors
+            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+    except Exception as e:
+        current_app.logger.error(f'Error editing quiz: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+
+# ...existing code...
+@api.route('/quiz/delete/<int:quiz_id>', methods=['DELETE'])
+def delete_quiz(quiz_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        db.session.delete(quiz)
+        db.session.commit()
+        response = create_response({'message': 'Quiz deleted successfully'}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error deleting quiz: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...

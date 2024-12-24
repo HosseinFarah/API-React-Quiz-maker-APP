@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify';
 import { API_URL } from '../components/Urls';
+import { useNavigate } from 'react-router-dom';
 
 export const fetchCsrfToken = async () => {
   try {
@@ -103,5 +104,37 @@ export const registerUser = async (userData) => {
   } catch (err) {
     console.error('Error registering user:', err);
     throw new Error(err.message || 'An error occurred. Please try again.');
+  }
+};
+
+export const deleteQuiz = (id, navigate) => async () => {
+  try {
+    if (!window.confirm("Are you sure you want to delete this quiz?")) {
+      return;
+    }
+
+    const csrfResponse = await fetch(`${API_URL}/csrf-token`, {
+      method: "GET",
+      credentials: "include",
+    });
+    const csrfData = await csrfResponse.json();
+    const csrfToken = csrfData.csrf_token;
+
+    const response = await fetch(`${API_URL}/quiz/delete/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "X-CSRFToken": csrfToken,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete quiz");
+    }
+    const data = await response.json();
+    console.log("Delete Quiz Response:", data);
+    toast.success(data.message);
+    navigate("/");
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
   }
 };

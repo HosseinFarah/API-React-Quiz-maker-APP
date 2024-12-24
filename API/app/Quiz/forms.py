@@ -51,6 +51,7 @@ class OptionForm(FlaskForm):
     option_text = StringField('Option Text', validators=[DataRequired(), Length(min=1, max=255)])
     option_image = FileField('Option Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], 'Only jpg, png, jpeg, gif and webp files allowed'), Optional(), img_size(1*1024*1024, message='Image size must be less than 1MB')])
     # Remove order_number field
+    score = StringField('Score', validators=[DataRequired()])
 
 class QuestionForm(FlaskForm):
     question = TextAreaField('Question', validators=[DataRequired(), Length(min=2, max=1000)])

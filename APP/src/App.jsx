@@ -10,6 +10,9 @@ import { PrivateRoute, AdminRoute, UnLogedInRoute } from './components/PrivateRo
 import RegisterForm from './pages/RegisterForm'; // Fix the import path
 import ResetPasswordRequest from './pages/ResetPasswordRequest';
 import ResetPassword from './pages/ResetPassword';
+import CreateQuiz from './pages/CreateQuiz';
+import Quiz from './pages/Quiz';
+import EditQuiz from './pages/EditQuiz';
 
 function App() {
   const router = createBrowserRouter(
@@ -24,6 +27,9 @@ function App() {
         <Route path="reset_password_request" element={<ResetPasswordRequest />} /> {/* Add route for reset password request */}
         <Route path="reset_password/:token" element={<ResetPassword />} /> {/* Ensure this route is defined */}
         <Route path="reset_password" element={<ResetPassword />} /> {/* Adjust route if using query parameters */}
+        <Route path="create_quiz" element={<AdminRoute><CreateQuiz /></AdminRoute>} />
+        <Route path="quiz/:id" element={<PrivateRoute><Quiz /></PrivateRoute>} />
+        <Route path="quiz/edit/:id" element={<AdminRoute><EditQuiz /></AdminRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )
