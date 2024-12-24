@@ -32,8 +32,13 @@ const AllQuizzes = () => {
   }, []);
 
   const handleDeleteQuiz = async (id) => {
-    await deleteQuiz(id, navigate)();
-    setQuizzes(quizzes.filter(quiz => quiz.id !== id));
+    const confirmed = window.confirm("Are you sure you want to delete this quiz?");
+    if (confirmed) {
+      await deleteQuiz(id, navigate)();
+      setQuizzes(quizzes.filter(quiz => quiz.id !== id));
+    } else {
+      setQuizzes([...quizzes]); // Force rerender by updating state
+    }
   };
 
   return (

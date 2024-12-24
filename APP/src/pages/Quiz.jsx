@@ -40,13 +40,11 @@ const Quiz = () => {
     );
   }
 
-  
-
   return (
     <>
       <div className="container" style={{ marginTop: "150px" }}>
-        <div className="row d-flex justify-content-center">
-          <div className="col-md-6">
+        <div className="row d-flex justify-content-start">
+          <div className="col-md-12">
             <h2 className="badge bg-secondary fs-3">Quiz: {quiz.title}</h2>
             <hr />
             <img
@@ -55,12 +53,13 @@ const Quiz = () => {
               style={{ maxHeight: "200px" }}
               alt={quiz.title}
             />
-            <p>{quiz.description}</p>
-            <p>Capacity: {quiz.capacity}</p>
-            <p>Start Date: {quiz.start_date}</p>
-            <p>Time Limit: {quiz.time_limit} minutes</p>
-            <p>Status: {quiz.status}</p>
-            <p>Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
+
+            <p className="text-wrap">{quiz.description}</p>
+            <p className="text-wrap">Capacity: {quiz.capacity}</p>
+            <p className="text-wrap">Start Date: {quiz.start_date}</p>
+            <p className="text-wrap">Time Limit: {quiz.time_limit} minutes</p>
+            <p className="text-wrap">Status: {quiz.status}</p>
+            <p className="text-wrap">Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
             <Link to={`/quiz/${quiz.id}/start`} className="btn btn-primary">
               Start Quiz
             </Link>
@@ -77,7 +76,13 @@ const Quiz = () => {
             </Link>
             <button
               className="btn btn-danger ms-2"
-              onClick={deleteQuiz(quiz.id, navigate)}
+              onClick={(e) => {
+                e.preventDefault();
+                if (!window.confirm("Are you sure you want to delete this quiz?")) {
+                  return;
+                }
+                deleteQuiz(quiz.id, navigate);
+              }}
             >
               Delete Quiz
             </button>

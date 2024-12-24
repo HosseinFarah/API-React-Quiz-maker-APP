@@ -112,7 +112,6 @@ export const deleteQuiz = (id, navigate) => async () => {
     if (!window.confirm("Are you sure you want to delete this quiz?")) {
       return;
     }
-
     const csrfResponse = await fetch(`${API_URL}/csrf-token`, {
       method: "GET",
       credentials: "include",
