@@ -1,321 +1,166 @@
-import React, { useState, useEffect } from "react";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
-import { toast } from "react-toastify";
-import { API_URL } from "../components/Urls";
-import { useNavigate, useParams } from "react-router-dom";
-import { getCsrfToken } from "../utils/csrfUtils";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { API_URL } from '../components/Urls';
+import { getCsrfToken } from '../utils/csrfUtils';
 
 const AddQuestion = () => {
-  const { quizId } = useParams(); // Get quizId from URL parameters
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      text: "",
-      format: "multiple_choice",
-      score: "",
-      options_format: "A,B,C,D", // Default value for options_format
-      answers: [
-        {
-          text: "",
-          image: null,
-          is_correct: false,
-          order_number: "",
-          score: "",
-        },
-      ],
-    },
-  });
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "answers",
-  });
+  const { quizId } = useParams();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [csrfToken, setCsrfToken] = useState("");
+  const [questionData, setQuestionData] = useState({
+    text: '',
+    format: 'multiple_choice',
+    options_format: 'A,B,C,D',
+    score: 1,
+    shuffle_enabled: false,
+    image: null
+  });
+  const [answers, setAnswers] = useState([{ text: '', is_correct: false, image: null }]);
+  
+  const [csrfToken, setCsrfToken] = useState('');
 
   useEffect(() => {
-    const fetchCsrfToken = async () => {
+    const fetchCsrf = async () => {
       const token = await getCsrfToken();
       setCsrfToken(token);
     };
-    fetchCsrfToken();
+    fetchCsrf();
   }, []);
 
-  const format = watch("format");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setQuestionData({ ...questionData, [name]: value });
+  };
 
-  const onSubmit = async (data) => {
-    setLoading(true);
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setQuestionData({ ...questionData, [name]: files[0] });
+  };
+
+  const handleAnswerChange = (index, e) => {
+    const { name, value, type, checked } = e.target;
+    const newAnswers = answers.map((answer, i) => (
+      i === index ? { ...answer, [name]: type === 'checkbox' ? checked : value } : answer
+    ));
+    setAnswers(newAnswers);
+  };
+
+  const handleAnswerFileChange = (index, e) => {
+    const { name, files } = e.target;
+    const newAnswers = answers.map((answer, i) => (
+      i === index ? { ...answer, [name]: files[0] } : answer
+    ));
+    setAnswers(newAnswers);
+  };
+
+  const addAnswer = () => {
+    setAnswers([...answers, { text: '', is_correct: false, image: null }]);
+  };
+
+  const removeAnswer = (index) => {
+    setAnswers(answers.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('csrf_token', csrfToken);
+    Object.keys(questionData).forEach((key) => {
+      formData.append(key, questionData[key]);
+    });
+
+    const answersDict = {};
+    answers.forEach((answer, index) => {
+      answersDict[index] = {
+        text: answer.text,
+        is_correct: answer.is_correct ? 'true' : 'false'
+      };
+      if (answer.image) {
+        formData.append(`answers[${index}][image]`, answer.image);
+      }
+    });
+
+    formData.append('answers', JSON.stringify(answersDict));
+
+    if (questionData.image) {
+      formData.append('image', questionData.image);
+    }
+
+    // Log formData entries for debugging
+    console.log('Logging formData entries:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + pair[1]);
+    }
+    console.log('Finished logging formData entries.');
+
     try {
-      const formData = new FormData();
-      formData.append("text", data.text);
-      formData.append("format", data.format);
-      formData.append("score", data.score || "0"); // Ensure score is not empty
-      formData.append("options_format", data.options_format); // Include options_format
-      formData.append("quiz_id", quizId);
-
-      data.answers.forEach((answer, index) => {
-        formData.append(`answers[${index}][text]`, answer.text || ""); // Ensure text is not empty
-        formData.append(`answers[${index}][is_correct]`, answer.is_correct);
-        formData.append(`answers[${index}][order_number]`, answer.order_number || ""); // Ensure order_number is not empty
-        formData.append(`answers[${index}][score]`, answer.score || "0"); // Ensure score is not empty
-        if (answer.image) {
-          formData.append(`answers[${index}][image]`, answer.image[0]);
-        }
+      const response = await fetch(`${API_URL}/quiz/${quizId}/create_question`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
       });
 
-      console.log("Submitting form data:", Object.fromEntries(formData.entries()));
-
-      const response = await fetch(
-        `${API_URL}/quiz/${quizId}/create_question`,
-        {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": csrfToken,
-          },
-          body: formData,
-          credentials: "include",
-        }
-      );
-
-      const result = await response.json();
       if (response.ok) {
-        toast.success("Question added successfully");
+        toast.success('Question added successfully');
         navigate(`/quiz/${quizId}`);
       } else {
-        console.error("Failed to add question:", result);
-        toast.error(result.message || "Failed to add question");
-        if (result.errors) {
-          Object.keys(result.errors).forEach((key) => {
-            toast.error(`${key}: ${result.errors[key].join(", ")}`);
-          });
-        }
+        const result = await response.json();
+        toast.error(result.message || 'Failed to add question');
       }
     } catch (error) {
-      console.error("Error adding question:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setLoading(false);
+      console.error('Error adding question:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
   return (
-    <div className="container" style={{ marginTop: "150px" }}>
-      <div className="row d-flex justify-content-center">
-        <div className="col-md-6">
-          <form onSubmit={handleSubmit(onSubmit)} className="form">
-            <div className="form-group">
-              <label>Question Text</label>
-              <Controller
-                name="text"
-                control={control}
-                rules={{ required: "Question text is required" }}
-                render={({ field }) => (
-                  <textarea {...field} className="form-control" />
-                )}
-              />
-              {errors.text && (
-                <p className="text-danger">{errors.text.message}</p>
-              )}
-            </div>
-
-            <div className="form-group">
-              <label>Format</label>
-              <Controller
-                name="format"
-                control={control}
-                render={({ field }) => (
-                  <select {...field} className="form-control">
-                    <option value="multiple_choice">Multiple Choice</option>
-                    <option value="true_false">True/False</option>
-                  </select>
-                )}
-              />
-            </div>
-
-
-            <div className="form-group">
-              <label>Options Format</label>
-              <Controller
-                name="options_format"
-                control={control}
-                rules={{ required: "Options format is required" }}
-                render={({ field }) => (
-                  <select {...field} className="form-control">
-                    <option value="A,B,C,D">A,B,C,D</option>
-                    <option value="1,2,3,4">1,2,3,4</option>
-                  </select>
-                )}
-              />
-              {errors.options_format && (
-                <p className="text-danger">{errors.options_format.message}</p>
-              )}
-            </div>
-
-            {format === "multiple_choice" && (
-              <div className="form-group">
-                <label>Answers</label>
-                {fields.map((field, index) => (
-                  <div key={field.id} className="form-group">
-                    <Controller
-                      name={`answers[${index}].text`}
-                      control={control}
-                      rules={{ required: "Answer text is required" }}
-                      render={({ field }) => (
-                        <input
-                          {...field}
-                          placeholder={`Answer ${index + 1}`}
-                          className="form-control"
-                          value={field.value ?? ""}
-                        />
-                      )}
-                    />
-                    <Controller
-                      name={`answers[${index}].image`}
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          type="file"
-                          {...field}
-                          className="form-control"
-                        />
-                      )}
-                    />
-                    <Controller
-                      name={`answers[${index}].is_correct`}
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          type="checkbox"
-                          {...field}
-                          onChange={(e) => {
-                            setValue(
-                              `answers[${index}].is_correct`,
-                              e.target.checked
-                            );
-                          }}
-                          className="form-check-input"
-                        />
-                      )}
-                    />
-                    <Controller
-                      name={`answers[${index}].score`}
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          type="number"
-                          {...field}
-                          placeholder="Score"
-                          className="form-control"
-                          value={field.value ?? ""}
-                        />
-                      )}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="btn btn-danger"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() =>
-                    append({
-                      text: "",
-                      image: null,
-                      is_correct: false,
-                      order_number: "",
-                      score: "",
-                    })
-                  }
-                  className="btn btn-primary"
-                >
-                  Add Answer
-                </button>
-              </div>
-            )}
-
-            {format === "true_false" && (
-              <div className="form-group">
-                <label>Answers</label>
-                <div className="form-check">
-                  <Controller
-                    name="answers[0].text"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        value="True"
-                        readOnly
-                        className="form-control-plaintext"
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="answers[0].is_correct"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        type="radio"
-                        {...field}
-                        onChange={() => {
-                          setValue("answers[0].is_correct", true);
-                          setValue("answers[1].is_correct", false);
-                        }}
-                        className="form-check-input"
-                      />
-                    )}
-                  />
-                </div>
-                <div className="form-check">
-                  <Controller
-                    name="answers[1].text"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        {...field}
-                        value="False"
-                        readOnly
-                        className="form-control-plaintext"
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="answers[1].is_correct"
-                    control={control}
-                    render={({ field }) => (
-                      <input
-                        type="radio"
-                        {...field}
-                        onChange={() => {
-                          setValue("answers[0].is_correct", false);
-                          setValue("answers[1].is_correct", true);
-                        }}
-                        className="form-check-input"
-                      />
-                    )}
-                  />
-                </div>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-success"
-            >
-              {loading ? "Submitting..." : "Submit"}
-            </button>
-          </form>
+    <div>
+      <h2>Add Question</h2>
+      <form onSubmit={handleSubmit} encType="multipart/form-data" noValidate className='form' style={{ marginTop: '120px' }}>
+        <div>
+          <label>Question Text</label>
+          <textarea name="text" value={questionData.text} onChange={handleInputChange} required />
         </div>
-      </div>
+        <div>
+          <label>Format</label>
+          <select name="format" value={questionData.format} onChange={handleInputChange}>
+            <option value="multiple_choice">Multiple Choice</option>
+            <option value="true_false">True/False</option>
+          </select>
+        </div>
+        <div>
+          <label>Options Format</label>
+          <input type="text" name="options_format" value={questionData.options_format} onChange={handleInputChange} required />
+        </div>
+        <div>
+          <label>Score</label>
+          <input type="number" name="score" value={questionData.score} onChange={handleInputChange} required />
+        </div>
+        <div>
+          <label>Shuffle Answers</label>
+          <input type="checkbox" name="shuffle_enabled" checked={questionData.shuffle_enabled} onChange={(e) => setQuestionData({ ...questionData, shuffle_enabled: e.target.checked })} />
+        </div>
+        <div>
+          <label>Question Image</label>
+          <input type="file" name="image" onChange={handleFileChange} />
+        </div>
+        <div>
+          <h3>Answers</h3>
+          {answers.map((answer, index) => (
+            <div key={index}>
+              <label>Answer Text</label>
+              <input type="text" name="text" value={answer.text} onChange={(e) => handleAnswerChange(index, e)} required />
+              <label>Correct</label>
+              <input type="checkbox" name="is_correct" checked={answer.is_correct} onChange={(e) => handleAnswerChange(index, e)} />
+              <label>Answer Image</label>
+              <input type="file" name="image" onChange={(e) => handleAnswerFileChange(index, e)} />
+              <button type="button" onClick={() => removeAnswer(index)}>Remove Answer</button>
+            </div>
+          ))}
+          <button type="button" onClick={addAnswer}>Add Answer</button>
+        </div>
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 };

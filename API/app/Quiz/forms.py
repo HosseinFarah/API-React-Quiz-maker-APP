@@ -55,15 +55,15 @@ class QuestionForm(FlaskForm):
     text = TextAreaField('Question Text', validators=[DataRequired(), Length(min=2, max=1000)])
     image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], 'Only jpg, png, jpeg, gif and webp files allowed'), img_size(1*1024*1024, message='Image size must be less than 1MB'), Optional()])
     format = SelectField('Format', choices=[('multiple_choice', 'Multiple Choice'), ('true_false', 'True/False')], validators=[DataRequired()])
-    score = StringField('Score', validators=[DataRequired()])
     shuffle_enabled = BooleanField('Shuffle Answers')
     options_format = StringField('Options Format', validators=[DataRequired()])
+    score = StringField('Score', validators=[DataRequired()])  # Add score field
     answers = FieldList(FormField(AnswerForm), min_entries=1, max_entries=10)
     submit = SubmitField('Create Question')
 
     def validate_score(self, score):
         if not score.data.isnumeric():
             raise ValidationError('Score must be a number')
-        if float(score.data) < 0:
-            raise ValidationError('Score must be at least 0')
+        if float(score.data) <= 0:
+            raise ValidationError('Score must be greater than 0')
 

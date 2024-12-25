@@ -18,6 +18,7 @@ from pytz import timezone
 from flask_babel import _
 from ..Quiz.forms import QuestionForm, AnswerForm
 from app.models import Questions, Answers
+from sqlalchemy.exc import SQLAlchemyError
 
 @api.errorhandler(400)
 def bad_request_error(e):
@@ -30,7 +31,7 @@ def internal_server_error(e):
     response = jsonify({'message': 'Internal Server Error', 'error': str(e)})
     response.status_code = 500
     response.headers.set('Content-Type', 'application/json')
-    current_app.logger.error(f'500 Error: {response.get_data(as_text=True)}')
+    current_app.logger.error(f'500 Error: {response.get_data(as_text(as_text=True))}')
     return response
 
 def create_response(message, status_code=200):
@@ -54,7 +55,7 @@ def page_not_allowed(e):
     message = {'error': 'Authentication required.'}
     response = create_response(message, status_code=401)
     response.headers.set('Content-Type', 'application/json')
-    app.logger.error(f'401 Error: {response.get_data(as_text=True)}')
+    app.logger.error(f'401 Error: {response.get_data(as_text(True))}')
     return response
 
 @api.app_errorhandler(CSRFError)
@@ -63,7 +64,7 @@ def handle_csrf_error(e):
     current_app.logger.error(f"CSRFError, headers: {str(request.headers)}")
     response = create_response(message, status_code=400)
     response.headers.set('Content-Type', 'application/json')
-    current_app.logger.error(f'CSRF Error: {response.get_data(as_text=True)}')
+    current_app.logger.error(f'CSRF Error: {response.get_data(as_text(True))}')
     return response
 
 # ...existing code...
@@ -176,7 +177,7 @@ def confirm(token):
     response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     response.headers.set('Content-Type', 'application/json')
-    current_app.logger.info(f'Confirm Response: {response.get_data(as_text=True)}')
+    current_app.logger.info(f'Confirm Response: {response.get_data(as_text(True))}')
     return response
 # ...existing code...
 
@@ -514,98 +515,84 @@ from ..Quiz.forms import QuestionForm, AnswerForm
 from app.models import Questions, Answers, Quizzes
 # ...existing code...
 
+def save_image(file):
+    if file is None:
+        return None
+    filename = secure_filename(file.filename)
+    upload_folder = current_app.config['QUIZ_UPLOAD_FOLDER']
+    if not os.path.exists(upload_folder):
+        os.makedirs(upload_folder)
+    image_path = os.path.join(upload_folder, filename)
+    file.save(image_path)
+    current_app.logger.info(f'Image saved to {image_path}')
+    return filename
+
 @api.route('/quiz/<int:quiz_id>/create_question', methods=['POST'])
 def create_question(quiz_id):
     try:
         quiz = Quizzes.query.get_or_404(quiz_id)
         data = request.form.to_dict(flat=False)
-        current_app.logger.debug(f'Received data: {data}')
-        
-        # Convert answers to a list of dictionaries
-        answers = []
-        for i in range(len(data.get('answers[0][text]', []))):
-            answer = {
-                'text': data.get(f'answers[{i}][text]', [''])[0],
-                'is_correct': data.get(f'answers[{i}][is_correct]', ['false'])[0] == 'true',
-                'order_number': data.get(f'answers[{i}][order_number]', [''])[0],
-                'score': data.get(f'answers[{i}][score]', ['0'])[0],
-                'image': request.files.get(f'answers[{i}][image]')
-            }
-            answers.append(answer)
-        
-        # Update data dictionary with parsed answers
-        data['answers'] = answers
-        
-        # Create a new dictionary for form validation
-        form_data = {
-            'text': data['text'][0],
-            'format': data['format'][0],
-            'score': data['score'][0],
-            'shuffle_enabled': data.get('shuffle_enabled', ['false'])[0] == 'true',
-            'options_format': data['options_format'][0],
-            'answers': [{'text': a['text'], 'is_correct': a['is_correct'], 'order_number': a['order_number'], 'score': a['score']} for a in answers]
-        }
-        
-        form = QuestionForm(data=form_data)
-        if form.validate():
-            image = request.files.get('image')
-            filename = None
-            if image:
-                filename = secure_filename(image.filename)
-                upload_folder = current_app.config['QUESTION_UPLOAD_FOLDER']
-                if not os.path.exists(upload_folder):
-                    os.makedirs(upload_folder)
-                image.save(os.path.join(upload_folder, filename))
-            
-            question = Questions(
-                text=form.text.data,
-                image=filename,
-                format=form.format.data,
-                score=form.score.data,
-                shuffle_enabled=form.shuffle_enabled.data,
-                options_format=form.options_format.data,
-                quiz_id=quiz.id
-            )
-            db.session.add(question)
-            db.session.commit()
+        files = request.files
+        current_app.logger.info(f'Received data: {data}')
+        current_app.logger.info(f'Received files: {files}')
+        answers = json.loads(data.get('answers')[0])
+        current_app.logger.info(f'Parsed answers: {answers}')
 
-            for answer_data in answers:
-                answer = Answers(
-                    text=answer_data['text'],
-                    image=answer_data['image'].filename if answer_data['image'] else None,
-                    is_correct=answer_data['is_correct'],
-                    order_number=answer_data['order_number'],
-                    question_id=question.id
-                )
-                if answer_data['image']:
-                    answer_image_filename = secure_filename(answer_data['image'].filename)
-                    answer_image_upload_folder = current_app.config['ANSWER_UPLOAD_FOLDER']
-                    if not os.path.exists(answer_image_upload_folder):
-                        os.makedirs(answer_image_upload_folder)
-                    answer_data['image'].save(os.path.join(answer_image_upload_folder, answer_image_filename))
-                    answer.image = answer_image_filename
-                db.session.add(answer)
-            db.session.commit()
-            log_message = f'Question created successfully for quiz {quiz_id}'
-            response = create_response({'message': 'Question created successfully'}, 201)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
-        else:
-            errors = {}
-            for field, field_errors in form.errors.items():
-                errors[field] = field_errors
-            log_message = f'Invalid data provided for question creation: {errors}'
-            current_app.logger.error(log_message)
-            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
+        processed_answers = []
+        for index, answer in answers.items():
+            text = answer['text']
+            is_correct = answer['is_correct'] == 'true'
+            image = files.get(f'answers[{index}][image]', None)
+
+            current_app.logger.info(f'Processing answer {index}: text={text}, is_correct={is_correct}, image={image}')
+
+            if not text:
+                return jsonify({"message": f"Answer {int(index)+1} text is required"}), 400
+
+            processed_answers.append({
+                'text': text,
+                'is_correct': is_correct,
+                'image': image,
+                'order_number': int(index)  # Set order number
+            })
+
+        current_app.logger.info(f'Processed answers: {processed_answers}')
+
+        question_image = files.get('image', None)
+        question = Questions(
+            quiz_id=quiz.id,
+            text=data.get('text')[0],
+            format=data.get('format')[0],
+            options_format=data.get('options_format')[0],
+            score=float(data.get('score')[0]),  # Set question score
+            shuffle_enabled=data.get('shuffle_enabled', ['false'])[0] == 'true',  # Set shuffle_enabled
+            image=save_image(question_image)  # Set question image
+        )
+        db.session.add(question)
+        db.session.flush()
+
+        for answer in processed_answers:
+            answer_entry = Answers(
+                question_id=question.id,
+                text=answer['text'],
+                is_correct=answer['is_correct'],
+                image=save_image(answer['image']),
+                order_number=answer['order_number']  # Set order number
+            )
+            db.session.add(answer_entry)
+
+        db.session.commit()
+        current_app.logger.info(f'Question created with ID: {question.id}')
+        return jsonify({"message": "Question created successfully"}), 201
+
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        current_app.logger.error(f"Database error: {e}")
+        return jsonify({"message": "A database error occurred"}), 500
+
     except Exception as e:
-        current_app.logger.error(f'Error creating question: {str(e)}')
-        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
-        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.set('Access-Control-Allow-Credentials', 'true')
-        return response
+        current_app.logger.error(f"Unexpected error: {e}")
+        return jsonify({"message": "An unexpected error occurred"}), 500
+
 # ...existing code...
 
