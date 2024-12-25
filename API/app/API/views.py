@@ -3,24 +3,24 @@ from flask import jsonify, request, current_app, redirect, url_for, session, ren
 from app import db  # Ensure this import is correct
 from flask_wtf.csrf import generate_csrf, validate_csrf, CSRFError
 from flask_login import login_user, current_user, logout_user
-from app.models import User, Quizzes, Questions, Answers, Options, QuestionType
+from app.models import User, Quizzes
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
 from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm
 from ..forms import RegistrationForm
-from ..Quiz.forms import QuizForm, QuestionForm, OptionForm
+from ..Quiz.forms import QuizForm
 from werkzeug.utils import secure_filename
 import os
 import json
 from datetime import datetime
 from pytz import timezone
 from flask_babel import _
+from ..Quiz.forms import QuestionForm, AnswerForm
+from app.models import Questions, Answers
 
 @api.errorhandler(400)
 def bad_request_error(e):
-    response = jsonify({'message': 'Bad Request', 'error': str(e)})
-    response.status_code = 400
     response.headers.set('Content-Type', 'application/json')
     current_app.logger.error(f'400 Error: {response.get_data(as_text=True)}')
     return response
@@ -412,63 +412,6 @@ def create_quiz():
         return response
 # ...existing code...
 
-@api.route('/quiz/<int:quiz_id>/add_question', methods=['POST'])
-def add_question(quiz_id):
-    try:
-        quiz = Quizzes.query.get_or_404(quiz_id)
-        data = request.form.to_dict()
-        form = QuestionForm(data=data)
-        
-        if form.validate():
-            image = request.files.get('image')
-            filename = None
-            if image:
-                filename = secure_filename(image.filename)
-                upload_folder = current_app.config['QUESTION_UPLOAD_FOLDER']
-                if not os.path.exists(upload_folder):
-                    os.makedirs(upload_folder)
-                image.save(os.path.join(upload_folder, filename))
-            
-            question = Questions(
-                question=form.question.data,
-                image=filename,
-                quiz_id=quiz.id,
-                order_number=form.order_number.data,
-                question_type_id=form.question_type_id.data
-            )
-            db.session.add(question)
-            db.session.commit()
-
-            for option_form in form.options.entries:
-                option = Options(
-                    option=option_form.form.option_text.data,
-                    image=option_form.form.option_image.data,
-                    score=option_form.form.score.data,
-                    question_id=question.id
-                )
-                db.session.add(option)
-            db.session.commit()
-
-            response = create_response({'message': 'Question added successfully'}, 201)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
-        else:
-            errors = {}
-            for field, field_errors in form.errors.items():
-                errors[field] = field_errors
-            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
-    except Exception as e:
-        current_app.logger.error(f'Error adding question: {str(e)}')
-        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
-        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-        response.headers.set('Access-Control-Allow-Credentials', 'true')
-        return response
-
-# ...existing code...
 
 @api.route('/all_quizzes', methods=['GET'])
 def all_quizzes():
@@ -565,3 +508,104 @@ def delete_quiz(quiz_id):
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
 # ...existing code...
+
+# ...existing code...
+from ..Quiz.forms import QuestionForm, AnswerForm
+from app.models import Questions, Answers, Quizzes
+# ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/create_question', methods=['POST'])
+def create_question(quiz_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        data = request.form.to_dict(flat=False)
+        current_app.logger.debug(f'Received data: {data}')
+        
+        # Convert answers to a list of dictionaries
+        answers = []
+        for i in range(len(data.get('answers[0][text]', []))):
+            answer = {
+                'text': data.get(f'answers[{i}][text]', [''])[0],
+                'is_correct': data.get(f'answers[{i}][is_correct]', ['false'])[0] == 'true',
+                'order_number': data.get(f'answers[{i}][order_number]', [''])[0],
+                'score': data.get(f'answers[{i}][score]', ['0'])[0],
+                'image': request.files.get(f'answers[{i}][image]')
+            }
+            answers.append(answer)
+        
+        # Update data dictionary with parsed answers
+        data['answers'] = answers
+        
+        # Create a new dictionary for form validation
+        form_data = {
+            'text': data['text'][0],
+            'format': data['format'][0],
+            'score': data['score'][0],
+            'shuffle_enabled': data.get('shuffle_enabled', ['false'])[0] == 'true',
+            'options_format': data['options_format'][0],
+            'answers': [{'text': a['text'], 'is_correct': a['is_correct'], 'order_number': a['order_number'], 'score': a['score']} for a in answers]
+        }
+        
+        form = QuestionForm(data=form_data)
+        if form.validate():
+            image = request.files.get('image')
+            filename = None
+            if image:
+                filename = secure_filename(image.filename)
+                upload_folder = current_app.config['QUESTION_UPLOAD_FOLDER']
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                image.save(os.path.join(upload_folder, filename))
+            
+            question = Questions(
+                text=form.text.data,
+                image=filename,
+                format=form.format.data,
+                score=form.score.data,
+                shuffle_enabled=form.shuffle_enabled.data,
+                options_format=form.options_format.data,
+                quiz_id=quiz.id
+            )
+            db.session.add(question)
+            db.session.commit()
+
+            for answer_data in answers:
+                answer = Answers(
+                    text=answer_data['text'],
+                    image=answer_data['image'].filename if answer_data['image'] else None,
+                    is_correct=answer_data['is_correct'],
+                    order_number=answer_data['order_number'],
+                    question_id=question.id
+                )
+                if answer_data['image']:
+                    answer_image_filename = secure_filename(answer_data['image'].filename)
+                    answer_image_upload_folder = current_app.config['ANSWER_UPLOAD_FOLDER']
+                    if not os.path.exists(answer_image_upload_folder):
+                        os.makedirs(answer_image_upload_folder)
+                    answer_data['image'].save(os.path.join(answer_image_upload_folder, answer_image_filename))
+                    answer.image = answer_image_filename
+                db.session.add(answer)
+            db.session.commit()
+            log_message = f'Question created successfully for quiz {quiz_id}'
+            response = create_response({'message': 'Question created successfully'}, 201)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+        else:
+            errors = {}
+            for field, field_errors in form.errors.items():
+                errors[field] = field_errors
+            log_message = f'Invalid data provided for question creation: {errors}'
+            current_app.logger.error(log_message)
+            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+    except Exception as e:
+        current_app.logger.error(f'Error creating question: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...
+

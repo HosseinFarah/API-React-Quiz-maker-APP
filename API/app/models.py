@@ -2,6 +2,8 @@ from . import db, get_locale,login
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from pytz import timezone
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from flask_login import UserMixin, AnonymousUserMixin #for role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -272,79 +274,59 @@ class Quizzes(db.Model):
     def __repr__(self) -> str:
         return '<Quizzes %r>' % self.title
 
+
 class Questions(db.Model):
     __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.Text, nullable=False)
+    quiz_id = db.Column(db.Integer, ForeignKey('quizzes.id', ondelete='CASCADE'), nullable=False)
+    text = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255), nullable=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
-    order_number = db.Column(db.Integer, nullable=False, default=0)
-    question_type_id = db.Column(db.Integer, db.ForeignKey('question_types.id'), nullable=False)  # New column
+    format = db.Column(db.String(50), nullable=False)  # "multiple_choice" or "true_false"
+    score = db.Column(db.Float, nullable=False, default=1.0)  # Score for the question
+    shuffle_enabled = db.Column(db.Boolean, default=False)  # Shuffle answers for this question
+    options_format = db.Column(db.String(10), nullable=False, default="A,B,C,D")  # e.g., A,B,C,D or 1,2,3,4
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     
     # Relationships
-    quiz = db.relationship('Quizzes', backref='questions')
-    
-    def shuffle_options(self):
-        from random import shuffle
-        options = self.options
-        shuffle(options)
-        for index, option in enumerate(options):
-            option.order_number = index
-        db.session.commit()
-    
-    def __repr__(self) -> str:
-        return '<Questions %r>' % self.question
-    
+    quiz = relationship("Quizzes", back_populates="questions")
+    answers = relationship("Answers", back_populates="question", cascade="all, delete-orphan")
 
-class Options(db.Model):
-    __tablename__ = 'options'
-    id = db.Column(db.Integer, primary_key=True)
-    option = db.Column(db.Text, nullable=False)
-    image = db.Column(db.String(255), nullable=True)
-    score = db.Column(db.Integer, nullable=False, default=0)
-    order_number = db.Column(db.Integer, nullable=False, default=0)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
-    question = db.relationship('Questions', backref='options')
-    
-    def __repr__(self) -> str:
-        return '<Options %r>' % self.option
-    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'quiz_id': self.quiz_id,
+            'text': self.text,
+            'image': self.image,
+            'format': self.format,
+            'score': self.score,
+            'shuffle_enabled': self.shuffle_enabled,
+            'options_format': self.options_format,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
 
 class Answers(db.Model):
     __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.Text, nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
-    option_id = db.Column(db.Integer, db.ForeignKey('options.id'), nullable=False)
-    question = db.relationship('Questions', backref='answers')
-    option = db.relationship('Options', backref='answers')
+    question_id = db.Column(db.Integer, ForeignKey('questions.id', ondelete='CASCADE'), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255), nullable=True)  # Optional image for the answer
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)  # True if this answer is correct
+    order_number = db.Column(db.Integer, nullable=True)  # For ordering answers
     
-    def set_score(self, is_correct):
-        self.option.score = 1 if is_correct else 0
-        db.session.commit()
-    
-    def __repr__(self) -> str:
-        return '<Answers %r>' % self.answer
+    # Relationships
+    question = relationship("Questions", back_populates="answers")
 
-class QuestionType(db.Model):
-    __tablename__ = 'question_types'
-    id = db.Column(db.Integer, primary_key=True)
-    type_name = db.Column(db.String(50), nullable=False, unique=True)
-    questions = db.relationship('Questions', backref='question_type', lazy=True)  # Ensure unique backref name
-    
-    def __repr__(self) -> str:
-        return '<QuestionType %r>' % self.type_name
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'question_id': self.question_id,
+            'text': self.text,
+            'image': self.image,
+            'is_correct': self.is_correct,
+            'order_number': self.order_number,
+        }
 
-    @staticmethod
-    def insert_question_types():
-        types = ['Multiple Choice', 'True/False']
-        for type_name in types:
-            question_type = QuestionType.query.filter_by(type_name=type_name).first()
-            if question_type is None:
-                question_type = QuestionType(type_name=type_name)
-                db.session.add(question_type)
-        db.session.commit()
-
-def insert_question_types():
-    QuestionType.insert_question_types()
-    print("Question types inserted.")
+# Adding back_populates to Quizzes
+Quizzes.questions = relationship("Questions", back_populates="quiz", cascade="all, delete-orphan")

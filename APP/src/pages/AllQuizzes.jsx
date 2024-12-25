@@ -55,44 +55,45 @@ const AllQuizzes = () => {
       <div className="container" style={{ marginTop: "150px" }}>
         <div className="row d-flex justify-content-center">
           {quizzes.map((quiz) => (
-            <div key={quiz.id} className="col-sm-12 col-md-6 col-lg-6 col-xl-4">
-              <div className="card mb-4">
-                <img
-                  src={`http://localhost:5000/static/uploads/quizzes/${quiz.image}`}
-                  className="card-img-top"
-                  alt={quiz.title}
-                />
-                <div className="card-header">
-                  <h5>{quiz.title}</h5>
-                </div>
-                <div className="card-body">
-                  <p>{quiz.description}</p>
-                  <p>{quiz.capacity} questions</p>
-                  <p>Time Limit: {quiz.time_limit} minutes</p>
-                  <p>Status: {quiz.status}</p>
-                  <p>Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
+            quiz.status === "available" && (
+              <div key={quiz.id} className="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                <div className="card mb-4">
+                  <img
+                    src={`http://localhost:5000/static/uploads/quizzes/${quiz.image}`}
+                    className="card-img-top"
+                    alt={quiz.title}
+                  />
+                  <div className="card-header">
+                    <h5>{quiz.title}</h5>
+                  </div>
+                  <div className="card-body">
+                    <p>{quiz.description}</p>
+                    <p>{quiz.capacity} questions</p>
+                    <p>Time Limit: {quiz.time_limit} minutes</p>
+                    <p>Status: {quiz.status}</p>
+                    <p>Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
 
-                  <Link
-                    key={quiz.id}
-                    to={`/quiz/${quiz.id}`}
-                    className="btn btn-primary"
-                  >
-                    Start Quiz
-                  </Link>
+                    <Link
+                      key={quiz.id}
+                      to={`/quiz/${quiz.id}`}
+                      className="btn btn-primary"
+                    >
+                      Start Quiz
+                    </Link>
+                  </div>
+                  {isAdmin && (
+                    <div className="card-footer">
+                      <Link to={`/quiz/edit/${quiz.id}`} className="btn btn-secondary">
+                        Edit
+                      </Link>
+                      <button onClick={() => handleDeleteQuiz(quiz.id)} className="btn btn-danger ms-2">
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {isAdmin && (
-                <div className="card-footer">
-                  <Link to={`/quiz/edit/${quiz.id}`} className="btn btn-secondary">
-                    Edit
-                  </Link>
-                  <button onClick={() => handleDeleteQuiz(quiz.id)} className="btn btn-danger ms-2">
-                    Delete
-                  </button>
-                </div>
-                )}
-
               </div>
-            </div>
+            )
           ))}
         </div>
       </div>

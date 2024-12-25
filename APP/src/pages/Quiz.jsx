@@ -60,29 +60,22 @@ const Quiz = () => {
             <p className="text-wrap">Time Limit: {quiz.time_limit} minutes</p>
             <p className="text-wrap">Status: {quiz.status}</p>
             <p className="text-wrap">Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
-            <Link to={`/quiz/${quiz.id}/start`} className="btn btn-primary">
-              Start Quiz
-            </Link>
             {isAdmin && (
-              <Link
-                to={`/quiz/edit/${quiz.id}`}
-                className="btn btn-primary ms-2"
-              >
-                Edit Quiz
-              </Link>
+              <>
+                <Link to={`/quiz/${quiz.id}/add_question`} className="btn btn-primary">
+                  Add Question
+                </Link>
+                <Link to={`/quiz/edit/${quiz.id}`} className="btn btn-primary ms-2">
+                  Edit Quiz
+                </Link>
+              </>
             )}
             <Link to="/" className="btn btn-secondary ms-2">
               Back
             </Link>
             <button
               className="btn btn-danger ms-2"
-              onClick={(e) => {
-                e.preventDefault();
-                if (!window.confirm("Are you sure you want to delete this quiz?")) {
-                  return;
-                }
-                deleteQuiz(quiz.id, navigate);
-              }}
+              onClick={() => deleteQuiz(quiz.id, navigate)}
             >
               Delete Quiz
             </button>

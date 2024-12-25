@@ -13,6 +13,7 @@ import ResetPassword from './pages/ResetPassword';
 import CreateQuiz from './pages/CreateQuiz';
 import Quiz from './pages/Quiz';
 import EditQuiz from './pages/EditQuiz';
+import AddQuestion from './pages/AddQuestion';
 
 function App() {
   const router = createBrowserRouter(
@@ -30,6 +31,7 @@ function App() {
         <Route path="create_quiz" element={<AdminRoute><CreateQuiz /></AdminRoute>} />
         <Route path="quiz/:id" element={<PrivateRoute><Quiz /></PrivateRoute>} />
         <Route path="quiz/edit/:id" element={<AdminRoute><EditQuiz /></AdminRoute>} />
+        <Route path="quiz/:quizId/add_question" element={<AdminRoute><AddQuestion /></AdminRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )
