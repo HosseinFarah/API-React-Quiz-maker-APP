@@ -701,11 +701,11 @@ def submit_quiz(quiz_id):
                 if is_correct:
                     question_score += correct_answer.question.score
             total_score += question_score
-        quiz_results.overalScore = total_score
+        quiz_results.overall_score = total_score
         quiz_results.duration = (quiz_results.end_time - quiz_results.start_time).seconds  # Calculate duration
         db.session.commit()
         current_app.logger.info(f'Quiz submitted successfully with score: {total_score}')  # Add logging
-        return jsonify({'message': 'Quiz submitted successfully', 'score': total_score}), 201
+        return jsonify({'message': 'Quiz submitted successfully', 'overall_score': total_score}), 201
     except Exception as e:
         current_app.logger.error(f'Error submitting quiz: {str(e)}')
         response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)

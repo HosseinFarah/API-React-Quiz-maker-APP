@@ -102,7 +102,7 @@ const SubmitQuestion = () => {
 
       const result = await response.json();
       console.log("Submission result:", result); // Add logging
-      alert(`Quiz submitted successfully! Your score: ${result.score}`);
+      alert(`Quiz submitted successfully! Your score: ${result.overall_score}`);
       navigate("/"); // Redirect to home or another page
     } catch (error) {
       console.error("Error submitting quiz:", error); // Add logging

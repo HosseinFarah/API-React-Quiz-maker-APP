@@ -339,7 +339,7 @@ class QuizResults(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     quiz_id = db.Column(db.Integer, ForeignKey('quizzes.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    overalScore = db.Column(db.Float, nullable=False, default=0.0)  # Score for the quiz
+    overall_score = db.Column(db.Float, nullable=False, default=0.0)  # Score for the quiz
     completed = db.Column(db.Boolean, nullable=False, default=False)  # True if the quiz is completed
     start_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone('Europe/Helsinki')))
     end_time = db.Column(db.DateTime, nullable=True)  # End time of the quiz
@@ -352,19 +352,19 @@ class QuizResults(db.Model):
     user = relationship("User", back_populates="results")
     answers = relationship("QuizAnswers", back_populates="result", cascade="all, delete-orphan")
     
-    def overalScore(self):
+    def calculate_overall_score(self):
         score = 0
         for answer in self.answers:
             if answer.is_correct:
-                score += answer.option.score
-        return score    
+                score += answer.question.score
+        return score
     
     def to_dict(self):
         return {
             'id': self.id,
             'quiz_id': self.quiz_id,
             'user_id': self.user_id,
-            'overalScore': self.overalScore,
+            'overall_score': self.overall_score,
             'completed': self.completed,
             'start_time': self.start_time,
             'end_time': self.end_time,
