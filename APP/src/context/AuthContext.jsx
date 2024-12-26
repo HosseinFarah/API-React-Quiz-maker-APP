@@ -59,6 +59,37 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  useEffect(() => { 
+    if (isAuthenticated) {
+      const fetchUser = async () => {
+        try {
+          const response = await fetch(`${API_URL}/user-info`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': await getCsrfToken()
+            }
+          });
+          if (!response.ok) {
+            if (response.status === 401) {
+              throw new Error('Unauthorized access');
+            }
+            throw new Error('Failed to fetch user data');
+          }
+          const data = await response.json();
+          setUser(data);
+        } catch (error) {
+          console.error('Fetch user error:', error);
+          throw new Error('Failed to fetch user data');
+        }
+      };
+      fetchUser();
+    }
+  }
+  , [isAuthenticated]);
+  
+
+
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, setAuth, logout, isConfirmed, setIsConfirmed, isAdmin, setAdmin, user, setUser }}>
       {children}

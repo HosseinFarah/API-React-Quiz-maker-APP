@@ -14,6 +14,8 @@ import CreateQuiz from './pages/CreateQuiz';
 import Quiz from './pages/Quiz';
 import EditQuiz from './pages/EditQuiz';
 import AddQuestion from './pages/AddQuestion';
+import ShowQuestions from './pages/-ShowQuestions';
+import SubmitQuestion from './pages/SubmitQuestion';
 
 function App() {
   const router = createBrowserRouter(
@@ -32,6 +34,8 @@ function App() {
         <Route path="quiz/:id" element={<PrivateRoute><Quiz /></PrivateRoute>} />
         <Route path="quiz/edit/:id" element={<AdminRoute><EditQuiz /></AdminRoute>} />
         <Route path="quiz/:quizId/add_question" element={<AdminRoute><AddQuestion /></AdminRoute>} />
+        <Route path="quiz/:quizId/questions" element={<PrivateRoute><ShowQuestions /></PrivateRoute>} />
+        <Route path="quiz/:id/submit" element={<PrivateRoute><SubmitQuestion /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )

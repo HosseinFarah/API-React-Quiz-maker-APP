@@ -3,7 +3,6 @@ from flask import jsonify, request, current_app, redirect, url_for, session, ren
 from app import db  # Ensure this import is correct
 from flask_wtf.csrf import generate_csrf, validate_csrf, CSRFError
 from flask_login import login_user, current_user, logout_user
-from app.models import User, Quizzes
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
@@ -17,11 +16,12 @@ from datetime import datetime
 from pytz import timezone
 from flask_babel import _
 from ..Quiz.forms import QuestionForm, AnswerForm
-from app.models import Questions, Answers
+from app.models import Questions, Answers, Quizzes, User, QuizResults, QuizAnswers
 from sqlalchemy.exc import SQLAlchemyError
 
 @api.errorhandler(400)
 def bad_request_error(e):
+    response = jsonify({'message': 'Bad Request', 'error': str(e)})
     response.headers.set('Content-Type', 'application/json')
     current_app.logger.error(f'400 Error: {response.get_data(as_text=True)}')
     return response
@@ -120,6 +120,36 @@ def login():
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
 # ...existing code...
 
+
+@api.route('/user-info', methods=['GET'])
+@login_required
+def user_info():
+    response = jsonify({
+        'id': current_user.id,
+        'email': current_user.email,
+        'firstname': current_user.firstname,
+        'lastname': current_user.lastname,
+        'is_admin': current_user.is_administrator(),
+        'is_confirmed': current_user.is_confirmed,
+        'phone': current_user.phone,
+        'address': current_user.address,
+        'city': current_user.city,
+        'zipcode': current_user.zipcode,
+        'image': current_user.image,
+        'created_at': current_user.created_at,
+        'is_active': current_user.is_active,
+    })
+    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    return response
+
+
+    
+    
+
+
+
+# ...existing code...
 @api.route('/csrf-token', methods=['GET', 'OPTIONS'])
 def csrf_token():
     if request.method == 'OPTIONS':
@@ -149,6 +179,7 @@ def csrf_token():
     except Exception as e:
         current_app.logger.error(f'Error generating CSRF token: {str(e)}')
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+# ...existing code...
 
 @api.route('/confirmation-status', methods=['GET'])
 def confirmation_status():
@@ -606,4 +637,101 @@ def create_question(quiz_id):
         return jsonify({"message": "An unexpected error occurred"}), 500
 
 # ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/questions', methods=['GET'])
+def get_questions(quiz_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+        answers = Answers.query.filter(Answers.question_id.in_([q.id for q in questions])).all()
+        questions_dict = [question.to_dict() for question in questions]
+        answers_dict = [answer.to_dict() for answer in answers]
+        for question in questions_dict:
+            question['answers'] = [answer for answer in answers_dict if answer['question_id'] == question['id']]
+        response = create_response({'questions': questions_dict})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching questions: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
+
+@api.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
+def submit_quiz(quiz_id):
+    try:
+        csrf_token = request.headers.get('X-CSRFToken')
+        current_app.logger.info(f'CSRF Token received: {csrf_token}')
+        if not csrf_token:
+            return jsonify({'message': 'CSRF token missing'}), 400
+
+        validate_csrf(csrf_token)
+        current_app.logger.info('CSRF token validated successfully')
+        
+        data = request.json
+        current_app.logger.info(f'Submission data received: {data}')  # Add logging
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        user = User.query.get_or_404(data.get('user_id'))
+        questions = data.get('questions')
+        end_time = datetime.now(timezone('Europe/Helsinki'))
+        quiz_results = QuizResults(quiz_id=quiz.id, user_id=user.id, end_time=end_time)
+        db.session.add(quiz_results)
+        db.session.flush()
+        total_score = 0
+        for question in questions:
+            question_id = question.get('question_id')
+            answers = question.get('answers')
+            question_score = 0
+            for answer in answers:
+                answer_id = answer.get('answer_id')
+                correct_answer = Answers.query.filter_by(id=answer_id, question_id=question_id).first()
+                is_correct = correct_answer.is_correct if correct_answer else False
+                answer_entry = QuizAnswers(
+                    result_id=quiz_results.id,
+                    question_id=question_id,
+                    answer_id=answer_id,
+                    is_correct=is_correct
+                )
+                db.session.add(answer_entry)
+                db.session.flush()
+                if is_correct:
+                    question_score += correct_answer.question.score
+            total_score += question_score
+        quiz_results.overalScore = total_score
+        quiz_results.duration = (quiz_results.end_time - quiz_results.start_time).seconds  # Calculate duration
+        db.session.commit()
+        current_app.logger.info(f'Quiz submitted successfully with score: {total_score}')  # Add logging
+        return jsonify({'message': 'Quiz submitted successfully', 'score': total_score}), 201
+    except Exception as e:
+        current_app.logger.error(f'Error submitting quiz: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...
+
+# ...existing code...
+
+@api.route('/answers/<int:question_id>', methods=['GET'])
+def get_answers(question_id):
+    try:
+        question = Questions.query.get_or_404(question_id)
+        answers = Answers.query.filter_by(question_id=question.id).all()
+        answers_dict = [answer.to_dict() for answer in answers]
+        response = create_response({'answers': answers_dict})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching answers: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...
+
 

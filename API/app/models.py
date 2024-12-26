@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), default=1)
     last_login = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     role = db.relationship('Role', backref='users')
+    results = relationship("QuizResults", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self) -> str:
         return '<User %r>' % self.email
@@ -239,6 +240,7 @@ class Quizzes(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     shuffle_questions_enabled = db.Column(db.Boolean, default=False)  # Add this field
+    results = relationship("QuizResults", back_populates="quiz", cascade="all, delete-orphan")
     
     def shuffle_questions(self):
         from random import shuffle
@@ -330,3 +332,67 @@ class Answers(db.Model):
 
 # Adding back_populates to Quizzes
 Quizzes.questions = relationship("Questions", back_populates="quiz", cascade="all, delete-orphan")
+
+
+class QuizResults(db.Model):
+    __tablename__ = 'quiz_results'
+    id = db.Column(db.Integer, primary_key=True)
+    quiz_id = db.Column(db.Integer, ForeignKey('quizzes.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    overalScore = db.Column(db.Float, nullable=False, default=0.0)  # Score for the quiz
+    completed = db.Column(db.Boolean, nullable=False, default=False)  # True if the quiz is completed
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone('Europe/Helsinki')))
+    end_time = db.Column(db.DateTime, nullable=True)  # End time of the quiz
+    duration = db.Column(db.Integer, nullable=True)  # Duration of the quiz in seconds
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    
+    # Relationships
+    quiz = relationship("Quizzes", back_populates="results")
+    user = relationship("User", back_populates="results")
+    answers = relationship("QuizAnswers", back_populates="result", cascade="all, delete-orphan")
+    
+    def overalScore(self):
+        score = 0
+        for answer in self.answers:
+            if answer.is_correct:
+                score += answer.option.score
+        return score    
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'quiz_id': self.quiz_id,
+            'user_id': self.user_id,
+            'overalScore': self.overalScore,
+            'completed': self.completed,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'duration': self.duration,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
+        
+        
+        
+class QuizAnswers(db.Model):
+    __tablename__ = 'quiz_answers'
+    id = db.Column(db.Integer, primary_key=True)
+    result_id = db.Column(db.Integer, ForeignKey('quiz_results.id', ondelete='CASCADE'), nullable=False)
+    question_id = db.Column(db.Integer, ForeignKey('questions.id', ondelete='CASCADE'), nullable=False)
+    answer_id = db.Column(db.Integer, ForeignKey('answers.id', ondelete='CASCADE'), nullable=False)
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)
+
+    # Relationships
+    result = relationship("QuizResults", back_populates="answers")
+    question = relationship("Questions")
+    answer = relationship("Answers")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'result_id': self.result_id,
+            'question_id': self.question_id,
+            'answer_id': self.answer_id,
+            'is_correct': self.is_correct,
+        }

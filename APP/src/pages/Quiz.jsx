@@ -5,8 +5,6 @@ import { PacmanLoader } from "react-spinners";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { deleteQuiz } from "../utils/csrfUtils";
-import { use } from "react";
-
 const Quiz = () => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +27,16 @@ const Quiz = () => {
     };
     fetchQuiz();
   }, [id]);
+
+  
+  const handleDeleteQuiz = async (id) => {
+    const confirmed = window.confirm("Are you sure you want to delete this quiz?");
+    if (confirmed) {
+      await deleteQuiz(id, navigate)();
+    }
+  };
+
+
 
   if (loading) {
     return (
@@ -75,11 +83,16 @@ const Quiz = () => {
             </Link>
             <button
               className="btn btn-danger ms-2"
-              onClick={() => deleteQuiz(quiz.id, navigate)}
+              onClick={() => handleDeleteQuiz(quiz.id)}
             >
               Delete Quiz
             </button>
           </div>
+        </div>
+        <div className="row d-flex justify-content-start">
+          <Link to={`/quiz/${quiz.id}/submit`} className="btn btn-primary mt-3">
+            Start Quiz
+          </Link>
         </div>
       </div>
     </>
