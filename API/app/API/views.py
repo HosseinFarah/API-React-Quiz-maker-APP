@@ -535,7 +535,18 @@ def create_question(quiz_id):
         files = request.files
         current_app.logger.info(f'Received data: {data}')
         current_app.logger.info(f'Received files: {files}')
-        answers = json.loads(data.get('answers')[0])
+
+        # Reconstruct the answers dictionary from individual form fields
+        answers = {}
+        for key, value in data.items():
+            if key.startswith('answers['):
+                parts = key.split('[')
+                index = int(parts[1][:-1])
+                sub_key = parts[2][:-1]
+                if index not in answers:
+                    answers[index] = {}
+                answers[index][sub_key] = value[0]
+
         current_app.logger.info(f'Parsed answers: {answers}')
 
         processed_answers = []
