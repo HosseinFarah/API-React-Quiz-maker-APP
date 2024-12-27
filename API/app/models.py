@@ -236,6 +236,7 @@ class Quizzes(db.Model):
     image = db.Column(db.String(255), nullable=True)
     attempt = db.Column(db.Integer, nullable=False, default=0)
     start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    end_date = db.Column(db.DateTime, nullable=True)
     time_limit = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
@@ -266,6 +267,7 @@ class Quizzes(db.Model):
             'status': self.status,
             'attempt': self.attempt,
             'start_date': self.start_date,
+            'end_date': self.end_date,
             'time_limit': self.time_limit,
             'image': self.image,
             'shuffle_questions': self.shuffle_questions_enabled,

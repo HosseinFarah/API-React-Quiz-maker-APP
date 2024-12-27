@@ -14,6 +14,7 @@ const SubmitQuestion = () => {
     register,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const SubmitQuestion = () => {
   const [title, setTitle] = useState("");
   const [attempts, setAttempts] = useState(0);
   const [quiz, setQuiz] = useState(null); // Add state for quiz
+  const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     fetch(`${API_URL}/quiz/${id}/questions`)
@@ -53,6 +55,18 @@ const SubmitQuestion = () => {
         const data = await response.json();
         setTitle(data.quiz.title);
         setQuiz(data.quiz); // Set quiz data
+        const savedStartTime = localStorage.getItem(`quiz_${id}_start_time`);
+        const currentTime = new Date().getTime();
+        if (!savedStartTime) {
+          const startTime = currentTime;
+          localStorage.setItem(`quiz_${id}_start_time`, startTime);
+          setTimer(data.quiz.time_limit * 60); // Convert minutes to seconds
+        } else {
+          const elapsedTime = Math.floor((currentTime - parseInt(savedStartTime)) / 1000);
+          const remainingTime = data.quiz.time_limit * 60 - elapsedTime;
+          setTimer(remainingTime > 0 ? remainingTime : 0);
+        }
+        console.log("Timer:", data.quiz.time_limit * 60); // Add logging
       } catch (error) {
         toast.error(error.message);
       }
@@ -84,7 +98,31 @@ const SubmitQuestion = () => {
     fetchAttempts();
   }, [id]);
 
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+      return () => clearInterval(countdown);
+    } else if (timer === 0 && quiz) {
+      handleSubmit(onSubmit)();
+    }
+  }, [timer, quiz]);
 
+  const saveAnswers = (data) => {
+    localStorage.setItem(`quiz_${id}_answers`, JSON.stringify(data));
+    toast.success("Answers saved successfully!");
+  };
+
+  useEffect(() => {
+    const savedAnswers = localStorage.getItem(`quiz_${id}_answers`);
+    if (savedAnswers) {
+      const parsedAnswers = JSON.parse(savedAnswers);
+      Object.keys(parsedAnswers).forEach((key) => {
+        setValue(key, parsedAnswers[key]);
+      });
+    }
+  }, [id, setValue]);
 
   const onSubmit = async (data) => {
     try {
@@ -104,13 +142,13 @@ const SubmitQuestion = () => {
           const answersData = await response.json();
           console.log("Answers data:", answersData); // Add logging
           const answers = answersData.answers;
-          const selectedAnswerId = parseInt(data[questionId]);
-          const isCorrect = answers.some(answer => answer.id === selectedAnswerId && answer.is_correct);
+          const selectedAnswerId = data[questionId] ? parseInt(data[questionId]) : null;
+          const isCorrect = selectedAnswerId !== null && answers.some(answer => answer.id === selectedAnswerId && answer.is_correct);
           return {
             question_id: parseInt(questionId),
-            answers: [
+            answers: selectedAnswerId !== null ? [
               { answer_id: selectedAnswerId, is_correct: isCorrect },
-            ],
+            ] : [],
           };
         })),
       };
@@ -136,6 +174,7 @@ const SubmitQuestion = () => {
       setAttempts(attempts + 1); // Increment attempts
       console.log("Submission result:", result); // Add logging
       alert(`Quiz submitted successfully! Your score: ${result.overall_score}`);
+      localStorage.removeItem(`quiz_${id}_start_time`); // Clear start time from local storage
       navigate("/"); // Redirect to home or another page
     } catch (error) {
       console.error("Error submitting quiz:", error); // Add logging
@@ -159,7 +198,10 @@ const SubmitQuestion = () => {
       <div className="row d-flex justify-content-start">
         <div className="col-md-12">
           <h1 className="badge bg-secondary fs-3">Submit Quiz: {title}</h1>
-          <p className="fs-5 mt-5">Attempts: {attempts}</p>
+          <p className="fs-5 mt-5">Remaining attempts: {quiz ? quiz.attempt - attempts : 0}</p>
+          {quiz && attempts < quiz.attempt ?
+          <p className="fs-5 mt-5">Time remaining: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} minutes</p> 
+          : null}
           <hr />
           {quiz && attempts < quiz.attempt ? (
           <form onSubmit={handleSubmit(onSubmit)} className="form">
@@ -169,13 +211,11 @@ const SubmitQuestion = () => {
                 {question.answers.map((answer) => (
                   <div key={answer.id} className="form-check">
                     <input
-                      type="radio" // Changed from checkbox to radio
+                      type="radio"
                       name={String(question.id)}
                       className="form-check-input"
                       value={answer.id}
-                      {...register(String(question.id), {
-                        required: "This question is required",
-                      })}
+                      {...register(String(question.id))}
                     />
                     <span className="ms-2">{answer.text}</span>
                   </div>
@@ -183,6 +223,7 @@ const SubmitQuestion = () => {
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
               </div>
             ))}
+            <button type="button" onClick={handleSubmit(saveAnswers)}>Save Answers</button>
             <button type="submit">Submit Quiz</button>
           </form>
             ) : (

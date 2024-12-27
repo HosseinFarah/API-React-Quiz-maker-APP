@@ -105,6 +105,12 @@ const CreateQuiz = () => {
               {serverErrors.start_date && <div className="text-danger">{serverErrors.start_date}</div>}
             </div>
             <div className="mb-3">
+              <label htmlFor="end_date" className="form-label">End Date</label>
+              <input type="date" {...register("end_date", { required: true })} className="form-control" />
+              {errors.end_date && <span className="text-danger">{errors.end_date.message || "This field is required"}</span>}
+              {serverErrors.end_date && <div className="text-danger">{serverErrors.end_date}</div>}
+            </div>
+            <div className="mb-3">
               <label htmlFor="time_limit" className="form-label">Time Limit</label>
               <input type="number" {...register("time_limit", { required: true })} className="form-control" />
               {errors.time_limit && <span className="text-danger">{errors.time_limit.message || "This field is required"}</span>}

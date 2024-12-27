@@ -28,7 +28,7 @@ def create_quiz():
             if not os.path.exists(upload_folder):
                 os.makedirs(upload_folder)
             image.save(os.path.join(upload_folder, filename))
-        quiz = Quizzes(title=form.title.data, description=form.description.data, status=form.status.data, attempt=form.attempt.data, start_date=form.start_date.data, time_limit=form.time_limit.data, image=filename)
+        quiz = Quizzes(title=form.title.data, description=form.description.data, status=form.status.data, attempt=form.attempt.data, start_date=form.start_date.data, time_limit=form.time_limit.data, image=filename, end_date=form.end_date.data, shuffle_options=form.shuffle_options.data, user_id=current_user.id)
         try:
             db.session.add(quiz)
             db.session.commit()

@@ -28,15 +28,14 @@ const Quiz = () => {
     fetchQuiz();
   }, [id]);
 
-  
   const handleDeleteQuiz = async (id) => {
-    const confirmed = window.confirm("Are you sure you want to delete this quiz?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this quiz?"
+    );
     if (confirmed) {
       await deleteQuiz(id, navigate)();
     }
   };
-
-
 
   if (loading) {
     return (
@@ -65,34 +64,45 @@ const Quiz = () => {
             <p className="text-wrap">{quiz.description}</p>
             <p className="text-wrap">attempt: {quiz.attempt}</p>
             <p className="text-wrap">Start Date: {quiz.start_date}</p>
+            <p className="text-wrap">End Date: {quiz.end_date}</p>
             <p className="text-wrap">Time Limit: {quiz.time_limit} minutes</p>
             <p className="text-wrap">Status: {quiz.status}</p>
-            <p className="text-wrap">Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
+            <p className="text-wrap">
+              Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}
+            </p>
             {isAdmin && (
               <>
-                <Link to={`/quiz/${quiz.id}/add_question`} className="btn btn-primary">
+                <Link
+                  to={`/quiz/${quiz.id}/add_question`}
+                  className="btn btn-primary"
+                >
                   Add Question
                 </Link>
-                <Link to={`/quiz/edit/${quiz.id}`} className="btn btn-primary ms-2">
+                <Link
+                  to={`/quiz/edit/${quiz.id}`}
+                  className="btn btn-primary ms-2"
+                >
                   Edit Quiz
                 </Link>
+                <button
+                  className="btn btn-danger ms-2"
+                  onClick={() => handleDeleteQuiz(quiz.id)}
+                >
+                  Delete Quiz
+                </button>
               </>
             )}
             <Link to="/" className="btn btn-secondary ms-2">
               Back
             </Link>
-            <button
-              className="btn btn-danger ms-2"
-              onClick={() => handleDeleteQuiz(quiz.id)}
-            >
-              Delete Quiz
-            </button>
           </div>
         </div>
-        <div className="row d-flex justify-content-start">
-          <Link to={`/quiz/${quiz.id}/submit`} className="btn btn-primary mt-3">
+        <div className="row d-flex justify-content-center">
+          {quiz.start_date && new Date(quiz.start_date) <= new Date() && new Date(quiz.end_date) >= new Date() ? (
+          <Link to={`/quiz/${quiz.id}/submit`} className="btn btn-primary mt-3 w-25">
             Start Quiz
           </Link>
+          ) : null}
         </div>
       </div>
     </>

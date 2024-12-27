@@ -53,15 +53,13 @@ const EditQuiz = () => {
             for (const key in data) {
                 if (key === "image" && data.image.length > 0) {
                     formData.append("image", data.image[0]);
+                } else if (key === "image" && data.image.length === 0) {
+                    formData.append("existing_image", quiz.image);
                 } else if (key === "shuffle_questions") {
                     formData.append("shuffle_questions", data[key] ? "true" : "false");
                 } else {
                     formData.append(key, data[key]);
                 }
-            }
-
-            if (!data.image.length) {
-                formData.append("existing_image", quiz.image);
             }
 
             const response = await fetch(`${API_URL}/quiz/edit/${id}`, {
@@ -141,6 +139,12 @@ const EditQuiz = () => {
                             <input defaultValue={formatDate(quiz.start_date)} type="date" {...register("start_date", { required: true })} className="form-control" />
                             {errors.start_date && <span className="text-danger">{errors.start_date.message || "This field is required"}</span>}
                             {serverErrors.start_date && <div className="text-danger">{serverErrors.start_date}</div>}
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="end_date" className="form-label">Start Date</label>
+                            <input defaultValue={formatDate(quiz.end_date)} type="date" {...register("end_date", { required: true })} className="form-control" />
+                            {errors.end_date && <span className="text-danger">{errors.end_date.message || "This field is required"}</span>}
+                            {serverErrors.end_date && <div className="text-danger">{serverErrors.end_date}</div>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="time_limit" className="form-label">Time Limit</label>

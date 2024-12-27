@@ -417,6 +417,7 @@ def create_quiz():
                 status=form.status.data,
                 attempt=form.attempt.data,
                 start_date=form.start_date.data,
+                end_date=form.end_date.data,
                 time_limit=form.time_limit.data,
                 image=filename,
                 shuffle_questions_enabled=shuffle_questions_enabled
@@ -499,6 +500,7 @@ def edit_quiz(quiz_id):
             quiz.status = form.status.data
             quiz.attempt = form.attempt.data
             quiz.start_date = form.start_date.data
+            quiz.end_date = form.end_date.data
             quiz.time_limit = form.time_limit.data
             quiz.shuffle_questions_enabled = data.get('shuffle_questions') == 'true'
             db.session.commit()
