@@ -68,7 +68,7 @@ const AllQuizzes = () => {
                   </div>
                   <div className="card-body">
                     <p>{quiz.description}</p>
-                    <p>{quiz.capacity} questions</p>
+                    <p>Attempts: {quiz.attempt}</p>
                     <p>Time Limit: {quiz.time_limit} minutes</p>
                     <p>Status: {quiz.status}</p>
                     <p>Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>

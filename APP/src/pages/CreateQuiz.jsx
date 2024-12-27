@@ -93,10 +93,10 @@ const CreateQuiz = () => {
               {serverErrors.status && <div className="text-danger">{serverErrors.status}</div>}
             </div>
             <div className="mb-3">
-              <label htmlFor="capacity" className="form-label">Capacity</label>
-              <input type="number" {...register("capacity", { required: true })} className="form-control" />
-              {errors.capacity && <span className="text-danger">{errors.capacity.message || "This field is required"}</span>}
-              {serverErrors.capacity && <div className="text-danger">{serverErrors.capacity}</div>}
+              <label htmlFor="attempt" className="form-label">attempt</label>
+              <input type="number" {...register("attempt", { required: true })} className="form-control" />
+              {errors.attempt && <span className="text-danger">{errors.attempt.message || "This field is required"}</span>}
+              {serverErrors.attempt && <div className="text-danger">{serverErrors.attempt}</div>}
             </div>
             <div className="mb-3">
               <label htmlFor="start_date" className="form-label">Start Date</label>

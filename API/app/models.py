@@ -234,7 +234,7 @@ class Quizzes(db.Model):
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='available', index=True)
     image = db.Column(db.String(255), nullable=True)
-    capacity = db.Column(db.Integer, nullable=False, default=0)
+    attempt = db.Column(db.Integer, nullable=False, default=0)
     start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     time_limit = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
@@ -264,7 +264,7 @@ class Quizzes(db.Model):
             'title': self.title,
             'description': self.description,
             'status': self.status,
-            'capacity': self.capacity,
+            'attempt': self.attempt,
             'start_date': self.start_date,
             'time_limit': self.time_limit,
             'image': self.image,
@@ -373,8 +373,30 @@ class QuizResults(db.Model):
             'updated_at': self.updated_at,
         }
         
-        
-        
+    @staticmethod
+    def get_attempts(user_id, quiz_id):
+        try:
+            attempts = QuizResults.query.filter_by(user_id=user_id, quiz_id=quiz_id).count()
+            return attempts
+        except Exception as e:
+            current_app.logger.error(f'Error in get_attempts: {str(e)}')
+            raise
+
+    @staticmethod
+    def save_result(user_id, quiz_id, overall_score, completed, start_time, end_time, duration):
+        result = QuizResults(
+            user_id=user_id,
+            quiz_id=quiz_id,
+            overall_score=overall_score,
+            completed=completed,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration
+        )
+        db.session.add(result)
+        db.session.commit()
+        return result
+
 class QuizAnswers(db.Model):
     __tablename__ = 'quiz_answers'
     id = db.Column(db.Integer, primary_key=True)

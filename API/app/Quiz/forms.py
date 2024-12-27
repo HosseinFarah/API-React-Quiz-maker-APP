@@ -21,7 +21,7 @@ class QuizForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(), Length(min=2, max=100)])
     description = TextAreaField('Description', validators=[DataRequired(), Length(min=2, max=1000)])
     status = SelectField('Status', choices=[('available', 'Available'), ('unavailable', 'Unavailable')], validators=[DataRequired()])
-    capacity = StringField('Capacity', validators=[DataRequired()])
+    attempt = StringField('attempt', validators=[DataRequired()])
     start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
     time_limit = StringField('Time Limit', validators=[DataRequired()])
     image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], 'Only jpg, png, jpeg, gif and webp files allowed'), img_size(1*1024*1024, message='Image size must be less than 1MB')])
@@ -29,13 +29,13 @@ class QuizForm(FlaskForm):
     shuffle_options = BooleanField('Shuffle Options')
     submit = SubmitField('Create Quiz')
     
-    def validate_capacity(self, capacity):
-        if not capacity.data.isnumeric():
-            raise ValidationError('Capacity must be a number')
-        if int(capacity.data) < 1:
-            raise ValidationError('Capacity must be at least 1')
-        if int(capacity.data) > 1000:
-            raise ValidationError('Capacity must be at most 1000')
+    def validate_attempt(self, attempt):
+        if not attempt.data.isnumeric():
+            raise ValidationError('attempt must be a number')
+        if int(attempt.data) < 1:
+            raise ValidationError('attempt must be at least 1')
+        if int(attempt.data) > 1000:
+            raise ValidationError('attempt must be at most 1000')
         
     def validate_time_limit(self, time_limit):
         if not time_limit.data.isnumeric():

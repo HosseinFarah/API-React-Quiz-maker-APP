@@ -63,7 +63,7 @@ const Quiz = () => {
             />
 
             <p className="text-wrap">{quiz.description}</p>
-            <p className="text-wrap">Capacity: {quiz.capacity}</p>
+            <p className="text-wrap">attempt: {quiz.attempt}</p>
             <p className="text-wrap">Start Date: {quiz.start_date}</p>
             <p className="text-wrap">Time Limit: {quiz.time_limit} minutes</p>
             <p className="text-wrap">Status: {quiz.status}</p>

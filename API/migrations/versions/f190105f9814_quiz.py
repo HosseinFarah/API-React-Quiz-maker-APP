@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('description', sa.Text(), nullable=False),
     sa.Column('status', sa.String(length=20), nullable=False),
     sa.Column('image', sa.String(length=255), nullable=True),
-    sa.Column('capacity', sa.Integer(), nullable=False),
+    sa.Column('attempt', sa.Integer(), nullable=False),
     sa.Column('start_date', sa.DateTime(), nullable=True),
     sa.Column('time_limit', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),

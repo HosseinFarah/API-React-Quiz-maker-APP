@@ -415,7 +415,7 @@ def create_quiz():
                 title=form.title.data,
                 description=form.description.data,
                 status=form.status.data,
-                capacity=form.capacity.data,
+                attempt=form.attempt.data,
                 start_date=form.start_date.data,
                 time_limit=form.time_limit.data,
                 image=filename,
@@ -497,7 +497,7 @@ def edit_quiz(quiz_id):
             quiz.title = form.title.data
             quiz.description = form.description.data
             quiz.status = form.status.data
-            quiz.capacity = form.capacity.data
+            quiz.attempt = form.attempt.data
             quiz.start_date = form.start_date.data
             quiz.time_limit = form.time_limit.data
             quiz.shuffle_questions_enabled = data.get('shuffle_questions') == 'true'
@@ -662,6 +662,7 @@ def get_questions(quiz_id):
     
 
 @api.route('/quiz/<int:quiz_id>/submit', methods=['POST'])
+@login_required
 def submit_quiz(quiz_id):
     try:
         csrf_token = request.headers.get('X-CSRFToken')
@@ -671,14 +672,19 @@ def submit_quiz(quiz_id):
 
         validate_csrf(csrf_token)
         current_app.logger.info('CSRF token validated successfully')
-        
-        data = request.json
-        current_app.logger.info(f'Submission data received: {data}')  # Add logging
+
+        user_id = current_user.id
         quiz = Quizzes.query.get_or_404(quiz_id)
-        user = User.query.get_or_404(data.get('user_id'))
+        attempts = QuizResults.get_attempts(user_id, quiz_id)
+
+        if attempts >= quiz.attempt:
+            return jsonify({'message': 'Maximum number of attempts reached'}), 403
+
+        data = request.get_json()
+        current_app.logger.info(f'Submission data received: {data}')
         questions = data.get('questions')
         end_time = datetime.now(timezone('Europe/Helsinki'))
-        quiz_results = QuizResults(quiz_id=quiz.id, user_id=user.id, end_time=end_time)
+        quiz_results = QuizResults(quiz_id=quiz.id, user_id=user_id, end_time=end_time)
         db.session.add(quiz_results)
         db.session.flush()
         total_score = 0
@@ -702,9 +708,9 @@ def submit_quiz(quiz_id):
                     question_score += correct_answer.question.score
             total_score += question_score
         quiz_results.overall_score = total_score
-        quiz_results.duration = (quiz_results.end_time - quiz_results.start_time).seconds  # Calculate duration
+        quiz_results.duration = (quiz_results.end_time - quiz_results.start_time).seconds
         db.session.commit()
-        current_app.logger.info(f'Quiz submitted successfully with score: {total_score}')  # Add logging
+        current_app.logger.info(f'Quiz submitted successfully with score: {total_score}')
         return jsonify({'message': 'Quiz submitted successfully', 'overall_score': total_score}), 201
     except Exception as e:
         current_app.logger.error(f'Error submitting quiz: {str(e)}')
@@ -712,6 +718,7 @@ def submit_quiz(quiz_id):
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
+
 # ...existing code...
 
 # ...existing code...
@@ -732,6 +739,28 @@ def get_answers(question_id):
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
+# ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/attempts', methods=['GET'])
+@login_required
+def get_attempts(quiz_id):
+    try:
+        user_id = current_user.id
+        current_app.logger.info(f'Fetching attempts for user_id: {user_id}, quiz_id: {quiz_id}')
+        attempts = QuizResults.get_attempts(user_id, quiz_id)
+        current_app.logger.info(f'Number of attempts: {attempts}')
+        response = create_response({'attempts': attempts})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching attempts: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+
+
 # ...existing code...
 
 

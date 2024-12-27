@@ -21,6 +21,8 @@ const SubmitQuestion = () => {
   const [loading, setLoading] = useState(true);
   const [error, setErrorState] = useState(null);
   const [title, setTitle] = useState("");
+  const [attempts, setAttempts] = useState(0);
+  const [quiz, setQuiz] = useState(null); // Add state for quiz
 
   useEffect(() => {
     fetch(`${API_URL}/quiz/${id}/questions`)
@@ -50,6 +52,7 @@ const SubmitQuestion = () => {
         }
         const data = await response.json();
         setTitle(data.quiz.title);
+        setQuiz(data.quiz); // Set quiz data
       } catch (error) {
         toast.error(error.message);
       }
@@ -58,8 +61,37 @@ const SubmitQuestion = () => {
     fetchQuiz();
   }, [id]);
 
+  useEffect(() => {
+    const fetchAttempts = async () => {
+      try {
+        const response = await fetch(`${API_URL}/quiz/${id}/attempts`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": await getCsrfToken(),
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch attempts");
+        }
+        const data = await response.json();
+        setAttempts(data.attempts);
+      } catch (error) {
+        toast.error(error.message);
+      }
+    };
+
+    fetchAttempts();
+  }, [id]);
+
+
+
   const onSubmit = async (data) => {
     try {
+      if (quiz && attempts >= quiz.attempt) {
+        alert("You have reached the maximum number of attempts for this quiz.");
+        return;
+      }
       console.log("Submitting data:", data); // Add logging
       const csrfToken = await getCsrfToken(); 
       const user_id = user.id;
@@ -101,6 +133,7 @@ const SubmitQuestion = () => {
       }
 
       const result = await response.json();
+      setAttempts(attempts + 1); // Increment attempts
       console.log("Submission result:", result); // Add logging
       alert(`Quiz submitted successfully! Your score: ${result.overall_score}`);
       navigate("/"); // Redirect to home or another page
@@ -122,11 +155,13 @@ const SubmitQuestion = () => {
   if (error) return <div>Error: {error.message}</div>;
 
   return (
-    <div className="container mt-5">
+    <div className="container mt-5" style={{ marginTop: "180px" }}>
       <div className="row d-flex justify-content-start">
         <div className="col-md-12">
           <h1 className="badge bg-secondary fs-3">Submit Quiz: {title}</h1>
+          <p className="fs-5 mt-5">Attempts: {attempts}</p>
           <hr />
+          {quiz && attempts < quiz.attempt ? (
           <form onSubmit={handleSubmit(onSubmit)} className="form">
             {questions.map((question) => (
               <div key={question.id} className="mb-3">
@@ -150,6 +185,9 @@ const SubmitQuestion = () => {
             ))}
             <button type="submit">Submit Quiz</button>
           </form>
+            ) : (
+                <p>You have reached the maximum number of attempts for this quiz.</p>
+            )}
         </div>
       </div>
     </div>
