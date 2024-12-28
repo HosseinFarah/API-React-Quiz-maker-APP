@@ -27,11 +27,26 @@ const SubmitQuestion = () => {
   const [timer, setTimer] = useState(0);
   const [startTime, setStartTime] = useState(null); // Add state for start time
 
+  // SHUFFLE FOR QUESTIONS
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+  // SHUFFLE FOR QUESTIONS and Answers
   useEffect(() => {
     fetch(`${API_URL}/quiz/${id}/questions`)
       .then((response) => response.json())
       .then((data) => {
-        setQuestions(data.questions);
+        const shuffledQuestions = data.questions.map((question) => {
+          if (question.shuffle_enabled) {
+            question.answers = shuffleArray(question.answers);
+          }
+          return question;
+        });
+        setQuestions(shuffledQuestions);
         setLoading(false);
       })
       .catch((error) => {
@@ -113,6 +128,13 @@ const SubmitQuestion = () => {
     }
   }, [timer, quiz]);
 
+  // SHUFFLE FOR QUESTIONS
+  useEffect(() => {
+    if (quiz && quiz.shuffle_questions) {
+      setQuestions((prevQuestions) => shuffleArray([...prevQuestions]));
+    }
+  }, [quiz]);
+
   const saveAnswers = (data) => {
     localStorage.setItem(`quiz_${id}_answers`, JSON.stringify(data));
     toast.success("Answers saved successfully!");
@@ -180,9 +202,10 @@ const SubmitQuestion = () => {
       setAttempts(attempts + 1); // Increment attempts
       console.log("Submission result:", result); // Add logging
       toast.success(`Quiz submitted successfully! Your score: ${result.overall_score}`);
+      setStartTime(0); // Reset start time
       localStorage.removeItem(`quiz_${id}_start_time`); // Clear start time from local storage
       localStorage.removeItem(`quiz_${id}_answers`); // Clear saved answers after submission
-      navigate("/"); // Redirect to home or another page
+      navigate(`/quiz/${id}`);
     } catch (error) {
       console.error("Error submitting quiz:", error); // Add logging
       setErrorState(error);
@@ -243,3 +266,5 @@ const SubmitQuestion = () => {
 };
 
 export default SubmitQuestion;
+
+// ...existing code...

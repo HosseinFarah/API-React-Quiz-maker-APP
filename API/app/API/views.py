@@ -526,7 +526,6 @@ def edit_quiz(quiz_id):
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
-
 # ...existing code...
 @api.route('/quiz/delete/<int:quiz_id>', methods=['DELETE'])
 def delete_quiz(quiz_id):
@@ -640,7 +639,6 @@ def create_question(quiz_id):
     except Exception as e:
         current_app.logger.error(f"Unexpected error: {e}")
         return jsonify({"message": "An unexpected error occurred"}), 500
-
 # ...existing code...
 
 @api.route('/quiz/<int:quiz_id>/questions', methods=['GET'])
