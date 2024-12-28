@@ -44,6 +44,11 @@ const SubmitQuestion = () => {
           if (question.shuffle_enabled) {
             question.answers = shuffleArray(question.answers);
           }
+          // Format answers based on options_format(eg. A,B,C,D or 1,2,3,4)
+          question.answers = question.answers.map((answer, index) => {
+            const format = question.options_format.split(",")[index];
+            return { ...answer, format };
+          });
           return question;
         });
         setQuestions(shuffledQuestions);
@@ -247,7 +252,7 @@ const SubmitQuestion = () => {
                       value={answer.id}
                       {...register(String(question.id))}
                     />
-                    <span className="ms-2">{answer.text}</span>
+                    <span className="ms-2">{answer.format}. {answer.text}</span>
                   </div>
                 ))}
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
