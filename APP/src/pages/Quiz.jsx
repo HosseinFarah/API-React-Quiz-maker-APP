@@ -5,12 +5,16 @@ import { PacmanLoader } from "react-spinners";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { deleteQuiz } from "../utils/csrfUtils";
+import QuizResults from "./QuizResults";
+
+
 const Quiz = () => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAdmin } = useContext(AuthContext);
+  const [savedAnswers, setSavedAnswers] = useState(null);
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -21,6 +25,8 @@ const Quiz = () => {
         const data = await response.json();
         setQuiz(data.quiz);
         setLoading(false);
+        const savedAnswers = localStorage.getItem(`quiz_${id}_answers`);
+        setSavedAnswers(savedAnswers);
       } catch (error) {
         console.error("Error fetching quiz:", error);
       }
@@ -100,10 +106,11 @@ const Quiz = () => {
         <div className="row d-flex justify-content-center">
           {quiz.start_date && new Date(quiz.start_date) <= new Date() && new Date(quiz.end_date) >= new Date() ? (
           <Link to={`/quiz/${quiz.id}/submit`} className="btn btn-primary mt-3 w-25">
-            Start Quiz
+            {savedAnswers ? "Continue Quiz" : "Start Quiz"}
           </Link>
           ) : null}
         </div>
+        <QuizResults quizId={id} />
       </div>
     </>
   );

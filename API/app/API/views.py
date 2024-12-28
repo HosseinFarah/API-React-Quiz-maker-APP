@@ -398,6 +398,8 @@ def create_quiz():
             return create_response({'message': 'Request content type must be multipart/form-data'}, 400)
 
         data = request.form.to_dict()
+        data['start_date'] = request.form.get('start_date')
+        data['end_date'] = request.form.get('end_date')
         form = QuizForm(data=data)
         if form.validate():
             image = request.files.get('image')
@@ -416,8 +418,8 @@ def create_quiz():
                 description=form.description.data,
                 status=form.status.data,
                 attempt=form.attempt.data,
-                start_date=form.start_date.data,
-                end_date=form.end_date.data,
+                start_date=datetime.strptime(data.get('start_date'), '%Y-%m-%dT%H:%M'),
+                end_date=datetime.strptime(data.get('end_date'), '%Y-%m-%dT%H:%M'),
                 time_limit=form.time_limit.data,
                 image=filename,
                 shuffle_questions_enabled=shuffle_questions_enabled
@@ -444,7 +446,6 @@ def create_quiz():
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
 # ...existing code...
-
 
 @api.route('/all_quizzes', methods=['GET'])
 def all_quizzes():
@@ -477,6 +478,8 @@ def edit_quiz(quiz_id):
     try:
         quiz = Quizzes.query.get_or_404(quiz_id)
         data = request.form.to_dict()
+        data['start_date'] = request.form.get('start_date')
+        data['end_date'] = request.form.get('end_date')
         form = QuizForm(data=data)
         if form.validate():
             image = request.files.get('image')
@@ -499,8 +502,8 @@ def edit_quiz(quiz_id):
             quiz.description = form.description.data
             quiz.status = form.status.data
             quiz.attempt = form.attempt.data
-            quiz.start_date = form.start_date.data
-            quiz.end_date = form.end_date.data
+            quiz.start_date = datetime.strptime(data.get('start_date'), '%Y-%m-%dT%H:%M')
+            quiz.end_date = datetime.strptime(data.get('end_date'), '%Y-%m-%dT%H:%M')
             quiz.time_limit = form.time_limit.data
             quiz.shuffle_questions_enabled = data.get('shuffle_questions') == 'true'
             db.session.commit()
@@ -685,8 +688,9 @@ def submit_quiz(quiz_id):
         data = request.get_json()
         current_app.logger.info(f'Submission data received: {data}')
         questions = data.get('questions')
+        duration = data.get('duration')  # Get duration from request data
         end_time = datetime.now(timezone('Europe/Helsinki'))
-        quiz_results = QuizResults(quiz_id=quiz.id, user_id=user_id, end_time=end_time)
+        quiz_results = QuizResults(quiz_id=quiz.id, user_id=user_id, end_time=end_time, duration=duration)
         db.session.add(quiz_results)
         db.session.flush()
         total_score = 0
@@ -710,7 +714,6 @@ def submit_quiz(quiz_id):
                     question_score += correct_answer.question.score
             total_score += question_score
         quiz_results.overall_score = total_score
-        quiz_results.duration = (quiz_results.end_time - quiz_results.start_time).seconds
         db.session.commit()
         current_app.logger.info(f'Quiz submitted successfully with score: {total_score}')
         return jsonify({'message': 'Quiz submitted successfully', 'overall_score': total_score}), 201
@@ -765,4 +768,36 @@ def get_attempts(quiz_id):
 
 # ...existing code...
 
+# ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/results', methods=['GET'])
+@login_required
+def get_results(quiz_id):
+    try:
+        user_id = current_user.id
+        current_app.logger.info(f'Fetching results for user_id: {user_id}, quiz_id: {quiz_id}')
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        results = QuizResults.get_results(user_id, quiz_id)
+        current_app.logger.info(f'Number of results fetched: {len(results)}')
+        current_app.logger.info(f'Results fetched: {results}')
+        
+        if not results:
+            current_app.logger.info('No results found.')
+            response = create_response({'results': [], 'max_score': 0.0})
+        else:
+            results_dict = [result.to_dict() for result in results]
+            max_score = max(result['overall_score'] for result in results_dict)
+            current_app.logger.info(f'Max score calculated: {max_score}')
+            response = create_response({'results': results_dict, 'max_score': max_score})
+        
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching results: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...
 

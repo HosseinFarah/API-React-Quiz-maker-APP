@@ -24,6 +24,8 @@ const CreateQuiz = () => {
       for (const key in data) {
         if (key === "shuffle_questions") {
           formData.append("shuffle_questions_enabled", data[key] ? "true" : "false");
+        } else if (key === "start_date" || key === "end_date") {
+          formData.append(key, data[key]);
         } else {
           formData.append(key, data[key]);
         }
@@ -100,13 +102,13 @@ const CreateQuiz = () => {
             </div>
             <div className="mb-3">
               <label htmlFor="start_date" className="form-label">Start Date</label>
-              <input type="date" {...register("start_date", { required: true })} className="form-control" />
+              <input type="datetime-local" {...register("start_date", { required: true })} className="form-control" />
               {errors.start_date && <span className="text-danger">{errors.start_date.message || "This field is required"}</span>}
               {serverErrors.start_date && <div className="text-danger">{serverErrors.start_date}</div>}
             </div>
             <div className="mb-3">
               <label htmlFor="end_date" className="form-label">End Date</label>
-              <input type="date" {...register("end_date", { required: true })} className="form-control" />
+              <input type="datetime-local" {...register("end_date", { required: true })} className="form-control" />
               {errors.end_date && <span className="text-danger">{errors.end_date.message || "This field is required"}</span>}
               {serverErrors.end_date && <div className="text-danger">{serverErrors.end_date}</div>}
             </div>

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, RadioField, SelectField, TextAreaField, BooleanField, FileField, FieldList, FormField
+from wtforms import StringField, SubmitField, RadioField, SelectField, TextAreaField, BooleanField, FileField, FieldList, FormField, DateTimeField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError
 from wtforms.fields import DateField
 from flask_wtf.file import FileAllowed
@@ -22,8 +22,8 @@ class QuizForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired(), Length(min=2, max=1000)])
     status = SelectField('Status', choices=[('available', 'Available'), ('unavailable', 'Unavailable')], validators=[DataRequired()])
     attempt = StringField('attempt', validators=[DataRequired()])
-    start_date = DateField('Start Date', format='%Y-%m-%d', validators=[DataRequired()])
-    end_date = DateField('End Date', format='%Y-%m-%d', validators=[DataRequired()])
+    start_date = DateTimeField('Start Date', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
+    end_date = DateTimeField('End Date', format='%Y-%m-%dT%H:%M', validators=[DataRequired()])
     time_limit = StringField('Time Limit', validators=[DataRequired()])
     image = FileField('Image', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif', 'webp'], 'Only jpg, png, jpeg, gif and webp files allowed'), img_size(1*1024*1024, message='Image size must be less than 1MB')])
     shuffle_questions = BooleanField('Shuffle Questions')

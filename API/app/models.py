@@ -235,7 +235,7 @@ class Quizzes(db.Model):
     status = db.Column(db.String(20), nullable=False, default='available', index=True)
     image = db.Column(db.String(255), nullable=True)
     attempt = db.Column(db.Integer, nullable=False, default=0)
-    start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    start_date = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone('Europe/Helsinki')))
     end_date = db.Column(db.DateTime, nullable=True)
     time_limit = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
@@ -368,8 +368,8 @@ class QuizResults(db.Model):
             'user_id': self.user_id,
             'overall_score': self.overall_score,
             'completed': self.completed,
-            'start_time': self.start_time,
-            'end_time': self.end_time,
+            'start_time': self.start_time.isoformat(),
+            'end_time': self.end_time.isoformat() if self.end_time else None,
             'duration': self.duration,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
@@ -398,6 +398,27 @@ class QuizResults(db.Model):
         db.session.add(result)
         db.session.commit()
         return result
+    
+    @staticmethod
+    def get_results(user_id, quiz_id):
+        try:
+            results = QuizResults.query.filter_by(user_id=user_id, quiz_id=quiz_id).all()
+            return results
+        except Exception as e:
+            current_app.logger.error(f'Error in get_results: {str(e)}')
+            raise
+        
+        
+
+    @staticmethod
+    def get_max_score(user_id, quiz_id):
+        try:
+            max_score = db.session.query(db.func.max(QuizResults.overall_score)).filter_by(user_id=user_id, quiz_id=quiz_id).scalar()
+            return max_score if max_score is not None else 0.0
+        except Exception as e:
+            current_app.logger.error(f'Error in get_max_score: {str(e)}')
+            raise
+
 
 class QuizAnswers(db.Model):
     __tablename__ = 'quiz_answers'

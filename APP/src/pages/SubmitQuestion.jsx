@@ -25,6 +25,7 @@ const SubmitQuestion = () => {
   const [attempts, setAttempts] = useState(0);
   const [quiz, setQuiz] = useState(null); // Add state for quiz
   const [timer, setTimer] = useState(0);
+  const [startTime, setStartTime] = useState(null); // Add state for start time
 
   useEffect(() => {
     fetch(`${API_URL}/quiz/${id}/questions`)
@@ -60,13 +61,16 @@ const SubmitQuestion = () => {
         if (!savedStartTime) {
           const startTime = currentTime;
           localStorage.setItem(`quiz_${id}_start_time`, startTime);
+          setStartTime(startTime); // Set start time
           setTimer(data.quiz.time_limit * 60); // Convert minutes to seconds
         } else {
           const elapsedTime = Math.floor((currentTime - parseInt(savedStartTime)) / 1000);
           const remainingTime = data.quiz.time_limit * 60 - elapsedTime;
           setTimer(remainingTime > 0 ? remainingTime : 0);
+          setStartTime(parseInt(savedStartTime)); // Set start time
         }
         console.log("Timer:", data.quiz.time_limit * 60); // Add logging
+        localStorage.removeItem(`quiz_${id}_answers`); // Clear saved answers for new attempt
       } catch (error) {
         toast.error(error.message);
       }
@@ -134,9 +138,11 @@ const SubmitQuestion = () => {
       const csrfToken = await getCsrfToken(); 
       const user_id = user.id;
       const end_time = new Date().toISOString();
+      const duration = Math.floor((new Date().getTime() - startTime) / 1000); // Calculate duration
       const formattedData = {
         user_id,
         end_time,
+        duration, // Include duration
         questions: await Promise.all(Object.keys(data).map(async (questionId) => {
           const response = await fetch(`${API_URL}/answers/${questionId}`);
           const answersData = await response.json();
@@ -173,8 +179,9 @@ const SubmitQuestion = () => {
       const result = await response.json();
       setAttempts(attempts + 1); // Increment attempts
       console.log("Submission result:", result); // Add logging
-      alert(`Quiz submitted successfully! Your score: ${result.overall_score}`);
+      toast.success(`Quiz submitted successfully! Your score: ${result.overall_score}`);
       localStorage.removeItem(`quiz_${id}_start_time`); // Clear start time from local storage
+      localStorage.removeItem(`quiz_${id}_answers`); // Clear saved answers after submission
       navigate("/"); // Redirect to home or another page
     } catch (error) {
       console.error("Error submitting quiz:", error); // Add logging

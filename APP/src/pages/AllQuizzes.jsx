@@ -70,6 +70,8 @@ const AllQuizzes = () => {
                     <p>{quiz.description}</p>
                     <p>Attempts: {quiz.attempt}</p>
                     <p>Time Limit: {quiz.time_limit} minutes</p>
+                    <p>Start Date: {quiz.start_date}</p>
+                    <p>End Date: {quiz.end_date}</p>
                     <p>Status: {quiz.status}</p>
                     <p>Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}</p>
 

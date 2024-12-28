@@ -36,12 +36,15 @@ const EditQuiz = () => {
         fetchQuiz();
     }, [id]);
 
-    const formatDate = (dateString) => {
+
+    const formatDateTimeLocal = (dateString) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
     };
 
     const onSubmit = async (data) => {
@@ -57,6 +60,8 @@ const EditQuiz = () => {
                     formData.append("existing_image", quiz.image);
                 } else if (key === "shuffle_questions") {
                     formData.append("shuffle_questions", data[key] ? "true" : "false");
+                } else if (key === "start_date" || key === "end_date") {
+                    formData.append(key, data[key]);
                 } else {
                     formData.append(key, data[key]);
                 }
@@ -136,13 +141,13 @@ const EditQuiz = () => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="start_date" className="form-label">Start Date</label>
-                            <input defaultValue={formatDate(quiz.start_date)} type="date" {...register("start_date", { required: true })} className="form-control" />
+                            <input defaultValue={formatDateTimeLocal(quiz.start_date)} type="datetime-local" {...register("start_date", { required: true })} className="form-control" />
                             {errors.start_date && <span className="text-danger">{errors.start_date.message || "This field is required"}</span>}
                             {serverErrors.start_date && <div className="text-danger">{serverErrors.start_date}</div>}
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="end_date" className="form-label">Start Date</label>
-                            <input defaultValue={formatDate(quiz.end_date)} type="date" {...register("end_date", { required: true })} className="form-control" />
+                            <label htmlFor="end_date" className="form-label">End Date</label>
+                            <input defaultValue={formatDateTimeLocal(quiz.end_date)} type="datetime-local" {...register("end_date", { required: true })} className="form-control" />
                             {errors.end_date && <span className="text-danger">{errors.end_date.message || "This field is required"}</span>}
                             {serverErrors.end_date && <div className="text-danger">{serverErrors.end_date}</div>}
                         </div>
