@@ -234,9 +234,11 @@ const SubmitQuestion = () => {
         <div className="col-md-12">
           <h1 className="badge bg-secondary fs-3">Submit Quiz: {title}</h1>
           <p className="fs-5 mt-5">Remaining attempts: {quiz ? quiz.attempt - attempts : 0}</p>
-          {quiz && attempts < quiz.attempt ?
-          <p className="fs-5 mt-5">Time remaining: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} minutes</p> 
-          : null}
+          {quiz && attempts < quiz.attempt ? (
+            <div className="row d-flex justify-content-end">
+               <span className="badge bg-danger fs-4 text-start shadow-lg flex-inline w-50">Time remaining: {Math.floor(timer / 60)}:{timer % 60 < 10 ? `0${timer % 60}` : timer % 60} minutes </span> 
+            </div>
+          ) : null}
           <hr />
           {quiz && attempts < quiz.attempt ? (
           <form onSubmit={handleSubmit(onSubmit)} className="form">
@@ -258,8 +260,12 @@ const SubmitQuestion = () => {
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
               </div>
             ))}
-            <button type="button" onClick={handleSubmit(saveAnswers)}>Save Answers</button>
-            <button type="submit">Submit Quiz</button>
+
+            <div className="d-flex justify-content-end">
+              <button type="button" onClick={handleSubmit(saveAnswers)} className="btn btn-primary me-2">Save Answers</button>
+              <button type="submit" className="btn btn-success">Submit Quiz</button>
+            </div>
+
           </form>
             ) : (
                 <p>You have reached the maximum number of attempts for this quiz.</p>

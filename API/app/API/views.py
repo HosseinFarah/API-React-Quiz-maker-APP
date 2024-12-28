@@ -778,16 +778,23 @@ def get_results(quiz_id):
         results = QuizResults.get_results(user_id, quiz_id)
         current_app.logger.info(f'Number of results fetched: {len(results)}')
         current_app.logger.info(f'Results fetched: {results}')
+        results_dict = []
+        for result in results:
+            result_dict = result.to_dict()
+            user = User.query.get(result.user_id)
+            result_dict['user'] = {
+                'firstname': user.firstname,
+                'lastname': user.lastname
+            }
+            results_dict.append(result_dict)
         
         if not results:
             current_app.logger.info('No results found.')
             response = create_response({'results': [], 'max_score': 0.0})
         else:
-            results_dict = [result.to_dict() for result in results]
-            max_score = max(result['overall_score'] for result in results_dict)
-            current_app.logger.info(f'Max score calculated: {max_score}')
+            max_score = max([result.overall_score for result in results])
             response = create_response({'results': results_dict, 'max_score': max_score})
-        
+            
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
@@ -797,5 +804,33 @@ def get_results(quiz_id):
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
-# ...existing code...
+    
+    
 
+@api.route('/quiz/<int:quiz_id>/all_results', methods=['GET'])
+def get_all_results(quiz_id):
+    try:
+        current_app.logger.info(f'Fetching all results for quiz_id: {quiz_id}')
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        results = QuizResults.get_all_results(quiz_id)
+        results_dict = []
+        for result in results:
+            result_dict = result.to_dict()
+            user = User.query.get(result.user_id)
+            result_dict['user'] = {
+                'firstname': user.firstname,
+                'lastname': user.lastname
+            }
+            results_dict.append(result_dict)
+        current_app.logger.info(f'Number of results fetched: {len(results_dict)}')
+        response = create_response({'results': results_dict})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching results for quiz_id {quiz_id}: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+# ...existing code...

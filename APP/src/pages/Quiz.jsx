@@ -7,7 +7,6 @@ import { AuthContext } from "../context/AuthContext";
 import { deleteQuiz } from "../utils/csrfUtils";
 import QuizResults from "./QuizResults";
 
-
 const Quiz = () => {
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,16 +65,37 @@ const Quiz = () => {
               style={{ maxHeight: "200px" }}
               alt={quiz.title}
             />
-
-            <p className="text-wrap">{quiz.description}</p>
-            <p className="text-wrap">attempt: {quiz.attempt}</p>
-            <p className="text-wrap">Start Date: {quiz.start_date}</p>
-            <p className="text-wrap">End Date: {quiz.end_date}</p>
-            <p className="text-wrap">Time Limit: {quiz.time_limit} minutes</p>
-            <p className="text-wrap">Status: {quiz.status}</p>
+            <hr className="text-primary" />
             <p className="text-wrap">
-              Shuffle: {quiz.shuffle_questions ? "Yes" : "No"}
+              <i className="fas fa-info-circle text-secondary fs-4"></i>{" "}
+              {quiz.description}
             </p>
+            <p className="text-wrap">
+              <i className="fas fa-user-clock text-danger fs-4"></i> Attempt:{" "}
+              {quiz.attempt}
+            </p>
+            <p className="text-wrap">
+              <i className="fas fa-calendar-day text-success fs-4"></i> Start
+              Date: {quiz.start_date}
+            </p>
+            <p className="text-wrap">
+              <i className="fas fa-calendar-day text-info fs-4"></i> End Date:{" "}
+              {quiz.end_date}
+            </p>
+            <p className="text-wrap">
+              <i className="fas fa-clock text-warning fs-4"></i> Time Limit:{" "}
+              {quiz.time_limit} minutes
+            </p>
+            <p className="text-wrap">
+              <i className="fas fa-info-circle text-success fs-4"></i> Status:{" "}
+              {quiz.status}
+            </p>
+            <p className="text-wrap">
+              <i className="fas fa-random text-info fs-4"></i> Shuffle:{" "}
+              {quiz.shuffle_questions ? "Yes" : "No"}
+            </p>
+            <hr className="text-primary" />
+
             {isAdmin && (
               <>
                 <Link
@@ -104,13 +124,26 @@ const Quiz = () => {
           </div>
         </div>
         <div className="row d-flex justify-content-center">
-          {quiz.start_date && new Date(quiz.start_date) <= new Date() && new Date(quiz.end_date) >= new Date() ? (
-          <Link to={`/quiz/${quiz.id}/submit`} className="btn btn-primary mt-3 w-25">
-            {savedAnswers ? "Continue Quiz" : "Start Quiz"}
-          </Link>
+          {quiz.start_date &&
+          new Date(quiz.start_date) <= new Date() &&
+          new Date(quiz.end_date) >= new Date() ? (
+            <Link
+              to={`/quiz/${quiz.id}/submit`}
+              className="btn btn-primary mt-3 w-25 shadow-lg fs-4 text-warning"
+            >
+              {savedAnswers ? "Continue Quiz" : "Start Quiz"}
+            </Link>
           ) : null}
         </div>
         <QuizResults quizId={id} />
+        {isAdmin && (
+        <Link
+          to={`/quiz/${quiz.id}/results`}
+          className="btn btn-primary mt-3 w-25 shadow-lg fs-4 text-warning"
+        >
+          View Results
+        </Link>
+        )}
       </div>
     </>
   );

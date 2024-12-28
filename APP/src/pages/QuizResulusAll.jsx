@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
-const QuizResults = ({ quizId }) => {
+const QuizResultsAll = () => {
+    const { quizId } = useParams(); // Extract quizId from URL parameters
     const [results, setResults] = useState([]);
-    const [maxScore, setMaxScore] = useState(null);
     const [error, setError] = useState(null);
     
     useEffect(() => {
+        if (!quizId) return; // Ensure quizId is defined
         const fetchResults = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/quiz/${quizId}/results`, {
+                const response = await fetch(`http://localhost:5000/api/quiz/${quizId}/all_results`, {
                     credentials: 'include'
                 });
                 if (!response.ok) {
@@ -16,7 +18,6 @@ const QuizResults = ({ quizId }) => {
                 }
                 const data = await response.json();
                 setResults(data.results.sort((a, b) => b.overall_score - a.overall_score)); // Sort results by score
-                setMaxScore(data.max_score);
             } catch (err) {
                 setError(err.message);
             }
@@ -29,8 +30,10 @@ const QuizResults = ({ quizId }) => {
     }
 
     return (
-        <div>
+        <div className='container' style={{ marginTop: '150px' }}>
             <hr className='text-danger' />
+            <Link to={`/quiz/${quizId}`} className='btn btn-secondary m-2'><i className='fas fa-arrow-left'></i> Back to Quiz</Link>
+            <br />
             <h1 className='badge bg-warning fs-3 text-primary shadow-lg'>Quiz Results</h1>
             {results.length === 0 ? (
                 <p>No results found.</p>
@@ -60,16 +63,12 @@ const QuizResults = ({ quizId }) => {
                 
 
             )}
-            {maxScore !== null && (
-                <div>
-                    <h2 className='badge bg-info fs-3'>Max Score: {maxScore}</h2>
-                </div>
-            )}
+
         </div>
     );
 };
 
-export default QuizResults;
+export default QuizResultsAll;
 
 
 

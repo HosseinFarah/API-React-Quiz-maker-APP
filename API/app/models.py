@@ -419,6 +419,14 @@ class QuizResults(db.Model):
             current_app.logger.error(f'Error in get_max_score: {str(e)}')
             raise
 
+    @staticmethod
+    def get_all_results(quiz_id):
+        try:
+            return QuizResults.query.filter_by(quiz_id=quiz_id).all()
+        except SQLAlchemyError as e:
+            current_app.logger.error(f'Database error fetching all results for quiz_id {quiz_id}: {str(e)}')
+            raise
+
 
 class QuizAnswers(db.Model):
     __tablename__ = 'quiz_answers'
