@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getCsrfToken } from "../utils/csrfUtils";
 import { API_URL } from "../components/Urls";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 const SubmitQuestion = () => {
-    const { user } = useContext(AuthContext);
+    const { user,isAdmin } = useContext(AuthContext);
     const { id } = useParams();
   const {
     register,
@@ -258,6 +258,9 @@ const SubmitQuestion = () => {
                   </div>
                 ))}
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
+                {isAdmin && (
+                  <Link to={`/quiz/${id}/edit_question/${question.id}`} className="btn btn-primary me-2">Edit Question</Link>
+                )}
               </div>
             ))}
 

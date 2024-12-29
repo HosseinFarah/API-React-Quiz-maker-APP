@@ -834,3 +834,126 @@ def get_all_results(quiz_id):
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
 # ...existing code...
+
+@api.route('/quiz/<int:quiz_id>/questions/<int:question_id>', methods=['GET'])
+def get_question(quiz_id, question_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        question = Questions.query.filter_by(id=question_id, quiz_id=quiz.id).first_or_404()
+        answers = Answers.query.filter_by(question_id=question.id).all()
+        question_dict = question.to_dict()
+        answers_dict = [answer.to_dict() for answer in answers]
+        question_dict['answers'] = answers_dict
+        response = jsonify({'question': question_dict})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching question: {str(e)}')
+        response = jsonify({'message': 'An error occurred', 'error': str(e)})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response, 500
+
+
+# route for updating questions and answers in a quiz
+@api.route('/quiz/<int:quiz_id>/update_question', methods=['POST'])
+def update_question(quiz_id):
+    try:
+        if request.method != 'POST':
+            current_app.logger.error('Request method is not POST')
+            return jsonify({"message": "Method not allowed"}), 405
+
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        data = request.form.to_dict(flat=False)
+        files = request.files
+        current_app.logger.info(f'Received data: {data}')  # Log received data
+        current_app.logger.info(f'Received files: {files}')  # Log received files
+
+        if not data:
+            current_app.logger.error('No data received in the request')
+            return jsonify({"message": "No data received"}), 400
+
+        if not files:
+            current_app.logger.error('No files received in the request')
+            return jsonify({"message": "No files received"}), 400
+
+        question_id = data.get('question_id')[0]
+        question = Questions.query.get_or_404(question_id)
+        question.text = data.get('text')[0]
+        question.format = data.get('format')[0]
+        question.options_format = data.get('options_format')[0]
+        question.score = float(data.get('score')[0])
+        question.shuffle_enabled = data.get('shuffle_enabled', ['false'])[0] == 'true'
+        question_image = files.get('image', None)
+        question.image = save_image(question_image)
+
+        current_app.logger.info(f'Updating question: {question_id} with text: {question.text}, format: {question.format}, options_format: {question.options_format}, score: {question.score}, shuffle_enabled: {question.shuffle_enabled}, image: {question.image}')
+
+        answers = {}
+        for key, value in data.items():
+            if key.startswith('answers['):
+                parts = key.split('[')
+                index = int(parts[1][:-1])
+                sub_key = parts[2][:-1]
+                if index not in answers:
+                    answers[index] = {}
+                answers[index][sub_key] = value[0]
+
+        current_app.logger.info(f'Parsed answers: {answers}')
+
+        processed_answers = []
+        for index, answer in answers.items():
+            text = answer['text']
+            is_correct = answer['is_correct'] == 'true'
+            image = files.get(f'answers[{index}][image]', None)
+            answer_id = answer.get('id')
+            order_number = answer.get('order_number')
+            question_id = answer.get('question_id')
+
+            current_app.logger.info(f'Processing answer {index}: id={answer_id}, text={text}, is_correct={is_correct}, image={image}, order_number={order_number}, question_id={question_id}')
+
+            if not text:
+                return jsonify({"message": f"Answer {int(index)+1} text is required"}), 400
+
+            processed_answers.append({
+                'id': None if answer_id == 'undefined' else answer_id,
+                'text': text,
+                'is_correct': is_correct,
+                'image': image,
+                'order_number': None if order_number == 'undefined' else order_number,
+                'question_id': None if question_id == 'undefined' else question_id
+            })
+
+        current_app.logger.info(f'Processed answers: {processed_answers}')
+
+        existing_answers = Answers.query.filter_by(question_id=question.id).all()
+        for answer in existing_answers:
+            db.session.delete(answer)
+
+        for answer in processed_answers:
+            answer_entry = Answers(
+                question_id=answer['question_id'],
+                text=answer['text'],
+                is_correct=answer['is_correct'],
+                image=save_image(answer['image']),
+                order_number=answer['order_number']
+            )
+            db.session.add(answer_entry)            
+        db.session.commit()
+        current_app.logger.info(f'Question updated with ID: {question.id}')
+        return jsonify({"message": "Question updated successfully"}), 200
+    
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        current_app.logger.error(f"Database error: {e}")
+        return jsonify({"message": "A database error occurred"}), 500
+    
+    except Exception as e:
+        current_app.logger.error(f"Unexpected error: {e}")
+        return jsonify({"message": "An unexpected error occurred"}), 500
+    
+# ...existing code...
+
+
+
