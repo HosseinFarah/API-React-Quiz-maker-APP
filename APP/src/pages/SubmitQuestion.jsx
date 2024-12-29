@@ -245,7 +245,9 @@ const SubmitQuestion = () => {
             {questions.map((question) => (
               <div key={question.id} className="mb-3">
                 <h3>{question.text}</h3>
+                {question.image &&
                 <img src={question.image ? `${IMAGE_URL}${question.image}` : ""} alt="Question" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
+                }
                 {question.answers.map((answer) => (
                   <>
                   <hr />

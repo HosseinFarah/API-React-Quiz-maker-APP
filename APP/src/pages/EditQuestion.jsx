@@ -89,7 +89,7 @@ const EditQuestion = () => {
       const result = await response.json();
       if (response.ok) {
         toast.success("Question updated successfully");
-        navigate(`/quiz/${quiz_id}`);
+        navigate(`/quiz/${quiz_id}/submit`);
       } else {
         throw new Error(result.message || "Failed to update question");
       }
