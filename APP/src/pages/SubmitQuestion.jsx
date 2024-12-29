@@ -247,7 +247,9 @@ const SubmitQuestion = () => {
                 <h3>{question.text}</h3>
                 <img src={question.image ? `${IMAGE_URL}${question.image}` : ""} alt="Question" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
                 {question.answers.map((answer) => (
-                  <div key={answer.id} className="form-check">
+                  <>
+                  <hr />
+                  <div key={answer.id} className="form-check mt-3">
                     <input
                       type="radio"
                       name={String(question.id)}
@@ -255,9 +257,18 @@ const SubmitQuestion = () => {
                       value={answer.id}
                       {...register(String(question.id))}
                     />
+                    <div className="row">
+                    <div className="col-md-3">
                     <span className="ms-2">{answer.format}. {answer.text}</span>
-                    <span><img src={answer.image ? `${IMAGE_URL}${answer.image}` : ""} alt="Answer" className="img-fluid rounded" style={{ maxHeight: "100px" }} /></span>
+                    </div>
+                    <div className="col-md-4">
+                      {answer.image &&
+                    <span><img src={answer.image ? `${IMAGE_URL}${answer.image}` : ""} alt="Answer" className="img-fluid rounded" style={{ maxHeight: "200px" }} /></span>
+                    }
+                    </div>
+                    </div>
                   </div>
+                  </>
                 ))}
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
                 {isAdmin && (
