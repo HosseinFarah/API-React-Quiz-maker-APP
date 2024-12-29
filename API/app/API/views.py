@@ -843,7 +843,71 @@ def get_all_results(quiz_id):
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
-# ...existing code...
+    
+    
+@api.route('/quiz/<int:quiz_id>/results/<int:result_id>', methods=['GET'])
+def get_result(quiz_id, result_id):
+    try:
+        current_app.logger.info(f'Fetching result with ID: {result_id}')
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        result = QuizResults.query.filter_by(id=result_id, quiz_id=quiz_id).first_or_404()
+        
+        questions = Questions.query.filter_by(quiz_id=quiz.id).all()
+        answers = Answers.query.filter(Answers.question_id.in_([q.id for q in questions])).all()
+        selected_answers = QuizAnswers.query.filter_by(result_id=result.id).all()
+        
+        questions_dict = []
+        for question in questions:
+            question_dict = question.to_dict()
+            question_dict['answers'] = [answer.to_dict() for answer in answers if answer.question_id == question.id]
+            question_dict['selected_answer'] = next((sa.answer_id for sa in selected_answers if sa.question_id == question.id), None)
+            questions_dict.append(question_dict)
+        
+        response_data = {
+            'quiz_name': quiz.title,
+            'duration': result.duration,
+            'start_time': result.start_time,
+            'end_time': result.end_time,
+            'questions': questions_dict,
+            'overall_score': result.overall_score
+        }
+        
+        response = create_response({'result': response_data})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error fetching result: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
+    
+    
+        
+        
+
+    
+    
+
+@api.route('/quiz/<int:quiz_id>/delete_result/<int:result_id>', methods=['DELETE'])
+def delete_result(quiz_id, result_id):
+    try:
+        current_app.logger.info(f'Deleting result with ID: {result_id}')
+        result = QuizResults.query.filter_by(id=result_id, quiz_id=quiz_id).first_or_404()
+        db.session.delete(result)
+        db.session.commit()
+        current_app.logger.info(f'Result with ID {result_id} deleted successfully')
+        return jsonify({'message': 'Result deleted successfully'}), 200
+    except Exception as e:
+        current_app.logger.error(f'Error deleting result: {str(e)}')
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+    
+
+
+
 
 @api.route('/quiz/<int:quiz_id>/questions/<int:question_id>', methods=['GET'])
 def get_question(quiz_id, question_id):

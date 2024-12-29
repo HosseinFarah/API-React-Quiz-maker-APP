@@ -23,6 +23,12 @@ const QuizResults = ({ quizId }) => {
         };
         fetchResults();
     }, [quizId]);
+    const formatDuration = (seconds) => {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        return `${hrs}h ${mins}m ${secs}s`;
+      };
 
     if (error) {
         return <div>Error: {error}</div>;
@@ -50,7 +56,7 @@ const QuizResults = ({ quizId }) => {
                             <tr key={result.id}>
                                 <td>{result.user.firstname} {result.user.lastname}</td>
                                 <td>{result.overall_score}</td>
-                                <td>{result.duration} seconds</td>
+                                <td>{formatDuration(result.duration)}</td>
                                 <td>{new Date(result.start_time).toLocaleString()}</td>
                                 <td>{new Date(result.end_time).toLocaleString()}</td>
                             </tr>
