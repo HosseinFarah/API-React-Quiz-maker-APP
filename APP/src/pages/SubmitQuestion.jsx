@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getCsrfToken } from "../utils/csrfUtils";
-import { API_URL } from "../components/Urls";
+import { API_URL,IMAGE_URL } from "../components/Urls";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -245,6 +245,7 @@ const SubmitQuestion = () => {
             {questions.map((question) => (
               <div key={question.id} className="mb-3">
                 <h3>{question.text}</h3>
+                <img src={question.image ? `${IMAGE_URL}${question.image}` : ""} alt="Question" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
                 {question.answers.map((answer) => (
                   <div key={answer.id} className="form-check">
                     <input
@@ -255,6 +256,7 @@ const SubmitQuestion = () => {
                       {...register(String(question.id))}
                     />
                     <span className="ms-2">{answer.format}. {answer.text}</span>
+                    <span><img src={answer.image ? `${IMAGE_URL}${answer.image}` : ""} alt="Answer" className="img-fluid rounded" style={{ maxHeight: "100px" }} /></span>
                   </div>
                 ))}
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
