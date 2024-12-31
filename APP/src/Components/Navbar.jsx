@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { isAuthenticated, logout,isAdmin } = useContext(AuthContext);
+  const { isAuthenticated, logout, isAdmin } = useContext(AuthContext);
 
   return (
     <>
@@ -48,20 +48,20 @@ const Navbar = () => {
                   Home
                 </NavLink>
               </li>
-              {isAuthenticated ? (
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/todos">
-                  Todos
-                </NavLink>
-              </li>
-              ): null}  
               {isAdmin ? (
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/create_quiz">
-                  Create New Quiz
-                </NavLink>
-              </li>
-              ): null}
+                <>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/create_quiz">
+                      Create New Quiz
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/all_users">
+                      All Users
+                    </NavLink>
+                  </li>
+                </>
+              ) : null}
             </ul>
             <ul className="navbar-nav ms-auto">
               {isAuthenticated ? (
@@ -72,16 +72,16 @@ const Navbar = () => {
                 </li>
               ) : (
                 <>
-                <li className="nav-item">
-                  <NavLink className="nav-link" to="/login">
-                    Login
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink className="nav-link" to="/register">
-                    Register
-                  </NavLink>
-                </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/login">
+                      Login
+                    </NavLink>
+                  </li>
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/register">
+                      Register
+                    </NavLink>
+                  </li>
                 </>
               )}
             </ul>

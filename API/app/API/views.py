@@ -16,7 +16,7 @@ from datetime import datetime
 from pytz import timezone
 from flask_babel import _
 from ..Quiz.forms import QuestionForm, AnswerForm
-from app.models import Questions, Answers, Quizzes, User, QuizResults, QuizAnswers
+from app.models import Questions, Answers, Quizzes, User, QuizResults, QuizAnswers, Role
 from sqlalchemy.exc import SQLAlchemyError
 
 @api.errorhandler(400)
@@ -389,7 +389,95 @@ def reset_password(token):
     response.headers.set('Access-Control-Allow-Credentials', 'true')
     return response
 
+@api.route('/all_users', methods=['GET'])
+def all_users():
+    users = User.query.all()
+    response = create_response({'users': [user.to_dict() for user in users]})
+    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    return response
 # ...existing code...
+
+@api.route('/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get_or_404(user_id)
+    response = create_response({'user': user.to_dict()})
+    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+    response.headers.set('Access-Control-Allow-Credentials', 'true')
+    return response
+    
+
+@api.route('/update_user/<int:user_id>', methods=['POST'])
+def update_user(user_id):
+    try:
+        user = User.query.get_or_404(user_id)
+        data = request.form.to_dict()
+        
+        # Validate and convert data
+        user.firstname = data.get('firstname', user.firstname)
+        user.lastname = data.get('lastname', user.lastname)
+        user.email = data.get('email', user.email)
+        user.phone = data.get('phone', user.phone)
+        user.address = data.get('address', user.address)
+        user.city = data.get('city', user.city)
+        user.zipcode = data.get('zipcode', user.zipcode)
+        user.is_active = data.get('isActive', 'false') == 'true'
+        
+        # Assign role as a Role object
+        role_name = data.get('role', user.role.name if user.role else None)
+        if role_name:
+            role = Role.query.filter_by(name=role_name).first()
+            if role:
+                user.role = role
+        
+        db.session.commit()
+        response = create_response({'message': 'User updated successfully', 'user': user.to_dict()}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error updating user: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
+@api.route('/delete_user/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    try:
+        user = User.query.get_or_404(user_id)
+        db.session.delete(user)
+        db.session.commit()
+        response = create_response({'message': 'User deleted successfully'}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except ValidationError as e:
+        current_app.logger.error(f'CSRF token validation error: {str(e)}')
+        response = create_response({'message': 'Invalid CSRF token', 'error': str(e)}, 400)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error deleting user: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+
+
+
+
+
+
+
+
+
+
+
+
+# """"""""""""""""""""""Quiz API""""""""""""""""""""""
 
 @api.route('/quiz/create', methods=['POST'])
 def create_quiz():
@@ -1006,5 +1094,7 @@ def edit_question(quiz_id, question_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+
+# ...existing code...
 
 # ...existing code...

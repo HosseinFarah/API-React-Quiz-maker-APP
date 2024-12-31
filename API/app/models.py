@@ -141,6 +141,20 @@ class User(UserMixin, db.Model):
         db.session.commit()
         return True
     
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address,
+            'city': self.city,
+            'zipcode': self.zipcode,
+            'is_active': self.is_active,
+            'role': self.role.name if self.role else None,  # Convert role to a serializable format
+            # Add other fields as necessary
+        }
 
  #for role    
 class Permission:
