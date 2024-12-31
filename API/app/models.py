@@ -149,6 +149,7 @@ class User(UserMixin, db.Model):
             'email': self.email,
             'phone': self.phone,
             'address': self.address,
+            'image': self.image,
             'city': self.city,
             'zipcode': self.zipcode,
             'is_active': self.is_active,

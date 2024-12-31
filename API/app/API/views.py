@@ -469,7 +469,34 @@ def delete_user(user_id):
 
 
 
-
+@api.route('/search_users', methods=['POST'])
+def search_users():
+    try:
+        data = request.get_json()
+        search_term = data.get('searchTerm')
+        users = User.query.filter(
+            (User.firstname.ilike(f'%{search_term}%')) |
+            (User.lastname.ilike(f'%{search_term}%')) |
+            (User.email.ilike(f'%{search_term}%')) |
+            (User.phone.ilike(f'%{search_term}%')) |
+            (User.address.ilike(f'%{search_term}%')) |
+            (User.city.ilike(f'%{search_term}%')) |
+            (User.zipcode.ilike(f'%{search_term}%'))|
+            (User.role.has(Role.name.ilike(f'%{search_term}%')))|
+            (User.firstname + ' ' + User.lastname).ilike(f'%{search_term}%')
+        ).all()
+        response = create_response({'users': [user.to_dict() for user in users]}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error searching users: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
 
 
 

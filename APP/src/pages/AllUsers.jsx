@@ -11,7 +11,7 @@ const AllUsers = () => {
   const { register, handleSubmit } = useForm();
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 15;
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });  
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -75,14 +75,14 @@ const AllUsers = () => {
   const onSubmit = async (data) => {
     try {
       const csrfToken = await getCsrfToken(); // Fetch CSRF token
-      const response = await fetch(`${API_URL}/search_user`, {
+      const response = await fetch(`${API_URL}/search_users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": csrfToken, // Use fetched CSRF token
         },
         credentials: "include",
-        body: JSON.stringify(data),
+        body: JSON.stringify({ searchTerm: data.search }), // Update key to 'searchTerm'
       });
       const res = await response.json();
       if (!response.ok) {
@@ -138,6 +138,19 @@ const AllUsers = () => {
       <div className="row justify-content-center">
         <div className="col-md-12">
           <h1>All Users</h1>
+          <form onChange={handleSubmit(onSubmit)}>
+            <div className="input-group mb-3">
+              <input type="text" className="form-control" placeholder="Search by name, email, role, city, phone" {...register("search")} />
+              <button className="btn btn-primary" type="submit">
+                <i className="fa fa-search"></i>
+              </button>
+            </div>
+          </form>
+          <div className="d-flex justify-content-between">
+            <h5>Total Users: <span className="badge bg-info text-light fs-5 shadow-md">{users.length}</span></h5>
+          </div>
+          <br />
+          <br />
           <table className="table table-bordered table-striped table-hover">
             <thead>
               <tr>
@@ -208,6 +221,7 @@ const AllUsers = () => {
                         </>
                       )}
                     </td>
+                
                   </tr>
                 ))
               )}
