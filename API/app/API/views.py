@@ -6,7 +6,7 @@ from flask_login import login_user, current_user, logout_user
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
-from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm, RegistrationForm,UpdateAccountForm,UpdatePasswordForm
+from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm, RegistrationForm,UpdatePasswordForm
 from ..Quiz.forms import QuizForm
 from werkzeug.utils import secure_filename
 import os
@@ -458,67 +458,50 @@ def update_user(user_id):
 @api.route('/update_profile/<int:user_id>', methods=['POST'])
 def update_profile(user_id):
     try:
-        form = UpdateAccountForm()
-        
-        # Load cities from JSON file
-        cities_file = os.path.join(current_app.config['JSON_FOLDER'], 'cities.json')
-        with open(cities_file, encoding='utf-8') as f:
-            cities = json.load(f)
-            form.city.choices = [(city, city) for city in cities]
-        
-        if form.validate_on_submit():
-            user = User.query.get_or_404(user_id)
-            data = request.form.to_dict()
-            current_app.logger.debug(f'Update Profile data received: {data}')
-            
-            # Validate city
-            if data.get('city') not in cities:
-                return create_response({'message': 'Invalid city choice'}, 400)
-            
-            user.firstname = form.firstname.data
-            user.lastname = form.lastname.data
-            user.phone = form.phone.data
-            user.address = form.address.data
-            user.city = form.city.data
-            user.zipcode = form.zipcode.data
-            image = request.files.get('image')
-            current_app.logger.debug(f'Image received: {image}')
-            if image and hasattr(image, 'read'):
-                filename = secure_filename(image.filename)
-                upload_folder = current_app.config.get('UPLOAD_FOLDER')
-                if not os.path.exists(upload_folder):
-                    os.makedirs(upload_folder)
-                image.save(os.path.join(upload_folder, filename))
-                user.image = filename
-            else:
-                existing_image = form.existing_image.data
-                if not existing_image:
-                    existing_image_url = f"{current_app.config['IMAGE_URL_USER']}{user.image}"
-                    response = requests.get(existing_image_url, stream=True)
-                    if response.status_code == 200:
-                        filename = secure_filename(user.image)
-                        with open(os.path.join(current_app.config['UPLOAD_FOLDER'], filename), 'wb') as f:
-                            for chunk in response.iter_content(chunk_size=8192):
-                                f.write(chunk)
-                        user.image = filename
-                else:
-                    user.image = existing_image
-            db.session.commit()
-            response = create_response({'message': 'User updated successfully', 'user': user.to_dict()}, 200)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
+        user = User.query.get_or_404(user_id)
+        data = request.form.to_dict()
+        image = request.files.get('image')
+        if image:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            user.image = filename
         else:
-            errors = {}
-            for field, field_errors in form.errors.items():
-                errors[field] = field_errors
-            current_app.logger.error(f'Form validation errors: {errors}')
-            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
-            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-            response.headers.set('Access-Control-Allow-Credentials', 'true')
-            return response
+            user.image = data.get('existing_image', user.image)
+        user.firstname = data.get('firstname', user.firstname)
+        firstname_regex = r"^[a-zåäöA-ZÅÄÖ'\-]+$"
+        if not re.match(firstname_regex, user.firstname):
+            return create_response({'message': 'First name must contain only letters and hyphens'}, 400)
+        user.lastname = data.get('lastname', user.lastname)
+        lastname_regex = r"^[a-zåäöA-ZÅÄÖ'\-]+$"
+        if not re.match(lastname_regex, user.lastname):
+            return create_response({'message': 'Last name must contain only letters and hyphens'}, 400)
+        
+        user.email = data.get('email', user.email)
+        phone_regex = r"^[\d\s\-\+\(\)]{1,15}$"
+        user.phone = data.get('phone', user.phone)
+        if not re.match(phone_regex, user.phone):
+            return create_response({'message': 'Phone number must have at most 15 digits and can contain numbers, spaces, hyphens, plus signs and parentheses'}, 400)
+        address_regex = r"^[a-zåäöA-ZÅÄÖ0-9\s'\-]+$"
+        user.address = data.get('address', user.address)
+        if not re.match(address_regex, user.address):
+            return create_response({'message': 'Address must contain only letters, numbers, spaces, hyphens and apostrophes'}, 400)
+        
+        user.city = data.get('city', user.city)
+        
+        zipcode_regex = r"^[0-9]{5}$"
+        
+        user.zipcode = data.get('zipcode', user.zipcode)
+        if not re.match(zipcode_regex, user.zipcode):
+            return create_response({'message': 'Zip code must be 5 digits long'}, 400)
+        
+        
+        db.session.commit()
+        response = create_response({'message': 'Profile updated successfully'}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
     except Exception as e:
-        current_app.logger.error(f'Error updating user: {str(e)}')
+        current_app.logger.error(f'Error updating profile: {str(e)}')
         response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
         response.headers.set('Access-Control-Allow-Credentials', 'true')

@@ -111,19 +111,9 @@ const EditProfile = () => {
         }
       });
 
-      // Append the existing image as a File object if no new image is uploaded
+      // Append the existing image as a string if no new image is uploaded
       if (!formData.image || formData.image.length === 0) {
-        const existingImageUrl = `${IMAGE_URL_USER}${userInfo.image}`;
-        const response = await fetch(existingImageUrl);
-        const blob = await response.blob();
-        const existingImageFile = new File([blob], userInfo.image, { type: blob.type });
-        formDataObj.append("image", existingImageFile);
-      }
-
-      // Debugging the FormData content
-      console.log("FormData content:");
-      for (let [key, value] of formDataObj.entries()) {
-        console.log(`keyName: ${key}, value: ${value}`);
+        formDataObj.append("existing_image", userInfo.image);
       }
 
       const response = await fetch(`${API_URL}/update_profile/${userId}`, {
@@ -137,13 +127,15 @@ const EditProfile = () => {
       const result = await response.json();
 
       if (response.ok) {
-        toast.success("User updated successfully");
-        Object.keys(result.user).forEach((key) =>
-          setValue(key, result.user[key])
-        ); // Update form values
+        toast.success("Profile updated successfully");
+        if (result.user) {
+          Object.keys(result.user).forEach((key) =>
+            setValue(key, result.user[key])
+          ); // Update form values
+        }
         navigate("/profile");
       } else {
-        console.error("Error updating user:", result);
+        console.error("Error updating profile:", result);
         if (result.errors) {
           const fieldErrors = {};
           for (const [field, messages] of Object.entries(result.errors)) {
@@ -151,13 +143,17 @@ const EditProfile = () => {
             setError(field, { type: "server", message: messages.join(", ") });
           }
           setServerErrors(fieldErrors);
+          // Display toast for each field error
+          Object.values(result.errors).forEach((messages) => {
+            toast.error(messages.join(", "));
+          });
         } else {
-          throw new Error(result.message || "Failed to update user");
+          throw new Error(result.message || "Failed to update profile");
         }
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(error.message || "An error occurred while updating user");
+      toast.error(error.message || "An error occurred while updating profile");
     }
   };
 
@@ -179,7 +175,7 @@ const EditProfile = () => {
                   defaultValue={userInfo?.firstname || ""}
                 />
                 {errors.firstname && (
-                  <span className="text-danger">{errors.firstname.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.firstname && (
                   <div className="text-danger">{serverErrors.firstname}</div>
@@ -193,7 +189,7 @@ const EditProfile = () => {
                   defaultValue={userInfo?.lastname || ""}
                 />
                 {errors.lastname && (
-                  <span className="text-danger">{errors.lastname.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.lastname && (
                   <div className="text-danger">{serverErrors.lastname}</div>
@@ -207,7 +203,7 @@ const EditProfile = () => {
                   defaultValue={userInfo?.phone || ""}
                 />
                 {errors.phone && (
-                  <span className="text-danger">{errors.phone.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.phone && (
                   <div className="text-danger">{serverErrors.phone}</div>
@@ -221,7 +217,7 @@ const EditProfile = () => {
                   defaultValue={userInfo?.address || ""}
                 />
                 {errors.address && (
-                  <span className="text-danger">{errors.address.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.address && (
                   <div className="text-danger">{serverErrors.address}</div>
@@ -243,7 +239,7 @@ const EditProfile = () => {
                   ))}
                 </select>
                 {errors.city && (
-                  <span className="text-danger">{errors.city.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.city && (
                   <div className="text-danger">{serverErrors.city}</div>
@@ -257,7 +253,7 @@ const EditProfile = () => {
                   defaultValue={userInfo?.zipcode || ""}
                 />
                 {errors.zipcode && (
-                  <span className="text-danger">{errors.zipcode.message}</span>
+                  <span className="text-danger">This field is required</span>
                 )}
                 {serverErrors.zipcode && (
                   <div className="text-danger">{serverErrors.zipcode}</div>
