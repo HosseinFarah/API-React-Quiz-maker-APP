@@ -75,15 +75,16 @@ const Login = () => {
                 } else {
                     console.log('Logged in user is a regular user.');
                 }
-
+                
                 setIsConfirmed(result.confirmed);
                 sessionStorage.setItem('isConfirmed', JSON.stringify(result.confirmed));
                 if (result.confirmed) {
                     toast.success('Login successful');
                     navigate('/');
                 } else {
+                    console.log("isConfirmed", result.confirmed);
                     toast.error('User is not confirmed. Please confirm your email.');
-                    navigate('/confirm');
+                    navigate('/confirm?token=' + token); // Pass token to confirm page
                 }
             } else {
                 if (result.message === 'Invalid or expired token, please login again and request a new confirmation email') {

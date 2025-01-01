@@ -87,9 +87,11 @@ const Quiz = () => {
               {quiz.time_limit} minutes
             </p>
             <p className="text-wrap">
-              <i className="fas fa-info-circle text-success fs-4"></i> Status:{" "}
-              {quiz.status}
-            </p>
+                        <i className={`fas fa-check text-${new Date(quiz.end_date) > Date.now() ? 'success' : 'danger'}`}></i> Status:{" "}
+                        <span style={{ textDecoration: new Date(quiz.end_date) > Date.now() ? 'none' : 'line-through' }}>
+                          {quiz.status}
+                        </span>
+                      </p>
             <p className="text-wrap">
               <i className="fas fa-random text-info fs-4"></i> Shuffle:{" "}
               {quiz.shuffle_questions ? "Yes" : "No"}

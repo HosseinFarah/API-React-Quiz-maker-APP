@@ -9,10 +9,13 @@ const RegisterForm = () => {
   const {
     register,
     handleSubmit,
+    watch,
+    setError,
     formState: { errors },
   } = useForm();
   const navigate = useNavigate();
   const [cities, setCities] = useState([]);
+  const [serverErrors, setServerErrors] = useState({});
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -48,11 +51,18 @@ const RegisterForm = () => {
       for (const key in data) {
         formData.append(key, data[key]);
       }
+      if (data.image && data.image.length > 0) {
+        formData.append('image', data.image[0]);
+      }
+      formData.forEach((value, key) => {
+        console.log(key + " " + value);
+      });
 
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
           "X-CSRFToken": csrfToken,
+          "credentials": "include",
         },
         credentials: "include",
         body: formData,
@@ -65,10 +75,39 @@ const RegisterForm = () => {
         );
         navigate("/login");
       } else {
-        throw new Error(result.message || "Registration failed");
+        if (result.errors) {
+          const fieldErrors = {};
+          for (const [field, messages] of Object.entries(result.errors)) {
+            fieldErrors[field] = messages.join(", ");
+            setError(field, { type: "server", message: messages.join(", ") });
+          }
+          setServerErrors(fieldErrors);
+        } else {
+          throw new Error(result.message || "Registration failed");
+        }
       }
     } catch (error) {
       toast.error(error.message || "An error occurred. Please try again.");
+      if (error.response && error.response.data && error.response.data.errors) {
+        const serverErrors = error.response.data.errors;
+        console.log("Form validation errors:", serverErrors); // Debugging statement
+        for (const key in serverErrors) {
+          setError(key, {
+            type: "server",
+            message: serverErrors[key].join(", "),
+          });
+        }
+      } else if (error.errors) {
+        // Handle errors if they are directly in the error object
+        const serverErrors = error.errors;
+        console.log("Form validation errors:", serverErrors); // Debugging statement
+        for (const key in serverErrors) {
+          setError(key, {
+            type: "server",
+            message: serverErrors[key].join(", "),
+          });
+        }
+      }
     }
   };
 
@@ -89,6 +128,7 @@ const RegisterForm = () => {
               {errors.firstname && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.firstname && <div className="text-danger">{serverErrors.firstname}</div>}
             </div>
             <div>
               <label htmlFor="lastname" className="form-label">
@@ -101,6 +141,7 @@ const RegisterForm = () => {
               {errors.lastname && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.lastname && <div className="text-danger">{serverErrors.lastname}</div>}
             </div>
             <div>
               <label htmlFor="email" className="form-label">
@@ -114,6 +155,7 @@ const RegisterForm = () => {
               {errors.email && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.email && <div className="text-danger">{serverErrors.email}</div>}
             </div>
             <div>
               <label htmlFor="password" className="form-label">
@@ -127,7 +169,29 @@ const RegisterForm = () => {
               {errors.password && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.password && <div className="text-danger">{serverErrors.password}</div>}
             </div>
+            <div>
+              <label htmlFor="confirmPassword" className="form-label">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                {...register("confirm_password", {
+                  required: true,
+                  validate: (value) =>
+                    value === watch("password") || "Passwords do not match",
+                })}
+                className="form-control"
+              />
+              {errors.confirm_password && (
+                <span className="text-danger">
+                  {errors.confirm_password.message || "This field is required"}
+                </span>
+              )}
+              {serverErrors.confirm_password && <div className="text-danger">{serverErrors.confirm_password}</div>}
+            </div>
+
             <div>
               <label htmlFor="address" className="form-label">
                 Address
@@ -139,6 +203,7 @@ const RegisterForm = () => {
               {errors.address && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.address && <div className="text-danger">{serverErrors.address}</div>}
             </div>
             <div>
               <label htmlFor="zipcode" className="form-label">
@@ -151,6 +216,7 @@ const RegisterForm = () => {
               {errors.zipcode && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.zipcode && <div className="text-danger">{serverErrors.zipcode}</div>}
             </div>
             <div>
               <label htmlFor="phone" className="form-label">
@@ -163,6 +229,7 @@ const RegisterForm = () => {
               {errors.phone && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.phone && <div className="text-danger">{serverErrors.phone}</div>}
             </div>
             <div>
               <label htmlFor="city" className="form-label">
@@ -181,6 +248,7 @@ const RegisterForm = () => {
               {errors.city && (
                 <span className="text-danger">This field is required</span>
               )}
+              {serverErrors.city && <div className="text-danger">{serverErrors.city}</div>}
             </div>
             <div>
               <label htmlFor="image" className="form-label">
@@ -188,9 +256,15 @@ const RegisterForm = () => {
               </label>
               <input
                 type="file"
-                {...register("image")}
+                {...register("image", { required: true })}
                 className="form-control"
               />
+              {errors.image && (
+                <span className="text-danger">
+                  {errors.image.message || "This field is required"}
+                </span>
+              )}
+              {serverErrors.image && <div className="text-danger">{serverErrors.image}</div>}
             </div>
             <div className="ms-auto d-flex justify-content-end mt-3">
               <button type="submit" className="btn btn-info mt-2 ">

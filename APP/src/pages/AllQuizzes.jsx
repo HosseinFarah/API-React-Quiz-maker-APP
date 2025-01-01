@@ -8,7 +8,7 @@ import { deleteQuiz } from "../utils/csrfUtils";
 
 const AllQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
-  const { isAdmin } = useContext(AuthContext);
+  const { isAdmin, isConfirmed } = useContext(AuthContext); // Add isConfirmed
   const navigate = useNavigate();
 
   const fetchQuizzes = async () => {
@@ -18,6 +18,11 @@ const AllQuizzes = () => {
         credentials: "include",
       });
       if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 403 && errorData.message === 'User not confirmed') {
+          navigate(`/confirm?token=${errorData.token}`); // Redirect to confirm page with token
+          return;
+        }
         throw new Error("Failed to fetch quizzes");
       }
       const data = await response.json();
@@ -28,8 +33,12 @@ const AllQuizzes = () => {
   };
 
   useEffect(() => {
-    fetchQuizzes();
-  }, []);
+    if (isConfirmed) {
+      fetchQuizzes();
+    } else {
+      navigate('/confirm'); // Redirect to confirm page if not confirmed
+    }
+  }, [isConfirmed, navigate]);
 
   const handleDeleteQuiz = async (id) => {
     const confirmed = window.confirm(
@@ -100,8 +109,10 @@ const AllQuizzes = () => {
                         Date: {quiz.end_date}
                       </p>
                       <p>
-                        <i className="fas fa-check text-success"></i> Status:{" "}
-                        {quiz.status}
+                        <i className={`fas fa-check text-${new Date(quiz.end_date) > Date.now() ? 'success' : 'danger'}`}></i> Status:{" "}
+                        <span style={{ textDecoration: new Date(quiz.end_date) > Date.now() ? 'none' : 'line-through' }}>
+                          {quiz.status}
+                        </span>
                       </p>
                       <p>
                         <i className="fas fa-random text-primary"></i> Shuffle:{" "}

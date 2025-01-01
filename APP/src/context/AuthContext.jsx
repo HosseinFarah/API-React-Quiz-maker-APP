@@ -79,6 +79,10 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 401) {
               throw new Error('Unauthorized access');
             }
+            // if (response.status === 403 && errorData.message === 'User not confirmed') {
+            //   navigate(`/confirm?token=${token}`); // Redirect to confirm page with token
+            //   return;
+            // }
             throw new Error(`Failed to fetch user data: ${errorData.message}`);
           }
           const data = await response.json();

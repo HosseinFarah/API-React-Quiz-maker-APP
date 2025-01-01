@@ -122,7 +122,6 @@ def login():
 
 
 @api.route('/user-info', methods=['GET'])
-@login_required
 def user_info():
     try:
         member_since = datetime.now() - current_user.created_at
@@ -294,15 +293,16 @@ def get_cities():
 def register():
     try:
         data = request.form.to_dict()
-        image = request.files.get('image')
+        image = request.files.get('image')  # Correctly retrieve the image file
         
         current_app.logger.debug(f'Registration data received: {data}')
+        current_app.logger.debug(f'Request files: {request.files}')
         if image:
             current_app.logger.debug(f'Image received: {image.filename}')
         else:
             current_app.logger.debug('No image received')
         
-        csrf_token = data.get('csrf_token')
+        csrf_token = request.headers.get('X-CSRFToken')  # Correctly retrieve the CSRF token from headers
         current_app.logger.debug(f'CSRF Token received: {csrf_token}')
         if not csrf_token:
             return create_response({'message': 'CSRF token missing'}, 400)
@@ -529,7 +529,6 @@ def update_profile(user_id):
 @api.route('/update_password/<int:user_id>', methods=['PATCH'])
 def update_password(user_id):
     try:
-        current_app.logger.info(f'Update Password data received: {request.json}')
         csrf_token = request.headers.get('X-CSRFToken')  # Get CSRF token from headers
         current_app.logger.info(f'CSRF Token received: {csrf_token}')
         if not csrf_token:

@@ -4,6 +4,7 @@ import { resendConfirmationEmail } from '../utils/csrfUtils';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../components/Urls';
+import { getCsrfToken } from '../utils/csrfUtils';
 
 const Confirm = () => {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ const Confirm = () => {
   const [token, setToken] = useState(null); // Add state for token
   const navigate = useNavigate();
   const location = useLocation();
-  const { setAuthConfirm, user, logout } = useAuth(); // Destructure logout from useAuth
+  const { setAuthConfirm, user, logout, isConfirmed } = useAuth(); // Destructure isConfirmed from useAuth
   const queryParams = new URLSearchParams(location.search);
   const message = queryParams.get('message');
 
@@ -34,8 +35,43 @@ const Confirm = () => {
   useEffect(() => {
     if (!user) {
       navigate(`/login?token=${token}`); // Pass token to login page
+    } else if (isConfirmed) {
+      navigate('/'); // Redirect confirmed user to home page
     }
-  }, [user, navigate, token]);
+  }, [user, navigate, token, isConfirmed]);
+
+  useEffect(() => {
+    if (user && token) {
+      const confirmUser = async () => {
+        setLoading(true);
+        setError('');
+        try {
+          const response = await fetch(`${API_URL}/confirm`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': await getCsrfToken()
+            },
+            body: JSON.stringify({ token }),
+            credentials: 'include'
+          });
+          const result = await response.json();
+          if (response.ok) {
+            setAuthConfirm(true);
+            toast.success('Email confirmed successfully');
+            navigate('/');
+          } else {
+            setError(result.message);
+          }
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      confirmUser();
+    }
+  }, [user, token, navigate, setAuthConfirm]);
 
   const handleResendConfirmation = async () => {
     setLoading(true);
