@@ -65,11 +65,19 @@ const Navbar = () => {
             </ul>
             <ul className="navbar-nav ms-auto">
               {isAuthenticated ? (
+                <>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/profile">
+                    Profile
+                  </NavLink>
+                </li>
+                
                 <li className="nav-item">
                   <button className="nav-link btn" onClick={logout}>
                     Logout
                   </button>
                 </li>
+                </>
               ) : (
                 <>
                   <li className="nav-item">

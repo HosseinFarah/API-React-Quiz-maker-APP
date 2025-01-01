@@ -65,7 +65,6 @@ const Login = () => {
                 setAuth(true);
                 setAdmin(result.admin);
                 if (result.user) {
-                    console.log('User Data:', result.user); // Debug log for user data
                     setUser(result.user); // Set the logged-in user data
                 } else {
                     console.error('User data is missing in the response');

@@ -6,8 +6,7 @@ from flask_login import login_user, current_user, logout_user
 from wtforms import ValidationError
 from app.email import send_email
 from flask_login import login_required
-from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm
-from ..forms import RegistrationForm
+from ..forms import LoginForm, PasswordResetRequestForm, ChangePasswordForm, RegistrationForm,UpdateAccountForm,UpdatePasswordForm
 from ..Quiz.forms import QuizForm
 from werkzeug.utils import secure_filename
 import os
@@ -18,6 +17,7 @@ from flask_babel import _
 from ..Quiz.forms import QuestionForm, AnswerForm
 from app.models import Questions, Answers, Quizzes, User, QuizResults, QuizAnswers, Role
 from sqlalchemy.exc import SQLAlchemyError
+import re  # Add this import at the top of the file
 
 @api.errorhandler(400)
 def bad_request_error(e):
@@ -124,24 +124,32 @@ def login():
 @api.route('/user-info', methods=['GET'])
 @login_required
 def user_info():
-    response = jsonify({
-        'id': current_user.id,
-        'email': current_user.email,
-        'firstname': current_user.firstname,
-        'lastname': current_user.lastname,
-        'is_admin': current_user.is_administrator(),
-        'is_confirmed': current_user.is_confirmed,
-        'phone': current_user.phone,
-        'address': current_user.address,
-        'city': current_user.city,
-        'zipcode': current_user.zipcode,
-        'image': current_user.image,
-        'created_at': current_user.created_at,
-        'is_active': current_user.is_active,
-    })
-    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
-    response.headers.set('Access-Control-Allow-Credentials', 'true')
-    return response
+    try:
+        member_since = datetime.now() - current_user.created_at
+        response = jsonify({
+            'id': current_user.id,
+            'email': current_user.email,
+            'firstname': current_user.firstname,
+            'lastname': current_user.lastname,
+            'is_admin': current_user.is_administrator(),
+            'is_confirmed': current_user.is_confirmed,
+            'phone': current_user.phone,
+            'address': current_user.address,
+            'city': current_user.city,
+            'zipcode': current_user.zipcode,
+            'image': current_user.image,
+            'created_at': current_user.created_at,
+            'is_active': current_user.is_active,
+            'member_since': member_since.days  # Calculate member_since in days
+        })
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        response = jsonify({'message': 'An error occurred', 'error': str(e)})
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response, 500
 
 
     
@@ -423,13 +431,15 @@ def update_user(user_id):
         user.zipcode = data.get('zipcode', user.zipcode)
         user.is_active = data.get('isActive', 'false') == 'true'
         
-        # Assign role as a Role object
-        role_name = data.get('role', user.role.name if user.role else None)
-        if role_name:
-            role = Role.query.filter_by(name=role_name).first()
-            if role:
-                user.role = role
-        
+        image = request.files.get('image')
+        if image:
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+            user.image = filename
+            
+        else:
+            user.image = data.get('existing_image', user.image)
+            
         db.session.commit()
         response = create_response({'message': 'User updated successfully', 'user': user.to_dict()}, 200)
         response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
@@ -442,6 +452,135 @@ def update_user(user_id):
         response.headers.set('Access-Control-Allow-Credentials', 'true')
         return response
     
+    
+    
+    
+@api.route('/update_profile/<int:user_id>', methods=['POST'])
+def update_profile(user_id):
+    try:
+        form = UpdateAccountForm()
+        
+        # Load cities from JSON file
+        cities_file = os.path.join(current_app.config['JSON_FOLDER'], 'cities.json')
+        with open(cities_file, encoding='utf-8') as f:
+            cities = json.load(f)
+            form.city.choices = [(city, city) for city in cities]
+        
+        if form.validate_on_submit():
+            user = User.query.get_or_404(user_id)
+            data = request.form.to_dict()
+            current_app.logger.debug(f'Update Profile data received: {data}')
+            
+            # Validate city
+            if data.get('city') not in cities:
+                return create_response({'message': 'Invalid city choice'}, 400)
+            
+            user.firstname = form.firstname.data
+            user.lastname = form.lastname.data
+            user.phone = form.phone.data
+            user.address = form.address.data
+            user.city = form.city.data
+            user.zipcode = form.zipcode.data
+            image = request.files.get('image')
+            current_app.logger.debug(f'Image received: {image}')
+            if image and hasattr(image, 'read'):
+                filename = secure_filename(image.filename)
+                upload_folder = current_app.config.get('UPLOAD_FOLDER')
+                if not os.path.exists(upload_folder):
+                    os.makedirs(upload_folder)
+                image.save(os.path.join(upload_folder, filename))
+                user.image = filename
+            else:
+                existing_image = form.existing_image.data
+                if not existing_image:
+                    existing_image_url = f"{current_app.config['IMAGE_URL_USER']}{user.image}"
+                    response = requests.get(existing_image_url, stream=True)
+                    if response.status_code == 200:
+                        filename = secure_filename(user.image)
+                        with open(os.path.join(current_app.config['UPLOAD_FOLDER'], filename), 'wb') as f:
+                            for chunk in response.iter_content(chunk_size=8192):
+                                f.write(chunk)
+                        user.image = filename
+                else:
+                    user.image = existing_image
+            db.session.commit()
+            response = create_response({'message': 'User updated successfully', 'user': user.to_dict()}, 200)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+        else:
+            errors = {}
+            for field, field_errors in form.errors.items():
+                errors[field] = field_errors
+            current_app.logger.error(f'Form validation errors: {errors}')
+            response = create_response({'message': 'Invalid data provided.', 'errors': errors}, 400)
+            response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+            response.headers.set('Access-Control-Allow-Credentials', 'true')
+            return response
+    except Exception as e:
+        current_app.logger.error(f'Error updating user: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
+  
+@api.route('/update_password/<int:user_id>', methods=['PATCH'])
+def update_password(user_id):
+    try:
+        current_app.logger.info(f'Update Password data received: {request.json}')
+        csrf_token = request.headers.get('X-CSRFToken')  # Get CSRF token from headers
+        current_app.logger.info(f'CSRF Token received: {csrf_token}')
+        if not csrf_token:
+            return jsonify({'message': 'CSRF token missing'}), 400
+
+        validate_csrf(csrf_token)
+        current_app.logger.info('CSRF token validated successfully')
+
+        form_data = request.json  # Get form data from JSON request body
+        user = User.query.get_or_404(user_id)
+
+        # Validate current_password
+        if not user.check_password(form_data.get('current_password', '')):
+            return create_response({'message': 'Invalid current password, please check and try again'}, 400)
+
+        # Validate new_password
+        new_password = form_data.get('new_password', '')
+        confirm_password = form_data.get('confirm_password', '')
+        password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{}|;:\'",.<>?/])[A-Za-z\d!@#$%^&*()_+\-=\[\]{}|;:\'",.<>?/]{8,}$'
+        if not new_password:
+            return create_response({'message': 'New password is required'}, 400)
+        if not re.match(password_regex, new_password):
+            return create_response({'message': 'New password does not meet complexity requirements'}, 400)
+        if new_password != confirm_password:
+            return create_response({'message': 'New password and confirm password do not match'}, 400)
+
+        user.password = new_password
+        db.session.commit()
+        response = create_response({'message': 'Password updated successfully'}, 200)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except ValidationError as e:
+        current_app.logger.error(f'CSRF token validation error: {str(e)}')
+        response = create_response({'message': 'Invalid CSRF token', 'error': str(e)}, 400)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    except Exception as e:
+        current_app.logger.error(f'Error updating password: {str(e)}')
+        response = create_response({'message': 'An error occurred', 'error': str(e)}, 500)
+        response.headers.set('Access-Control-Allow-Origin', 'http://localhost:5173')
+        response.headers.set('Access-Control-Allow-Credentials', 'true')
+        return response
+    
+    
+    
+    
+        
+       
+
     
 @api.route('/delete_user/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
@@ -666,7 +805,7 @@ from app.models import Questions, Answers, Quizzes
 # ...existing code...
 
 def save_image(file):
-    if file is None:
+    if file is None or not hasattr(file, 'read'):
         return None
     filename = secure_filename(file.filename)
     upload_folder = current_app.config['QUIZ_UPLOAD_FOLDER']

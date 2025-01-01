@@ -36,6 +36,7 @@ class User(UserMixin, db.Model):
     def __repr__(self) -> str:
         return '<User %r>' % self.email
     
+    
     def ping(self):
         self.last_login = datetime.now(timezone('Europe/Helsinki'))
         db.session.add(self)

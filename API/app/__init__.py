@@ -43,7 +43,7 @@ def create_app(config_name='default'):
     bootstrap.init_app(app)
     csrf.init_app(app)
     # for API
-    cors.init_app(app, resources={r"/api/*": {"origins": [config[config_name].DEFAULT_ORIGIN]}}, supports_credentials=True, expose_headers=['Content-Type', 'Authorization', 'X-CSRFToken'], allow_headers=['Content-Type', 'Authorization', 'X-CSRFToken', 'credentials'])
+    cors.init_app(app, resources={r"/api/*": {"origins": [config[config_name].DEFAULT_ORIGIN]}}, supports_credentials=True, expose_headers=['Content-Type', 'Authorization', 'X-CSRFToken'], allow_headers=['Content-Type', 'Authorization', 'X-CSRFToken', 'credentials'], methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
     
     # for translation
     babel.init_app(app, locale_selector=get_locale)
@@ -64,7 +64,7 @@ def create_app(config_name='default'):
         response.headers['Access-Control-Allow-Origin'] = config[config_name].DEFAULT_ORIGIN
         response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,X-CSRFToken,credentials'
-        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS,PATCH'
         return response
     
     # for API
@@ -78,7 +78,7 @@ def create_app(config_name='default'):
         response.headers['Access-Control-Allow-Credentials'] = 'true'
         response.headers['Access-Control-Allow-Origin'] = config[config_name].DEFAULT_ORIGIN
         response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization,X-CSRFToken,credentials'
-        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS'
+        response.headers['Access-Control-Allow-Methods'] = 'GET,POST,PUT,DELETE,OPTIONS,PATCH'
         return response
 
     # Register blueprints

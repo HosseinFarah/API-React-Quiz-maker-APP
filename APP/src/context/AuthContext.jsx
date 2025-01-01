@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { API_URL } from '../Components/Urls';
 import { getCsrfToken } from '../utils/csrfUtils';
+import { useNavigation } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
@@ -15,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     JSON.parse(localStorage.getItem('isAdmin')) || false
   );
   const [user, setUser] = useState(null);
+
 
   const setAuth = (authState) => {
     setIsAuthenticated(authState);
@@ -63,18 +65,21 @@ export const AuthProvider = ({ children }) => {
     if (isAuthenticated) {
       const fetchUser = async () => {
         try {
+          const csrfToken = await getCsrfToken();
           const response = await fetch(`${API_URL}/user-info`, {
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
-              'X-CSRFToken': await getCsrfToken()
+              'X-CSRFToken': csrfToken
             }
           });
           if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Fetch user failed:', response.status, errorData);
             if (response.status === 401) {
               throw new Error('Unauthorized access');
             }
-            throw new Error('Failed to fetch user data');
+            throw new Error(`Failed to fetch user data: ${errorData.message}`);
           }
           const data = await response.json();
           setUser(data);

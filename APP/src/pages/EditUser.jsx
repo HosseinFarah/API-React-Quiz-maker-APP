@@ -93,6 +93,7 @@ const EditUser = () => {
         body: formDataObj,
       });
       const result = await response.json();
+      
       if (response.ok) {
         toast.success("User updated successfully");
         setUser(result.user); // Update user state with the updated user data from the response

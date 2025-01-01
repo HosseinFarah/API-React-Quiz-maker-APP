@@ -51,8 +51,8 @@ def set_language():
 
 @main.route("/")
 def index():
-    quizzes = Quizzes.query.all()  # Fetch all quizzes
-    return render_template("index.html", quizzes=quizzes)
+    # quizzes = Quizzes.query.all()  # Fetch all quizzes
+    return render_template("index.html")
 
 @main.route('/search', methods=['GET', 'POST'])
 def search():

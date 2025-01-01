@@ -21,6 +21,10 @@ import EditQuestion from './pages/EditQuestion';
 import ViewResult from './pages/ViewResult';
 import AllUsers from './pages/AllUsers';
 import EditUser from './pages/EditUser';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import UpdatePassword from './pages/UpdatePassword';
+
 
 function App() {
   const router = createBrowserRouter(
@@ -35,6 +39,7 @@ function App() {
         <Route path="reset_password_request" element={<ResetPasswordRequest />} /> {/* Add route for reset password request */}
         <Route path="reset_password/:token" element={<ResetPassword />} /> {/* Ensure this route is defined */}
         <Route path="reset_password" element={<ResetPassword />} /> {/* Adjust route if using query parameters */}
+        <Route path="profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="create_quiz" element={<AdminRoute><CreateQuiz /></AdminRoute>} />
         <Route path="quiz/:id" element={<PrivateRoute><Quiz /></PrivateRoute>} />
         <Route path="quiz/edit/:id" element={<AdminRoute><EditQuiz /></AdminRoute>} />
@@ -46,6 +51,8 @@ function App() {
         <Route path="quiz/:quiz_id/results/:result_id" element={<AdminRoute><ViewResult /></AdminRoute>} />
         <Route path="all_users" element={<AdminRoute><AllUsers /></AdminRoute>} />
         <Route path="edit_user/:userId" element={<AdminRoute><EditUser /></AdminRoute>} />
+        <Route path="edit_profile/:userId" element={<PrivateRoute><EditProfile /></PrivateRoute>} />
+        <Route path="update_password" element={<PrivateRoute><UpdatePassword /></PrivateRoute>} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )
