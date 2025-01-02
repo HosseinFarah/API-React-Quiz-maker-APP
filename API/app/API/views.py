@@ -1243,6 +1243,16 @@ def edit_question(quiz_id, question_id):
         db.session.rollback()
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
 
-# ...existing code...
 
-# ...existing code...
+@api.route('/quiz/<int:quiz_id>/questions/<int:question_id>', methods=['DELETE'])
+def delete_question(quiz_id, question_id):
+    try:
+        quiz = Quizzes.query.get_or_404(quiz_id)
+        question = Questions.query.filter_by(id=question_id, quiz_id=quiz.id).first_or_404()
+        db.session.delete(question)
+        db.session.commit()
+        return jsonify({'message': 'Question deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+    

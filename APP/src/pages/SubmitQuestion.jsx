@@ -225,6 +225,37 @@ const SubmitQuestion = () => {
     }
   };
 
+  const deleteQuestion = (quizId, questionId) => async () => {
+    if (window.confirm("Are you sure you want to delete this question?")) {
+      try {
+        const csrfToken = await getCsrfToken();
+        const response = await fetch(`${API_URL}/quiz/${quizId}/questions/${questionId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Failed to delete question");
+        }
+
+        const updatedQuestions = questions.filter((question) => question.id !== questionId);
+        setQuestions(updatedQuestions);
+        toast.success("Question deleted successfully!");
+      } catch (error) {
+        console.error("Error deleting question:", error);
+        toast.error(error.message);
+      }
+    }
+  };
+
+  
+
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -274,7 +305,10 @@ const SubmitQuestion = () => {
                 ))}
                 {errors[question.id] && <p>{errors[question.id].message}</p>}
                 {isAdmin && (
+                  <>
                   <Link to={`/quiz/${id}/edit_question/${question.id}`} className="btn btn-primary me-2">Edit Question</Link>
+                  <button type="button" className="btn btn-danger" onClick={deleteQuestion(id, question.id)}>Delete Question</button>
+                  </>
                 )}
               </div>
             ))}
