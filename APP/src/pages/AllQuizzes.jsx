@@ -58,7 +58,7 @@ const AllQuizzes = () => {
 
   return (
     <>
-      <div className="container" >
+      <div className="container" style={{ marginTop: "120px" }}>
         <div className="row d-flex justify-content-center">
           <div className="col-md-4">
             {isAdmin && (

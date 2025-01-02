@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { API_URL, IMAGE_URL_USER } from "../Components/Urls";
 import { getCsrfToken } from "../utils/csrfUtils";
 import { toast } from "react-toastify";
+import {CircleLoader} from "react-spinners";
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
@@ -136,7 +137,13 @@ const AllUsers = () => {
   return (
     <div className="container" style={{ marginTop: "150px" }}>
       <div className="row justify-content-center">
+          {loading && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <CircleLoader color="#0d6efd" loading={loading} size={150} />
+            </div>
+          )}
         <div className="col-md-12">
+
           <h1>All Users</h1>
           <form onChange={handleSubmit(onSubmit)}>
             <div className="input-group mb-3">
