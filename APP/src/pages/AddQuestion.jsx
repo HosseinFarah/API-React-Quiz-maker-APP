@@ -21,6 +21,7 @@ const AddQuestion = () => {
   });
 
   const [serverErrors, setServerErrors] = useState({});
+  const [questionFormat, setQuestionFormat] = useState("multiple_choice");
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -36,6 +37,19 @@ const AddQuestion = () => {
     };
     fetchCsrf();
   }, []);
+
+  const handleFormatChange = (e) => {
+    setQuestionFormat(e.target.value);
+    setValue("format", e.target.value);
+    if (e.target.value === "true_false") {
+      setValue("answers", [
+        { text: "True", is_correct: false, image: null },
+        { text: "False", is_correct: false, image: null },
+      ]);
+    } else {
+      setValue("answers", [{ text: "", is_correct: false, image: null }]);
+    }
+  };
 
   const onSubmit = async (data) => {
     const formData = new FormData();
@@ -123,6 +137,7 @@ const AddQuestion = () => {
               <select
                 {...register("format", { required: true })}
                 className="form-select"
+                onChange={handleFormatChange}
               >
                 <option value="multiple_choice">Multiple Choice</option>
                 <option value="true_false">True/False</option>
@@ -171,42 +186,66 @@ const AddQuestion = () => {
             </div>
             <div>
               <h3 className="mt-4">Answers</h3>
-              {fields.map((field, index) => (
-                <div key={field.id} className="shadow-lg p-3 mb-5 bg-body rounded mt-3">
-                  <label htmlFor="text" className="form-label">Answer Text</label>
-                  <textarea
-                    type="text"
-                    {...register(`answers.${index}.text`, { required: true })}
-                    className="form-control"
-                  />
-                  {errors.answers && errors.answers[index] && errors.answers[index].text && <div className="text-danger">This field is required</div>}
-                  {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].text && <div className="text-danger">{serverErrors.answers[index].text}</div>}
-                  <label htmlFor="is_correct" className="form-label mt-1">Is Correct</label>
-                  <input
-                    type="checkbox"
-                    {...register(`answers.${index}.is_correct`)}
-                    className="form-check-input mt-2 ms-1"
-                  />
-                  {errors.answers && errors.answers[index] && errors.answers[index].is_correct && <div className="text-danger">This field is required</div>}
-                  {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].is_correct && <div className="text-danger">{serverErrors.answers[index].is_correct}</div>}
-                  <div>
-                  <label htmlFor="image" className="form-label">Answer Image</label>
-                  <input
-                    type="file"
-                    {...register(`answers.${index}.image`)}
-                    className="form-control mb-2"
-                  />
-                  {errors.answers && errors.answers[index] && errors.answers[index].image && <div className="text-danger">This field is required</div>}
-                  {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].image && <div className="text-danger">{serverErrors.answers[index].image}</div>}
+              {questionFormat === "true_false" ? (
+                fields.map((field, index) => (
+                  <div key={field.id} className="shadow-lg p-3 mb-5 bg-body rounded mt-3">
+                    <label htmlFor="text" className="form-label">Answer Text</label>
+                    <input
+                      type="text"
+                      {...register(`answers.${index}.text`)}
+                      className="form-control"
+                      readOnly
+                    />
+                    <label htmlFor="is_correct" className="form-label mt-1">Is Correct</label>
+                    <input
+                      type="checkbox"
+                      {...register(`answers.${index}.is_correct`)}
+                      className="form-check-input mt-2 ms-1"
+                    />
+                    {errors.answers && errors.answers[index] && errors.answers[index].is_correct && <div className="text-danger">This field is required</div>}
+                    {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].is_correct && <div className="text-danger">{serverErrors.answers[index].is_correct}</div>}
                   </div>
-                  <button type="button" onClick={() => remove(index)} className="btn btn-danger">
-                    Remove Answer
-                  </button>
-                </div>
-              ))}
-              <button type="button" onClick={() => append({ text: "", is_correct: false, image: null })} className="btn btn-primary">
-                Add New Option
-              </button>
+                ))
+              ) : (
+                fields.map((field, index) => (
+                  <div key={field.id} className="shadow-lg p-3 mb-5 bg-body rounded mt-3">
+                    <label htmlFor="text" className="form-label">Answer Text</label>
+                    <textarea
+                      type="text"
+                      {...register(`answers.${index}.text`, { required: true })}
+                      className="form-control"
+                    />
+                    {errors.answers && errors.answers[index] && errors.answers[index].text && <div className="text-danger">This field is required</div>}
+                    {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].text && <div className="text-danger">{serverErrors.answers[index].text}</div>}
+                    <label htmlFor="is_correct" className="form-label mt-1">Is Correct</label>
+                    <input
+                      type="checkbox"
+                      {...register(`answers.${index}.is_correct`)}
+                      className="form-check-input mt-2 ms-1"
+                    />
+                    {errors.answers && errors.answers[index] && errors.answers[index].is_correct && <div className="text-danger">This field is required</div>}
+                    {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].is_correct && <div className="text-danger">{serverErrors.answers[index].is_correct}</div>}
+                    <div>
+                    <label htmlFor="image" className="form-label">Answer Image</label>
+                    <input
+                      type="file"
+                      {...register(`answers.${index}.image`)}
+                      className="form-control mb-2"
+                    />
+                    {errors.answers && errors.answers[index] && errors.answers[index].image && <div className="text-danger">This field is required</div>}
+                    {serverErrors.answers && serverErrors.answers[index] && serverErrors.answers[index].image && <div className="text-danger">{serverErrors.answers[index].image}</div>}
+                    </div>
+                    <button type="button" onClick={() => remove(index)} className="btn btn-danger">
+                      Remove Answer
+                    </button>
+                  </div>
+                ))
+              )}
+              {questionFormat !== "true_false" && (
+                <button type="button" onClick={() => append({ text: "", is_correct: false, image: null })} className="btn btn-primary">
+                  Add New Option
+                </button>
+              )}
             </div>
             <div className="d-flex justify-content-end mb-5">
             <button type="submit" className="btn btn-success mt-3">
