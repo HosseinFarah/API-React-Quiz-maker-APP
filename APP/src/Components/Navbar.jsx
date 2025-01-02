@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import logo from "../assets/react.svg";
+import logo from "../assets/logo.webp";
 import { FaBars } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";

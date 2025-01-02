@@ -58,13 +58,13 @@ const AllQuizzes = () => {
 
   return (
     <>
-      <div className="container" style={{ marginTop: "150px" }}>
+      <div className="container" >
         <div className="row d-flex justify-content-center">
           <div className="col-md-4">
             {isAdmin && (
               <Link
-                className="btn btn-primary ms-4"
-                style={{ marginTop: "150px" }}
+                className="btn btn-primary mb-3"
+                style={{ marginTop: "120px" }}
                 to="/create_quiz"
               >
                 <FaPlus /> Add New Quiz
