@@ -6,10 +6,12 @@ import { API_URL } from "../Components/Urls";
 import { useContext } from "react";
 import { deleteQuiz } from "../utils/csrfUtils";
 import QuizEvent from "../Components/QuizEvent";
+import { PulseLoader } from "react-spinners";
 
 const AllQuizzes = () => {
   const [quizzes, setQuizzes] = useState([]);
   const { isAdmin, isConfirmed } = useContext(AuthContext); // Add isConfirmed
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const fetchQuizzes = async () => {
@@ -31,6 +33,7 @@ const AllQuizzes = () => {
       }
       const data = await response.json();
       setQuizzes(data.quizzes);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching quizzes:", error);
     }
@@ -60,6 +63,11 @@ const AllQuizzes = () => {
     <>
       <div className="container" style={{ marginTop: "120px" }}>
         <div className="row d-flex justify-content-center">
+        {loading && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <PulseLoader color="#0d6efd" loading={loading} size={50} />
+            </div>
+          )}
           <div className="col-md-4">
             {isAdmin && (
               <Link

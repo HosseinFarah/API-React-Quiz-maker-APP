@@ -61,12 +61,12 @@ const Quiz = () => {
             <hr />
             <img
               src={`http://localhost:5000/static/uploads/quizzes/${quiz.image}`}
-              className="img-fluid rounded mb-3 shadow-md"
+              className="img-fluid rounded mb-3 shadow-lg"
               style={{ maxHeight: "200px" }}
               alt={quiz.title}
             />
             <hr className="text-primary" />
-            <p className="text-wrap">
+            <p className="text-wrap" style={{ textAlign: "justify" }}>
               <i className="fas fa-info-circle text-secondary fs-4"></i>{" "}
               {quiz.description}
             </p>

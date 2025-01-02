@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { API_URL } from "../components/Urls";
+import { PulseLoader } from "react-spinners";
 
 const EditUser = () => {
   const { register, handleSubmit, setValue } = useForm();
@@ -10,6 +11,7 @@ const EditUser = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
   const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,6 +23,7 @@ const EditUser = () => {
         if (response.ok) {
           const userData = data.user; // Adjusted to match the API response structure
           setUser(userData);
+          setLoading(false);
           Object.keys(userData).forEach((key) => setValue(key, userData[key]));
         } else {
           toast.error(data.message || "Failed to fetch user data");
@@ -61,6 +64,7 @@ const EditUser = () => {
     if (user) {
       Object.keys(user).forEach((key) => setValue(key, user[key]));
     }
+    setLoading(false);
   }, [user, setValue]);
 
   const fetchCsrfToken = async () => {
@@ -112,6 +116,11 @@ const EditUser = () => {
   return (
     <div className="container" style={{ marginTop: "150px" }}>
       <div className="row justify-content-center">
+      {loading && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <PulseLoader color="#0d6efd" loading={loading} size={50} />
+            </div>
+          )}
         <div className="col-md-6">
           <form onSubmit={handleSubmit(onSubmit)} className="container mt-4">
             <div className="mb-3">

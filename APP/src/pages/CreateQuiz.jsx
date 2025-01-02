@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { API_URL } from "../Components/Urls";
 import { fetchCsrfToken } from "../utils/csrfUtils";
 import { useNavigate } from "react-router-dom";
+import { PulseLoader } from "react-spinners";
 
 const CreateQuiz = () => {
   const {
@@ -13,6 +14,7 @@ const CreateQuiz = () => {
     setError,
   } = useForm();
   const [serverErrors, setServerErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const onSubmit = async (data) => {
@@ -47,6 +49,7 @@ const CreateQuiz = () => {
       if (response.ok) {
         console.log("Quiz created successfully:", result);
         toast.success("Quiz created successfully");
+        setLoading(false);
         navigate("/");
       } else {
         console.error("Error creating quiz:", result);
@@ -70,6 +73,11 @@ const CreateQuiz = () => {
   return (
     <div className="container" style={{marginTop: "150px"}}>
       <div className="row d-flex justify-content-center">
+      {loading && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <PulseLoader color="#0d6efd" loading={loading} size={50} />
+            </div>
+          )}
         <div className="col-md-6">
           <form onSubmit={handleSubmit(onSubmit)} className="form" encType="multipart/form-data">
             <div className="mb-3">
