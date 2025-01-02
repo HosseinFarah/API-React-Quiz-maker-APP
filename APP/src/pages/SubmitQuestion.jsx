@@ -273,9 +273,9 @@ const SubmitQuestion = () => {
           <hr />
           {quiz && attempts < quiz.attempt ? (
           <form onSubmit={handleSubmit(onSubmit)} className="form">
-            {questions.map((question) => (
+            {questions.map((question, index) => (
               <div key={question.id} className="mb-3">
-                <h3>{question.text}</h3>
+                <h3>{index + 1}. {question.text}</h3> {/* Add numbering here */}
                 {question.image &&
                 <img src={question.image ? `${IMAGE_URL}${question.image}` : ""} alt="Question" className="img-fluid rounded" style={{ maxHeight: "200px" }} />
                 }

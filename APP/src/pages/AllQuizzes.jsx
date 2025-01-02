@@ -94,7 +94,7 @@ const AllQuizzes = () => {
                         </h5>
                       </div>
                       <div className="card-body">
-                        <p>
+                        <p className="text-justify" style={{ textAlign: "justify" }}>
                           <i className="fas fa-align-left text-primary"></i>{" "}
                           Description: {quiz.description}
                         </p>

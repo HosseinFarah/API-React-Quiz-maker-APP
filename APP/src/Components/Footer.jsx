@@ -9,7 +9,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="bg-light text-center text-lg-start footer"
+      className="bg-light text-center text-lg-start footer custom-footer"
       style={{
         bottom: "0",
         width: "100%",
