@@ -359,19 +359,21 @@ const SubmitQuestion = () => {
                   {errors[question.id] && <p>{errors[question.id].message}</p>}
                   {isAdmin && (
                     <>
+                    <div className="d-flex justify-content-end">
                       <Link
                         to={`/quiz/${id}/edit_question/${question.id}`}
-                        className="btn btn-primary me-2"
+                        className="btn btn-success me-2"
                       >
-                        Edit Question
+                        <i className="fas fa-edit"></i> 
                       </Link>
                       <button
                         type="button"
-                        className="btn btn-danger"
+                        className="btn btn-secondary"
                         onClick={deleteQuestion(id, question.id)}
                       >
-                        Delete Question
+                        <i className="fas fa-trash"></i> 
                       </button>
+                      </div>
                     </>
                   )}
                 </div>
