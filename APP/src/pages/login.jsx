@@ -16,6 +16,10 @@ const Login = () => {
     const [error, setError] = useState('');
     const [token, setToken] = useState(null); // Add state for token
     const [message, setMessage] = useState(null); // Add state for message
+    const [loginAttempt, setLoginAttempt] = useState(0); // Add state for login attempts
+    const [timer, setTimer] = useState(0); // Add state for timer
+    console.log("loginAttempt", loginAttempt);
+    
 
     useEffect(() => {
         const fetchToken = async () => {
@@ -34,6 +38,45 @@ const Login = () => {
         const messageFromUrl = new URLSearchParams(location.search).get('message'); // Extract message from URL
         setMessage(messageFromUrl); // Store message in state
     }, [location.search]);
+
+//    store the timer and login attempt count in local storage
+    useEffect(() => {
+        const storedTimer = localStorage.getItem('loginTimer');
+        const storedLoginAttempt = localStorage.getItem('loginAttempt');
+        if (storedTimer) {
+            setTimer(parseInt(storedTimer, 10));
+        }
+        if (storedLoginAttempt) {
+            setLoginAttempt(parseInt(storedLoginAttempt, 10));
+        }
+    }, []);
+
+    useEffect(() => {
+        let interval;
+        if (loginAttempt > 5) {
+            const initialTimer = timer > 0 ? timer : 60;
+            setTimer(initialTimer); // Set timer to 60 seconds or continue from stored timer
+            interval = setInterval(() => {
+                setTimer(prevTimer => {
+                    if (prevTimer <= 1) {
+                        clearInterval(interval);
+                        setLoginAttempt(0); // Reset login attempts after timer ends
+                        localStorage.removeItem('loginTimer');
+                        localStorage.removeItem('loginAttempt');
+                        return 0;
+                    }
+                    const newTimer = prevTimer - 1;
+                    localStorage.setItem('loginTimer', newTimer);
+                    return newTimer;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(interval);
+    }, [loginAttempt, timer]);
+
+    useEffect(() => {
+        localStorage.setItem('loginAttempt', loginAttempt);
+    }, [loginAttempt]);
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -91,7 +134,9 @@ const Login = () => {
                     toast.error(result.message);
                     navigate('/login'); // Rerender the login form
                 } else {
+                    
                     setError(result.message);
+                    setLoginAttempt(loginAttempt + 1);
                 }
             }
         } catch (err) {
@@ -124,10 +169,11 @@ const Login = () => {
                             <label className='form-label ms-1' htmlFor="remember">Remember Me</label>
                         </div>
                         <div className='ms-auto d-flex justify-content-end'>
-                            <button type="submit" className='btn btn-primary' disabled={loading}>
+                            <button type="submit" className='btn btn-primary' disabled={loading || loginAttempt > 5}>
                                 {loading ? <PacmanLoader color='white' size={10}/> : 'Login'}
                             </button>
 
+                            <span>{loginAttempt > 5 && <p style={{ color: 'red', marginTop: '1rem' }}>Too many login attempts. Please try again in {timer} seconds.</p>}</span>
                         </div>
                         {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
                     </form>
