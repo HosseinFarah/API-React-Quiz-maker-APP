@@ -16,6 +16,7 @@ const RegisterForm = () => {
   const navigate = useNavigate();
   const [cities, setCities] = useState([]);
   const [serverErrors, setServerErrors] = useState({});
+  const [uploadImage, setUploadImage] = useState(null);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -41,6 +42,17 @@ const RegisterForm = () => {
 
     fetchCities();
   }, []);
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadImage(e.target.files[0]);
+    }
+  };
+
+  const handleRemovePreview = () => {
+    setUploadImage(null);
+    document.getElementById("imageInput").value = "";
+  };
 
   const onSubmit = async (data) => {
     try {
@@ -256,9 +268,28 @@ const RegisterForm = () => {
               </label>
               <input
                 type="file"
+                id="imageInput"
                 {...register("image", { required: true })}
                 className="form-control"
+                onChange={handleImageChange}
               />
+              {uploadImage && (
+                <>
+                <img
+                  src={URL.createObjectURL(uploadImage)}
+                  alt="Uploaded"
+                  className="img-thumbnail mt-2"
+                  style={{ width: "200px" }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemovePreview}
+                  className="btn btn-danger ms-2">
+                  <i className="fas fa-close"></i>
+                </button>
+                </>
+              )}
+
               {errors.image && (
                 <span className="text-danger">
                   {errors.image.message || "This field is required"}

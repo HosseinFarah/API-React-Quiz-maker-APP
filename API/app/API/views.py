@@ -330,7 +330,7 @@ def register():
             if image:
                 filename = secure_filename(image.filename)
                 image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-                user.profile_picture = filename
+                user.image = filename
 
             db.session.add(user)
             db.session.commit()

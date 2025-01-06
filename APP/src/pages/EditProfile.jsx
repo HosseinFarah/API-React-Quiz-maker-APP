@@ -20,6 +20,8 @@ const EditProfile = () => {
   const { user } = useContext(AuthContext);
   const { userId } = useParams();
   const id = user ? user.id : null;
+  const [uploadImage, setUploadImage] = useState(null);
+
 
   useEffect(() => {
     if (!user) {
@@ -52,6 +54,20 @@ const EditProfile = () => {
 
     fetchUser();
   }, [userId]);
+
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setUploadImage(e.target.files[0]);
+    }
+  };
+
+  const handleRemovePreview = () => {
+    setUploadImage(null);
+    document.getElementById("imageInput").value = "";
+  };
+
+
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -281,7 +297,25 @@ const EditProfile = () => {
                   type="file"
                   className="form-control"
                   accept="image/*"
+                  onChange={handleImageChange}
+                  id="imageInput"
                 />
+                {uploadImage && (
+                <>
+                <img
+                  src={URL.createObjectURL(uploadImage)}
+                  alt="Uploaded"
+                  className="img-thumbnail mt-2"
+                  style={{ width: "200px" }}
+                />
+                <button
+                  type="button"
+                  onClick={handleRemovePreview}
+                  className="btn btn-danger ms-2">
+                  <i className="fas fa-close"></i>
+                </button>
+                </>
+              )}
                 {serverErrors.image && (
                   <div className="text-danger">{serverErrors.image}</div>
                 )}
