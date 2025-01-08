@@ -40,15 +40,19 @@ const Confirm = () => {
   useEffect(() => {
     const handleUserConfirm = async () => {
       if (user && user.confirmed === true && token || isConfirmed) {
+        toast.success('Email already confirmed');
         navigate('/');
       }
       else if (user && token && user.confirmed === false) {
+        toast.error('After login, with the valid token, your email will be confirmed');
         await logout(() => token ? navigate('/login?token=' + token) : navigate('/login'));
       }
       else if (!user && token) {
+        toast.error('Please login first and confirm your account with the link sent to your email');
         await logout(() => navigate('/login?token=' + token));
       }
       else if (!user && !token) {
+        toast.error('Please login first');
         await logout(() => navigate('/login'));
       }
 

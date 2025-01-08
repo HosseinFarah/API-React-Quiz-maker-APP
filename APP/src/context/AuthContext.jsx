@@ -56,7 +56,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('isAdmin');
         localStorage.removeItem('isConfirmed');
         sessionStorage.removeItem('isConfirmed');
-        toast.success('Logout successful');
         if(typeof callback === 'function') {
           callback();
         }
