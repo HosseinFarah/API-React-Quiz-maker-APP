@@ -33,7 +33,7 @@ const Footer = () => {
             </Link>
           </div>
           <div className="col-md-3 d-flex justify-content-end me-5 mt-5 ">
-            {isAuthenticated ? (
+            {user ? (
               <>
                 <Link to="/profile" className="text-dark text-decoration-none">
                   <img

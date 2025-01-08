@@ -34,7 +34,7 @@ const Confirm = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate(`/login?token=${token}`); // Pass token to login page
+      navigate(token ? `/login?token=${token}` : '/login'); // Redirect unauthenticated user to login page
     } else if (isConfirmed) {
       navigate('/'); // Redirect confirmed user to home page
     }
