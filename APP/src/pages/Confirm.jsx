@@ -12,9 +12,14 @@ const Confirm = () => {
   const [token, setToken] = useState(null); // Add state for token
   const navigate = useNavigate();
   const location = useLocation();
-  const { setAuthConfirm, user, logout, isConfirmed } = useAuth(); // Destructure isConfirmed from useAuth
+  const { setAuthConfirm, user: contextUser, logout, isConfirmed } = useAuth(); // Destructure isConfirmed from useAuth
   const queryParams = new URLSearchParams(location.search);
   const message = queryParams.get('message');
+
+  const userFromStorage = JSON.parse(localStorage.getItem('user'));
+  const [user, setUser] = useState(contextUser || userFromStorage || null); // Initialize user state with data from localStorage
+
+  console.log("User Data in Confirm Page", user);
 
   useEffect(() => {
     const handleStorageChange = event => {
@@ -33,12 +38,26 @@ const Confirm = () => {
   }, [location.search]);
 
   useEffect(() => {
-    if (!user) {
-      navigate(token ? `/login?token=${token}` : '/login'); // Redirect unauthenticated user to login page
-    } else if (isConfirmed) {
-      navigate('/'); // Redirect confirmed user to home page
-    }
-  }, [user, navigate, token, isConfirmed]);
+    const handleUserConfirm = async () => {
+      if (user && user.confirmed === true && token || isConfirmed) {
+        navigate('/');
+      }
+      else if (user && token && user.confirmed === false) {
+        await logout(() => token ? navigate('/login?token=' + token) : navigate('/login'));
+      }
+      else if (!user && token) {
+        await logout(() => navigate('/login?token=' + token));
+      }
+      else if (!user && !token) {
+        await logout(() => navigate('/login'));
+      }
+
+    };
+    handleUserConfirm();
+  }, [user, token, navigate, logout, isConfirmed]);
+
+  console.log('Is there any user data in Confirm Page?', user);
+  
 
   useEffect(() => {
     if (user && token) {
@@ -77,16 +96,17 @@ const Confirm = () => {
     setLoading(true);
     setError('');
     try {
-      await resendConfirmationEmail(user, navigate, logout, token); // Use token from state
+      await resendConfirmationEmail(user.user, navigate, logout, token); // Use token from state
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+      await logout(() => navigate('/login'));
     }
   };
 
   const otsikko = message || "You have not confirmed your email address yet.";
-  const viesti = !message && 
+  const viesti = !message &&
     "We need to confirm your email address before you can use the service. " +
     "Please check your email inbox for a message with a confirmation link.";
 
@@ -100,7 +120,7 @@ const Confirm = () => {
           <p>Do you need a new confirmation link?</p>
           <input
             type="email"
-            value={user || ''}
+            value={user ? user.user : ''}
             readOnly
             placeholder="Enter your email"
             className="form-control"

@@ -82,6 +82,7 @@ const Login = () => {
         setLoading(true);
         setError('');
         try {
+            await fetchCsrfToken(); // Fetch CSRF token before login
             const csrfToken = sessionStorage.getItem('csrf_token');
             if (!csrfToken) {
                 throw new Error('CSRF token is missing');
@@ -108,7 +109,10 @@ const Login = () => {
                 setAuth(true);
                 setAdmin(result.admin);
                 if (result.user) {
-                    setUser(result.user); // Set the logged-in user data
+                    setUser(result); // Set the logged-in user data
+                    localStorage.setItem('user', JSON.stringify(result)); // Store user data in localStorage
+                    console.log('User Data After Login:', result);
+                    
                 } else {
                     console.error('User data is missing in the response');
                 }

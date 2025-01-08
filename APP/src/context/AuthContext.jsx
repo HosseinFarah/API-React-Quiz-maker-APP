@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { API_URL } from '../Components/Urls';
 import { getCsrfToken } from '../utils/csrfUtils';
 import { useNavigation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const AuthContext = createContext();
 
@@ -30,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
   }, [isAdmin]);
 
-  const logout = async () => {
+  const logout = async (callback) => {
     try {
       const csrfToken = await getCsrfToken(); // Get CSRF token
       console.log('CSRF Token for logout:', csrfToken); // Log CSRF token
@@ -49,7 +50,16 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem('csrf_token'); // Ensure CSRF token is cleared
         setIsAuthenticated(false);
         setIsAdmin(false);
+        setIsConfirmed(false); // Set isConfirmed to false
         setUser(null);
+        localStorage.removeItem('user'); // Remove user data from localStorage
+        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('isConfirmed');
+        sessionStorage.removeItem('isConfirmed');
+        toast.success('Logout successful');
+        if(typeof callback === 'function') {
+          callback();
+        }
       } else {
         const result = await response.json();
         console.error('Logout failed:', result); // Log error response
@@ -79,14 +89,11 @@ export const AuthProvider = ({ children }) => {
             if (response.status === 401) {
               throw new Error('Unauthorized access');
             }
-            // if (response.status === 403 && errorData.message === 'User not confirmed') {
-            //   navigate(`/confirm?token=${token}`); // Redirect to confirm page with token
-            //   return;
-            // }
             throw new Error(`Failed to fetch user data: ${errorData.message}`);
           }
           const data = await response.json();
           setUser(data);
+          localStorage.setItem('user', JSON.stringify(data)); // Store user data in localStorage
         } catch (error) {
           console.error('Fetch user error:', error);
           throw new Error('Failed to fetch user data');

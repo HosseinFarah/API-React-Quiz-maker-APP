@@ -3,10 +3,11 @@ import logo from "../assets/logo.webp";
 import { FaBars } from "react-icons/fa";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { isAuthenticated, logout, isAdmin,isConfirmed } = useContext(AuthContext);
-
+  const navigate = useNavigate();
   return (
     <>
       <nav
@@ -75,7 +76,7 @@ const Navbar = () => {
                 ) : null}
                 
                 <li className="nav-item">
-                  <button className="nav-link btn" onClick={logout}>
+                  <button className="nav-link btn" onClick={()=>logout(()=>navigate('/login'))}>
                     Logout
                   </button>
                 </li>
