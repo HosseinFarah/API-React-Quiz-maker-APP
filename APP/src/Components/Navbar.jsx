@@ -5,7 +5,7 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
-  const { isAuthenticated, logout, isAdmin } = useContext(AuthContext);
+  const { isAuthenticated, logout, isAdmin,isConfirmed } = useContext(AuthContext);
 
   return (
     <>
@@ -66,11 +66,13 @@ const Navbar = () => {
             <ul className="navbar-nav ms-auto">
               {isAuthenticated ? (
                 <>
+                {isConfirmed ? (
                 <li className="nav-item">
                   <NavLink className="nav-link" to="/profile">
                     Profile
                   </NavLink>
                 </li>
+                ) : null}
                 
                 <li className="nav-item">
                   <button className="nav-link btn" onClick={logout}>
