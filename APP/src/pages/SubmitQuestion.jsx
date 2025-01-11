@@ -160,7 +160,7 @@ const SubmitQuestion = () => {
   const onSubmit = async (data) => {
     try {
       if (quiz && attempts >= quiz.attempt) {
-        alert("You have reached the maximum number of attempts for this quiz.");
+        toast.error("You have reached the maximum number of attempts.");
         return;
       }
       console.log("Submitting data:", data); // Add logging
@@ -393,9 +393,14 @@ const SubmitQuestion = () => {
               </div>
             </form>
           ) : (
-            <p>
+            <>
+            <p className="fs-3 text-light shadow-lg p-3 rounded bg-danger d-flex justify-content-center mt-5">
               You have reached the maximum number of attempts for this quiz.
             </p>
+            {/* <Link to={`/quiz/${id}`} className="btn btn-primary mt-3">
+              <i className="fas fa-arrow-left"></i> Go Back
+            </Link> */}
+            </>
           )}
         </div>
       </div>

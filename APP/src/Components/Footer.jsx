@@ -4,8 +4,9 @@ import { useContext } from "react";
 import { IMAGE_URL_USER } from "../components/Urls";
 
 const Footer = () => {
-  const { isAuthenticated, logout, user } = useContext(AuthContext);
+  const { logout, user,isConfirmed } = useContext(AuthContext);
   const userImage = user ? user.image : null;
+  console.log("User Data in footer", user);
 
   return (
     <footer
@@ -35,14 +36,26 @@ const Footer = () => {
           <div className="col-md-3 d-flex justify-content-end me-5 mt-5 ">
             {user ? (
               <>
-                <Link to="/profile" className="text-dark text-decoration-none">
+                {isConfirmed ? (
+                  <Link
+                    to="/profile"
+                    className="text-dark text-decoration-none"
+                  >
+                    <img
+                      src={IMAGE_URL_USER + userImage}
+                      alt="user"
+                      className="rounded thumbnail me-2 shadow-lg"
+                      style={{ width: "60px", height: "60px" }}
+                    />
+                  </Link>
+                ) : (
                   <img
                     src={IMAGE_URL_USER + userImage}
                     alt="user"
                     className="rounded thumbnail me-2 shadow-lg"
                     style={{ width: "60px", height: "60px" }}
                   />
-                </Link>
+                )}
                 <Link
                   to=""
                   className="text-dark mt-3 no-style text-decoration-none"

@@ -3,9 +3,9 @@ import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 export const PrivateRoute = ({ children }) => {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, isConfirmed } = useContext(AuthContext);
 
-    return isAuthenticated ? children : <Navigate to="/login" />;
+    return isAuthenticated && isConfirmed ? children : <Navigate to="/login" />;
 };
 
 export const AdminRoute = ({ children }) => {

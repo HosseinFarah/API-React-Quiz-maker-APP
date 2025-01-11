@@ -1,13 +1,21 @@
 import { NavLink } from "react-router-dom";
 import logo from "../assets/logo.webp";
 import { FaBars } from "react-icons/fa";
-import { useContext } from "react";
+import { useContext, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
-  const { isAuthenticated, logout, isAdmin,isConfirmed } = useContext(AuthContext);
+  const { isAuthenticated, logout, isAdmin,isConfirmed,user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const navbarCollapseRef = useRef(null);
+
+  const handleNavLinkClick = () => {
+    if (navbarCollapseRef.current.classList.contains("show")) {
+      navbarCollapseRef.current.classList.remove("show");
+    }
+  };
+
   return (
     <>
       <nav
@@ -42,22 +50,22 @@ const Navbar = () => {
           >
             <FaBars />
           </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
+          <div className="collapse navbar-collapse" id="navbarNav" ref={navbarCollapseRef}>
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">
+                <NavLink className="nav-link" to="/" onClick={handleNavLinkClick}>
                   Home
                 </NavLink>
               </li>
               {isAdmin ? (
                 <>
                   <li className="nav-item">
-                    <NavLink className="nav-link" to="/create_quiz">
+                    <NavLink className="nav-link" to="/create_quiz" onClick={handleNavLinkClick}>
                       Create New Quiz
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink className="nav-link" to="/all_users">
+                    <NavLink className="nav-link" to="/all_users" onClick={handleNavLinkClick}>
                       All Users
                     </NavLink>
                   </li>
@@ -65,18 +73,18 @@ const Navbar = () => {
               ) : null}
             </ul>
             <ul className="navbar-nav ms-auto">
-              {isAuthenticated ? (
+              {isAuthenticated || user ? (
                 <>
                 {isConfirmed ? (
                 <li className="nav-item">
-                  <NavLink className="nav-link" to="/profile">
+                  <NavLink className="nav-link" to="/profile" onClick={handleNavLinkClick}>
                     Profile
                   </NavLink>
                 </li>
                 ) : null}
                 
                 <li className="nav-item">
-                  <button className="nav-link btn" onClick={()=>logout(()=>navigate('/login'))}>
+                  <button className="nav-link btn" onClick={()=>{logout(()=>navigate('/login')); handleNavLinkClick();}}>
                     Logout
                   </button>
                 </li>
@@ -84,12 +92,12 @@ const Navbar = () => {
               ) : (
                 <>
                   <li className="nav-item">
-                    <NavLink className="nav-link" to="/login">
+                    <NavLink className="nav-link" to="/login" onClick={handleNavLinkClick}>
                       Login
                     </NavLink>
                   </li>
                   <li className="nav-item">
-                    <NavLink className="nav-link" to="/register">
+                    <NavLink className="nav-link" to="/register" onClick={handleNavLinkClick}>
                       Register
                     </NavLink>
                   </li>

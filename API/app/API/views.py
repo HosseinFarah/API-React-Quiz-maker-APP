@@ -91,7 +91,7 @@ def login():
                     if user.confirm(token):
                         db.session.commit()
                         current_app.logger.info('User confirmed successfully')
-                        response = jsonify({'success': True, 'confirmed': user.is_confirmed, 'admin': admin, 'user': user.email})
+                        response = jsonify({'success': True, 'confirmed': user.is_confirmed, 'admin': admin, 'user': user.email, 'image': user.image, 'id': user.id,'firstname': user.firstname,'lastname': user.lastname,'phone': user.phone,'address': user.address,'city': user.city,'zipcode': user.zipcode})
                         response.status_code = 200
                         return response
                     else:
@@ -99,7 +99,7 @@ def login():
                         response = jsonify({'success': False, 'message': 'Invalid or expired token, please login again and request a new confirmation email'})
                         response.status_code = 400
                         return response
-                response = jsonify({'success': True, 'confirmed': user.is_confirmed, 'admin': admin, 'user': user.email})
+                response = jsonify({'success': True, 'confirmed': user.is_confirmed, 'admin': admin, 'user': user.email, 'image': user.image, 'id': user.id,'firstname': user.firstname,'lastname': user.lastname,'phone': user.phone,'address': user.address,'city': user.city,'zipcode': user.zipcode})
                 response.status_code = 200
                 return response
             else:

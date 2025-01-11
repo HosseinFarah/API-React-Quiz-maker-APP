@@ -34,11 +34,11 @@ function App() {
         <Route path="login" element={<UnLogedInRoute><Login /></UnLogedInRoute>} />
         <Route path="register" element={<RegisterForm />} />
         <Route path="resend-confirmation" element={<ResendConfirmation />} />
-        <Route path="confirm" element={<Confirm />} />
-        <Route path="confirm/:token" element={<Confirm />} />
-        <Route path="reset_password_request" element={<ResetPasswordRequest />} /> {/* Add route for reset password request */}
-        <Route path="reset_password/:token" element={<ResetPassword />} /> {/* Ensure this route is defined */}
-        <Route path="reset_password" element={<ResetPassword />} /> {/* Adjust route if using query parameters */}
+        <Route path="confirm" element={<privateRoute><Confirm /></privateRoute>} />
+        <Route path="confirm/:token" element={<PrivateRoute><Confirm /></PrivateRoute>} />
+        <Route path="reset_password_request" element={<ResetPasswordRequest />} /> 
+        <Route path="reset_password/:token" element={<ResetPassword />} /> 
+        <Route path="reset_password" element={<ResetPassword />} /> 
         <Route path="profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="create_quiz" element={<AdminRoute><CreateQuiz /></AdminRoute>} />
         <Route path="quiz/:id" element={<PrivateRoute><Quiz /></PrivateRoute>} />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchCsrfToken, getCsrfToken } from "../utils/csrfUtils";
 import { API_URL, IMAGE_URL } from "../components/Urls";
 import { toast } from "react-toastify";
@@ -186,6 +186,7 @@ const EditQuestion = () => {
               <button type="button" onClick={() => append({})} className="btn btn-primary">
                 Add Answer
               </button>
+              <Link to={`/quiz/${quiz_id}/submit`} className="btn btn-secondary ms-2">Cancel</Link>
             </div>
             <button type="submit" className="btn btn-success">Update Question</button>
           </form>

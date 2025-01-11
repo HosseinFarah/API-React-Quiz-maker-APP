@@ -134,8 +134,8 @@ const QuizResultsAll = () => {
                             <th>FirstName LastName</th>
                             <th>Score</th>
                             <th>Duration</th>
-                            <th>Start Date</th>
-                            <th>End Date</th>
+                            {/* <th>Start Date</th> */}
+                            <th>Submit Date</th>
                             <th>Actions</th>
                           </tr>
                      </thead>
@@ -145,7 +145,7 @@ const QuizResultsAll = () => {
                                 <td>{result.user.firstname} {result.user.lastname}</td>
                                 <td>{result.overall_score}</td>
                                 <td>{formatDuration(result.duration)}</td>
-                                <td>{new Date(result.start_time).toLocaleString()}</td>
+                                {/* <td>{new Date(result.start_time).toLocaleString()}</td> */}
                                 <td>{new Date(result.end_time).toLocaleString()}</td>
                                 <td>
                                     <Link to={`/quiz/${quizId}/results/${result.id}`} className='btn btn-secondary btn-sm me-3 text-light'><i className='fas fa-eye'></i> View</Link>

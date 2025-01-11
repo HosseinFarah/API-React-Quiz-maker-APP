@@ -112,7 +112,6 @@ const Login = () => {
                     setUser(result); // Set the logged-in user data
                     localStorage.setItem('user', JSON.stringify(result)); // Store user data in localStorage
                     console.log('User Data After Login:', result);
-                    
                 } else {
                     console.error('User data is missing in the response');
                 }

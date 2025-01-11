@@ -126,8 +126,8 @@ const RegisterForm = () => {
   return (
     <div style={{ marginTop: "150px" }} className="container">
       <div className="row d-flex justify-content-center">
+   
         <div className="col-md-6 shadow rounded p-4 mb-5">
-          <h2 className="text-secondary mt-1">Register</h2>
           <form onSubmit={handleSubmit(onSubmit)} className="form-group">
             <div>
               <label htmlFor="firstname" className="form-label">
@@ -298,11 +298,15 @@ const RegisterForm = () => {
               {serverErrors.image && <div className="text-danger">{serverErrors.image}</div>}
             </div>
             <div className="ms-auto d-flex justify-content-end mt-3">
-              <button type="submit" className="btn btn-info mt-2 ">
+              <button type="submit" className="btn btn-secondary mt-2 shadow-lg">
                 Register
               </button>
             </div>
           </form>
+        </div>
+      <div className="col-md-4 shadow rounded p-4 mb-5 bg-secondary text-light">
+        <h2 className="text-light mt-1 shadow-lg fs-3 text-center bg-secondary text-light p-2 rounded mb-5 shadow-bg-warning">Profile Picture</h2>
+          <img src="https://cdn-icons-png.flaticon.com/512/3456/3456388.png" alt="profile" className="img-fluid" style={{width: "200px", position: "relative", left: "50%", transform: "translateX(-50%)"}} />
         </div>
       </div>
     </div>

@@ -135,7 +135,7 @@ const UpdatePassword = () => {
                                 {errors.confirm_password && <small className="text-danger">{errors.confirm_password.message}</small>}
                             </div>
 
-                            <button type="submit" className="btn btn-primary">Update Password</button>
+                            <button type="submit" className="btn btn-success mt-3 shadow-lg">Update Password</button>
 
                         </form>
                     </div>
