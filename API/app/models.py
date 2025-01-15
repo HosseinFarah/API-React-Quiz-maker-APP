@@ -2,6 +2,8 @@ from . import db, get_locale,login
 import sqlalchemy as sa
 import sqlalchemy.orm as so
 from pytz import timezone
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from flask_login import UserMixin, AnonymousUserMixin #for role
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -29,9 +31,11 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), default=1)
     last_login = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     role = db.relationship('Role', backref='users')
+    results = relationship("QuizResults", back_populates="user", cascade="all, delete-orphan")
     
     def __repr__(self) -> str:
         return '<User %r>' % self.email
+    
     
     def ping(self):
         self.last_login = datetime.now(timezone('Europe/Helsinki'))
@@ -138,6 +142,21 @@ class User(UserMixin, db.Model):
         db.session.commit()
         return True
     
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'firstname': self.firstname,
+            'lastname': self.lastname,
+            'email': self.email,
+            'phone': self.phone,
+            'address': self.address,
+            'image': self.image,
+            'city': self.city,
+            'zipcode': self.zipcode,
+            'is_active': self.is_active,
+            'role': self.role.name if self.role else None,  # Convert role to a serializable format
+            # Add other fields as necessary
+        }
 
  #for role    
 class Permission:
@@ -231,12 +250,14 @@ class Quizzes(db.Model):
     description = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(20), nullable=False, default='available', index=True)
     image = db.Column(db.String(255), nullable=True)
-    capacity = db.Column(db.Integer, nullable=False, default=0)
-    start_date = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    attempt = db.Column(db.Integer, nullable=False, default=0)
+    start_date = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone('Europe/Helsinki')))
+    end_date = db.Column(db.DateTime, nullable=True)
     time_limit = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     shuffle_questions_enabled = db.Column(db.Boolean, default=False)  # Add this field
+    results = relationship("QuizResults", back_populates="quiz", cascade="all, delete-orphan")
     
     def shuffle_questions(self):
         from random import shuffle
@@ -260,8 +281,9 @@ class Quizzes(db.Model):
             'title': self.title,
             'description': self.description,
             'status': self.status,
-            'capacity': self.capacity,
+            'attempt': self.attempt,
             'start_date': self.start_date,
+            'end_date': self.end_date,
             'time_limit': self.time_limit,
             'image': self.image,
             'shuffle_questions': self.shuffle_questions_enabled,
@@ -272,79 +294,174 @@ class Quizzes(db.Model):
     def __repr__(self) -> str:
         return '<Quizzes %r>' % self.title
 
+
 class Questions(db.Model):
     __tablename__ = 'questions'
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.Text, nullable=False)
+    quiz_id = db.Column(db.Integer, ForeignKey('quizzes.id', ondelete='CASCADE'), nullable=False)
+    text = db.Column(db.Text, nullable=False)
     image = db.Column(db.String(255), nullable=True)
-    quiz_id = db.Column(db.Integer, db.ForeignKey('quizzes.id'), nullable=False)
-    order_number = db.Column(db.Integer, nullable=False, default=0)
-    question_type_id = db.Column(db.Integer, db.ForeignKey('question_types.id'), nullable=False)  # New column
+    format = db.Column(db.String(50), nullable=False)  # "multiple_choice" or "true_false"
+    score = db.Column(db.Float, nullable=False, default=1.0)  # Score for the question
+    shuffle_enabled = db.Column(db.Boolean, default=False)  # Shuffle answers for this question
+    options_format = db.Column(db.String(10), nullable=False, default="A,B,C,D")  # e.g., A,B,C,D or 1,2,3,4
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     
     # Relationships
-    quiz = db.relationship('Quizzes', backref='questions')
-    
-    def shuffle_options(self):
-        from random import shuffle
-        options = self.options
-        shuffle(options)
-        for index, option in enumerate(options):
-            option.order_number = index
-        db.session.commit()
-    
-    def __repr__(self) -> str:
-        return '<Questions %r>' % self.question
-    
+    quiz = relationship("Quizzes", back_populates="questions")
+    answers = relationship("Answers", back_populates="question", cascade="all, delete-orphan")
 
-class Options(db.Model):
-    __tablename__ = 'options'
-    id = db.Column(db.Integer, primary_key=True)
-    option = db.Column(db.Text, nullable=False)
-    image = db.Column(db.String(255), nullable=True)
-    score = db.Column(db.Integer, nullable=False, default=0)
-    order_number = db.Column(db.Integer, nullable=False, default=0)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
-    question = db.relationship('Questions', backref='options')
-    
-    def __repr__(self) -> str:
-        return '<Options %r>' % self.option
-    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'quiz_id': self.quiz_id,
+            'text': self.text,
+            'image': self.image,
+            'format': self.format,
+            'score': self.score,
+            'shuffle_enabled': self.shuffle_enabled,
+            'options_format': self.options_format,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
 
 class Answers(db.Model):
     __tablename__ = 'answers'
     id = db.Column(db.Integer, primary_key=True)
-    answer = db.Column(db.Text, nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'), nullable=False)
-    option_id = db.Column(db.Integer, db.ForeignKey('options.id'), nullable=False)
-    question = db.relationship('Questions', backref='answers')
-    option = db.relationship('Options', backref='answers')
+    question_id = db.Column(db.Integer, ForeignKey('questions.id', ondelete='CASCADE'), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    image = db.Column(db.String(255), nullable=True)  # Optional image for the answer
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)  # True if this answer is correct
+    order_number = db.Column(db.Integer, nullable=True)  # For ordering answers
     
-    def set_score(self, is_correct):
-        self.option.score = 1 if is_correct else 0
-        db.session.commit()
-    
-    def __repr__(self) -> str:
-        return '<Answers %r>' % self.answer
+    # Relationships
+    question = relationship("Questions", back_populates="answers")
 
-class QuestionType(db.Model):
-    __tablename__ = 'question_types'
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'question_id': self.question_id,
+            'text': self.text,
+            'image': self.image,
+            'is_correct': self.is_correct,
+            'order_number': self.order_number,
+        }
+
+# Adding back_populates to Quizzes
+Quizzes.questions = relationship("Questions", back_populates="quiz", cascade="all, delete-orphan")
+
+
+class QuizResults(db.Model):
+    __tablename__ = 'quiz_results'
     id = db.Column(db.Integer, primary_key=True)
-    type_name = db.Column(db.String(50), nullable=False, unique=True)
-    questions = db.relationship('Questions', backref='question_type', lazy=True)  # Ensure unique backref name
+    quiz_id = db.Column(db.Integer, ForeignKey('quizzes.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    overall_score = db.Column(db.Float, nullable=False, default=0.0)  # Score for the quiz
+    completed = db.Column(db.Boolean, nullable=False, default=False)  # True if the quiz is completed
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone('Europe/Helsinki')))
+    end_time = db.Column(db.DateTime, nullable=True)  # End time of the quiz
+    duration = db.Column(db.Integer, nullable=True)  # Duration of the quiz in seconds
+    created_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
+    updated_at = db.Column(db.DateTime, default=datetime.now(timezone('Europe/Helsinki')))
     
-    def __repr__(self) -> str:
-        return '<QuestionType %r>' % self.type_name
+    # Relationships
+    quiz = relationship("Quizzes", back_populates="results")
+    user = relationship("User", back_populates="results")
+    answers = relationship("QuizAnswers", back_populates="result", cascade="all, delete-orphan")
+    
+    def calculate_overall_score(self):
+        score = 0
+        for answer in self.answers:
+            if answer.is_correct:
+                score += answer.question.score
+        return score
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'quiz_id': self.quiz_id,
+            'user_id': self.user_id,
+            'overall_score': self.overall_score,
+            'completed': self.completed,
+            'start_time': self.start_time.isoformat(),
+            'end_time': self.end_time.isoformat() if self.end_time else None,
+            'duration': self.duration,
+            'created_at': self.created_at,
+            'updated_at': self.updated_at,
+        }
+        
+    @staticmethod
+    def get_attempts(user_id, quiz_id):
+        try:
+            attempts = QuizResults.query.filter_by(user_id=user_id, quiz_id=quiz_id).count()
+            return attempts
+        except Exception as e:
+            current_app.logger.error(f'Error in get_attempts: {str(e)}')
+            raise
 
     @staticmethod
-    def insert_question_types():
-        types = ['Multiple Choice', 'True/False']
-        for type_name in types:
-            question_type = QuestionType.query.filter_by(type_name=type_name).first()
-            if question_type is None:
-                question_type = QuestionType(type_name=type_name)
-                db.session.add(question_type)
+    def save_result(user_id, quiz_id, overall_score, completed, start_time, end_time, duration):
+        result = QuizResults(
+            user_id=user_id,
+            quiz_id=quiz_id,
+            overall_score=overall_score,
+            completed=completed,
+            start_time=start_time,
+            end_time=end_time,
+            duration=duration
+        )
+        db.session.add(result)
         db.session.commit()
+        return result
+    
+    @staticmethod
+    def get_results(user_id, quiz_id):
+        try:
+            results = QuizResults.query.filter_by(user_id=user_id, quiz_id=quiz_id).all()
+            return results
+        except Exception as e:
+            current_app.logger.error(f'Error in get_results: {str(e)}')
+            raise
+        
+        
 
-def insert_question_types():
-    QuestionType.insert_question_types()
-    print("Question types inserted.")
+    @staticmethod
+    def get_max_score(user_id, quiz_id):
+        try:
+            max_score = db.session.query(db.func.max(QuizResults.overall_score)).filter_by(user_id=user_id, quiz_id=quiz_id).scalar()
+            return max_score if max_score is not None else 0.0
+        except Exception as e:
+            current_app.logger.error(f'Error in get_max_score: {str(e)}')
+            raise
+
+    @staticmethod
+    def get_all_results(quiz_id):
+        try:
+            return QuizResults.query.filter_by(quiz_id=quiz_id).all()
+        except SQLAlchemyError as e:
+            current_app.logger.error(f'Database error fetching all results for quiz_id {quiz_id}: {str(e)}')
+            raise
+
+
+class QuizAnswers(db.Model):
+    __tablename__ = 'quiz_answers'
+    id = db.Column(db.Integer, primary_key=True)
+    result_id = db.Column(db.Integer, ForeignKey('quiz_results.id', ondelete='CASCADE'), nullable=False)
+    question_id = db.Column(db.Integer, ForeignKey('questions.id', ondelete='CASCADE'), nullable=False)
+    answer_id = db.Column(db.Integer, ForeignKey('answers.id', ondelete='CASCADE'), nullable=False)
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)
+
+    # Relationships
+    result = relationship("QuizResults", back_populates="answers")
+    question = relationship("Questions")
+    answer = relationship("Answers")
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'result_id': self.result_id,
+            'question_id': self.question_id,
+            'answer_id': self.answer_id,
+            'is_correct': self.is_correct,
+        }

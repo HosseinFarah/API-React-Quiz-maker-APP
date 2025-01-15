@@ -5,8 +5,9 @@ import { AuthContext } from "../context/AuthContext";
 import AllQuizzes from "./AllQuizzes";
 
 const Home = () => {
-  const { isAdmin } = useContext(AuthContext);
+  const { isAdmin,isConfirmed } = useContext(AuthContext);
   console.log('isAdmin in Home:', isAdmin); // Debug log
+  console.log('isConfirmed in Home:', isConfirmed); // Debug log
   
 
   return (

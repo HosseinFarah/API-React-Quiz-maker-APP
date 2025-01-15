@@ -40,12 +40,12 @@
           {% endfor %}
         </div>
         <div class="form-group mb-3">
-          {{ form.capacity.label(class="form-label") }} {{
-          form.capacity(class="form-control", required=True) }}
+          {{ form.attempt.label(class="form-label") }} {{
+          form.attempt(class="form-control", required=True) }}
           <div class="invalid-feedback">
-            Capacity is required
+            attempt is required
           </div>
-          {% for error in form.capacity.errors %}
+          {% for error in form.attempt.errors %}
           <span class="invalid-feedback">{{ error }}</span>
           {% endfor %}
         </div>
@@ -56,6 +56,16 @@
             Start Date is required
           </div>
           {% for error in form.start_date.errors %}
+          <span class="invalid-feedback">{{ error }}</span>
+          {% endfor %}
+        </div>
+        <div class="form-group mb-3">
+          {{ form.end_date.label(class="form-label") }} {{
+          form.end_date(class="form-control", required=True) }}
+          <div class="invalid-feedback">
+            End Date is required
+          </div>
+          {% for error in form.end_date.errors %}
           <span class="invalid-feedback">{{ error }}</span>
           {% endfor %}
         </div>

@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { API_URL } from '../Components/Urls';
 import { getCsrfToken } from '../utils/csrfUtils';
+import { useNavigation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export const AuthContext = createContext();
 
@@ -16,6 +18,7 @@ export const AuthProvider = ({ children }) => {
   );
   const [user, setUser] = useState(null);
 
+
   const setAuth = (authState) => {
     setIsAuthenticated(authState);
   };
@@ -28,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('isAdmin', JSON.stringify(isAdmin));
   }, [isAdmin]);
 
-  const logout = async () => {
+  const logout = async (callback) => {
     try {
       const csrfToken = await getCsrfToken(); // Get CSRF token
       console.log('CSRF Token for logout:', csrfToken); // Log CSRF token
@@ -47,7 +50,15 @@ export const AuthProvider = ({ children }) => {
         sessionStorage.removeItem('csrf_token'); // Ensure CSRF token is cleared
         setIsAuthenticated(false);
         setIsAdmin(false);
+        setIsConfirmed(false); // Set isConfirmed to false
         setUser(null);
+        localStorage.removeItem('user'); // Remove user data from localStorage
+        localStorage.removeItem('isAdmin');
+        localStorage.removeItem('isConfirmed');
+        sessionStorage.removeItem('isConfirmed');
+        if(typeof callback === 'function') {
+          callback();
+        }
       } else {
         const result = await response.json();
         console.error('Logout failed:', result); // Log error response
@@ -58,6 +69,41 @@ export const AuthProvider = ({ children }) => {
       throw new Error('Failed to logout');
     }
   };
+
+  useEffect(() => { 
+    if (isAuthenticated) {
+      const fetchUser = async () => {
+        try {
+          const csrfToken = await getCsrfToken();
+          const response = await fetch(`${API_URL}/user-info`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrfToken
+            }
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Fetch user failed:', response.status, errorData);
+            if (response.status === 401) {
+              throw new Error('Unauthorized access');
+            }
+            throw new Error(`Failed to fetch user data: ${errorData.message}`);
+          }
+          const data = await response.json();
+          setUser(data);
+          localStorage.setItem('user', JSON.stringify(data)); // Store user data in localStorage
+        } catch (error) {
+          console.error('Fetch user error:', error);
+          throw new Error('Failed to fetch user data');
+        }
+      };
+      fetchUser();
+    }
+  }
+  , [isAuthenticated]);
+  
+
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, setAuth, logout, isConfirmed, setIsConfirmed, isAdmin, setAdmin, user, setUser }}>

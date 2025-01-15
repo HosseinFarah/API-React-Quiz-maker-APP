@@ -1,0 +1,7 @@
+Confirm Email
+    Hi {{ user.firstname+ ' ' + user.lastname }}
+    Click the link below to confirm your email address.
+    http://localhost:5173/confirm?token={{ token }}
+    Thank you for using our service!
+    Best regards,
+    Team

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { API_URL } from "../Components/Urls";
 import { fetchCsrfToken } from "../utils/csrfUtils";
 import { useNavigate } from "react-router-dom";
+import { PulseLoader } from "react-spinners";
 
 const CreateQuiz = () => {
   const {
@@ -13,6 +14,7 @@ const CreateQuiz = () => {
     setError,
   } = useForm();
   const [serverErrors, setServerErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const onSubmit = async (data) => {
@@ -24,6 +26,8 @@ const CreateQuiz = () => {
       for (const key in data) {
         if (key === "shuffle_questions") {
           formData.append("shuffle_questions_enabled", data[key] ? "true" : "false");
+        } else if (key === "start_date" || key === "end_date") {
+          formData.append(key, data[key]);
         } else {
           formData.append(key, data[key]);
         }
@@ -45,6 +49,7 @@ const CreateQuiz = () => {
       if (response.ok) {
         console.log("Quiz created successfully:", result);
         toast.success("Quiz created successfully");
+        setLoading(false);
         navigate("/");
       } else {
         console.error("Error creating quiz:", result);
@@ -68,6 +73,11 @@ const CreateQuiz = () => {
   return (
     <div className="container" style={{marginTop: "150px"}}>
       <div className="row d-flex justify-content-center">
+      {loading && (
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+              <PulseLoader color="#0d6efd" loading={loading} size={50} />
+            </div>
+          )}
         <div className="col-md-6">
           <form onSubmit={handleSubmit(onSubmit)} className="form" encType="multipart/form-data">
             <div className="mb-3">
@@ -93,16 +103,22 @@ const CreateQuiz = () => {
               {serverErrors.status && <div className="text-danger">{serverErrors.status}</div>}
             </div>
             <div className="mb-3">
-              <label htmlFor="capacity" className="form-label">Capacity</label>
-              <input type="number" {...register("capacity", { required: true })} className="form-control" />
-              {errors.capacity && <span className="text-danger">{errors.capacity.message || "This field is required"}</span>}
-              {serverErrors.capacity && <div className="text-danger">{serverErrors.capacity}</div>}
+              <label htmlFor="attempt" className="form-label">attempt</label>
+              <input type="number" {...register("attempt", { required: true })} className="form-control" />
+              {errors.attempt && <span className="text-danger">{errors.attempt.message || "This field is required"}</span>}
+              {serverErrors.attempt && <div className="text-danger">{serverErrors.attempt}</div>}
             </div>
             <div className="mb-3">
               <label htmlFor="start_date" className="form-label">Start Date</label>
-              <input type="date" {...register("start_date", { required: true })} className="form-control" />
+              <input type="datetime-local" {...register("start_date", { required: true })} className="form-control" />
               {errors.start_date && <span className="text-danger">{errors.start_date.message || "This field is required"}</span>}
               {serverErrors.start_date && <div className="text-danger">{serverErrors.start_date}</div>}
+            </div>
+            <div className="mb-3">
+              <label htmlFor="end_date" className="form-label">End Date</label>
+              <input type="datetime-local" {...register("end_date", { required: true })} className="form-control" />
+              {errors.end_date && <span className="text-danger">{errors.end_date.message || "This field is required"}</span>}
+              {serverErrors.end_date && <div className="text-danger">{serverErrors.end_date}</div>}
             </div>
             <div className="mb-3">
               <label htmlFor="time_limit" className="form-label">Time Limit</label>
